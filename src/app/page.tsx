@@ -1,9 +1,10 @@
+import FlowContainer from "@/components/flow/FlowContainer";
 import Image from "next/image";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1 className="text-3xl font-bold underline"></h1>
+    <main className="flex flex-col w-full h-full items-center justify-between">
+      <FlowContainer />
     </main>
   );
 }
