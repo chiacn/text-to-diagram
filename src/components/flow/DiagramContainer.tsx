@@ -2,16 +2,26 @@
 import { useState } from "react";
 import DiagramItem from "./DiagramItem";
 import useLLM from "@/commonHooks/useLLM";
+import CommonToggleGroups from "../CommonTogleGroup";
 
 export default function DiagramContainer() {
   //  LLM 테스트 ---------------------------------------------
 
-  const { getAnswerFromModel } = useLLM({});
-
+  const { getAnswerFromModel, inquiryType, setInquiryType, inquiryTypeList } =
+    useLLM({});
   const [question, setQuestion] = useState("");
 
-  const submitPrompt = () => {
-    getAnswerFromModel(question);
+  const [structure, setStructure] = useState([]);
+
+  // --------------------------------------------------------
+
+  // --------------------------------------------------------
+
+  const submitPrompt = async () => {
+    const json = JSON.parse((await getAnswerFromModel(question)) as string);
+    console.log("json --- ", json);
+    setStructure(json);
+    console.log("structure ---- ", structure);
   };
 
   // 주입식으로?
@@ -37,15 +47,21 @@ export default function DiagramContainer() {
       },
     },
   ];
+
   return (
     <>
-      <div>
+      <div className="flex flex-col">
+        <CommonToggleGroups
+          items={inquiryTypeList}
+          selectedValue={inquiryType}
+          setSelectedToggle={setInquiryType}
+        />
         <textarea
           name="postContent"
           rows={4}
           cols={40}
           onChange={(e) => setQuestion(e.target.value)}
-          className="border border-gray-300"
+          className="border border-gray-300 mt-2"
         ></textarea>
         <button onClick={submitPrompt}>Submit!!</button>
       </div>
@@ -64,6 +80,19 @@ export default function DiagramContainer() {
             />
           );
         })}
+
+        {/* {structure[0].map((item) => {
+          return (
+            <DiagramItem
+              key={item.diagramId}
+              diagramId={item.diagramId}
+              style={{
+                position: "absolute",
+                ...item.style,
+              }}
+            />
+          );
+        })} */}
       </div>
     </>
   );

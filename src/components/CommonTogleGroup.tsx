@@ -2,8 +2,8 @@ import { ToggleGroup, ToggleGroupItem } from "@radix-ui/react-toggle-group";
 import type { Dispatch, SetStateAction } from "react";
 
 interface ToggleGroupsProps {
-  type: "single" | "multiple";
   items: ToggleItem[];
+  selectedValue: string | null;
   setSelectedToggle:
     | ((value: string) => void)
     | Dispatch<SetStateAction<string | null>>;
@@ -14,6 +14,7 @@ type ToggleItem = {
 };
 export default function CommonToggleGroups({
   items,
+  selectedValue,
   setSelectedToggle,
 }: ToggleGroupsProps) {
   return (
@@ -26,11 +27,14 @@ export default function CommonToggleGroups({
         <ToggleGroupItem
           key={item.value}
           value={item.value}
-          className="            
+          className={`
             px-4 py-2 border border-gray-300 rounded 
             bg-white hover:bg-gray-100 transition-colors 
-            cursor-pointe
-          "
+            cursor-pointer min-h-16
+            ${
+              selectedValue === item.value ? "bg-gray-100" : "hover:bg-gray-100"
+            } 
+          `}
         >
           {item.label}
         </ToggleGroupItem>
