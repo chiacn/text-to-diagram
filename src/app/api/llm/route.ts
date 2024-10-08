@@ -20,49 +20,12 @@ const rule_guide_displayType_tree = `
   b. Group these units into larger logical structures or categories that share a common theme or relationship.
   c. Within each group, if further subdivisions are possible, repeat the process by clustering smaller related units until no further meaningful grouping can be performed.
   d. Include all necessary elements from the input text, ensuring no duplication, while maintaining maximum coverage of important information.
-  e. You have to translate each element and description into japanese.
 `;
 const rule_guide_displayType_list_compare = `
   a. Identify the main criteria or themes that can be used to list elements from the input content. (There can be multiple top-level elements, and if there are multiple, it is 'compare'.)
   b. Break down the content into individual elements that fit these criteria.
   c. Organize these elements into a simple list, ensuring each aligns with the main context or theme.
 `;
-// const rule_guide_displayType_example = `
-// a. First, identify the key logical steps or core concepts in the input text. Ensure that you clearly understand the sequence or flow of these steps.
-// b. Based on your understanding, generate a relevant example that illustrates these concepts or steps. Ensure the example directly relates to the context of the input.
-// c. Present the example in a step-by-step manner, ensuring that each part of the example corresponds to a specific step or concept in the input. Each step in the example should clearly demonstrate the logical flow of the original content.
-// `;
-
-/*
-
-  element로 예시의 unit을 나눈다. => 만약 그 예시의 unit이 펼쳐질 수 있는(전개될 수 있는거라면.) ex. for문의 n은 최소 4번 정도의 하위 step을 가져야 한다.
-
-  input의 맥락에서 핵심적인
-  DFS
-
-  EX)
-  User 피드백도 넣을까 ..?
-  FEED BACK - "DFS 위주로 알려줘"
-
-  '예시'라는 것을 모델링하는데, 이 때 모델링의 구성 요소는 
-  너가 이해한 input의 예시에 필요한 다른 요소가 될 수도 있고,
-  loop문이라면 특정 구성요소가 반복되는 것일 수도 있다.
-
-  1. 그 요소들을 구성하는 여러 가지 논리적인 청크를 만든다?  시작 - (끝이 있는)
-  2. 가장 큰 논리적인 맥락에서부터 step을 나누고, 각 step마다 하위 step이 있으면 그것을 나눈다.
-  step에 기반한 청크. -> 각 스텝을 기준으로 나눈다.
-
-*/
-
-// const rule_guide_displayType_example = `
-//   a. first, understand the INPUT TEXT based on its logical flow to create a real use case.
-//     a-1. extraction of key context should be based on real cases that can be applied to the logic of input text.
-//     a-2. based on the example, create the step-by-step process.
-//     a-3. Each step must be structured according to the rules below.
-//       - if logical flow has parameter, each step should be structured focusing on the development of the parameters.
-//       - the logical chunk that can be divided into multiple steps should be ensured that all step is displayed. ( for example. Do not lump each step into a comprehensive explanation, but specify each step. )
-//   b. If there are sub-logical units within a chunk, break them down into sequential sub steps.
-// `;
 
 /*
   모델링
@@ -78,24 +41,42 @@ const rule_guide_displayType_list_compare = `
 
 */
 
+// * 현재까지 가장 정확
 // const rule_guide_displayType_example = `
-//   a. First, understand the INPUT TEXT by understanding its logical flow.
-//   b. based on your understand, create actual use case for step-by-step example.
-//   c. Each step should follow these rules:
-//     - If the logical flow includes parameters, each step should focus on how the parameters are developed.
-//     - Break down each logical chunk into multiple steps when possible. Do not condense steps into a single explanation; specify each step separately.
-//   b. If there are sub-logical units within a chunk, break them down into sequential sub-steps.
+//   a. create an step-by-step example that is specific to the largest context.
+//   b. the example should be able to be applied as an actual use case.
+//   c. for figuring out sub steps of the example, use the example created by the larger example.
+//   c-1. The examples of sub step must be derived from the larger examples. (An example that comes up by substituting a larger example)
+//   d. repeat the above process to configure sub steps.
+//   e. ensure each step is developed in detail. it should show all the steps in a logical order.
+//   f. ensure threre are enough examples. (for recursive, at least 5 steps)
 // `;
 
 /*
-  largest element를 파악하고 그걸로 예시 만들기?
+
+  핵심적인 맥락을 추출한다.
+  (첫 번째 레이어에서는 여러 맥락 중에 하나를 추출한다?)
+
+  * => 여기서 User feedback으로 다른 걸 중점 맥락으로 할 수도 있게??
+
+  
+  * 아예 초반에 했던 것처럼 엘리먼트 파악한 뒤 그 구조를 토대로 예시를 만드는걸로 하자.
+  
+  하위 example은 상위 example의 step을 빠짐없이 구성해야한다.
+  
+  step은 example에서의 flow를 따라야한다.
 */
 
-const rule_guide_displayType_example = `
-  a. define the largest conceptual element that makes up the input text.
-  b. create step-by-step example using actual example that can be substituted. (An Example or use case corresponding to the element.)
-  b-1. each step should be defined based on the example of the largest element. (these steps should be derived directly from the example created by the largest element.)
-  b-2. define sub-steps based on larger example.
+// 모든 스텝은 연결되어야한다? 시작점과 끝점을 바탕으로 연결관계를 찾아라. -> 이 연결관계를 바탕으로 순서를 정리 . '선후관계'를 바탕으로?
+// largest context to smaller context - 각 layer에서의 요소들의 연결관계를 파악. 이 연결관계를 바탕으로 시작점과 끝점 / 대입의 방법.
+// '연결구조'
+const rule_guide_displayType_example = ` 
+  a. Create a specific, step-by-step example based on the provided input text.
+  b. Organize the steps in a logical sequence, ensuring that each step follows naturally from the previous one based on their causal relationships.
+  c. For each primary step, break it down into smaller sub-steps that derive from the main action or idea.
+  d. Repeat the process recursively, ensuring that each sub-step is broken down further as needed to maintain clarity.
+  e. Ensure that each step and sub-step is detailed, explaining all relevant actions or decisions.
+  f. Provide enough examples, ensuring that recursive processes contain at least 5 well-defined steps.
 `;
 
 const rule_guide_displayType_logical_progression = `
@@ -128,17 +109,18 @@ const userContent_rule_format_tree = `
 const userContent_rule_format_list_compare = `
   2. Based on divided elements, generate a JSON structure that represents relationship of elements. Each element in the JSON should follow this format:
 `;
+
+// * 그냥 displayType을 response format에 {displayType: "example", content: "response"} 이런식으로 넣어주자.
 const userContent_rule_format_example = `
-  2. Based on example, generate a JSON structure that represents relationship of elements. Each element in the JSON should follow this format:
+  2. Based on created example, generate a JSON structure based on example. Each element in the JSON should follow this format:
    {
-    displayType: "example",
-    steps: [ 
+    target: element of INPUT TEXT corresponding to the example,
+    example: actual example corresponding to the step by substituting the target,
+    description: explanation of the step,
+    steps: [ // if there are sub steps.
       {
-        step: 1,  // steps in the example
-        target: "Target corresponding to actual input text",
-        example: "Example of the step",
-        description: "Explanation of the overall logic for this step",
-        sub_steps: [], // If there are sub steps
+        step: 1,2,3,4 ..., 
+        ... // add the above process to configure sub steps. ( you have to include step, target, example, description )
       }
     ]
   }
@@ -195,7 +177,7 @@ const setUserContentByInquiryType = (inquiryType: string, input: string) => {
   }
 };
 
-const setUserContentRuleByLanguage = (lang: string = "EN") => {
+const setUserContentRuleByLanguage = (lang: string = "KR") => {
   let language = "English";
   switch (lang) {
     case "EN":
