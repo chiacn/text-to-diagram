@@ -12,7 +12,6 @@ import { NextResponse } from "next/server";
 const userContent_rule_guide = `
   You must follow below 'Guide line' about 'INPUT TEXT'.
   Guide line:
-  1. You should understand INPUT TEXT to explain it based on the below way.
 `;
 
 const rule_guide_displayType_tree = `
@@ -43,13 +42,13 @@ const rule_guide_displayType_list_compare = `
 
 // * 현재까지 가장 정확
 // const rule_guide_displayType_example = `
-//   a. create an step-by-step example that is specific to the largest context.
-//   b. the example should be able to be applied as an actual use case.
-//   c. for figuring out sub steps of the example, use the example created by the larger example.
-//   c-1. The examples of sub step must be derived from the larger examples. (An example that comes up by substituting a larger example)
-//   d. repeat the above process to configure sub steps.
-//   e. ensure each step is developed in detail. it should show all the steps in a logical order.
-//   f. ensure threre are enough examples. (for recursive, at least 5 steps)
+// a. create an step-by-step example that is specific to the largest context.
+// b. the example should be able to be applied as an actual use case.
+// c. for figuring out sub steps of the example, use the example created by the larger example.
+// c-1. The examples of sub step must be derived from the larger examples. (An example that comes up by substituting a larger example)
+// d. repeat the above process to configure sub steps.
+// e. ensure each step is developed in detail. it should show all the steps in a logical order.
+// f. ensure there are enough examples. (for recursive, at least 5 steps)
 // `;
 
 /*
@@ -59,24 +58,44 @@ const rule_guide_displayType_list_compare = `
 
   * => 여기서 User feedback으로 다른 걸 중점 맥락으로 할 수도 있게??
 
-  
-  * 아예 초반에 했던 것처럼 엘리먼트 파악한 뒤 그 구조를 토대로 예시를 만드는걸로 하자.
-  
-  하위 example은 상위 example의 step을 빠짐없이 구성해야한다.
+    만들어진 example의 시작점과 끝점에 유의해 하위 요소들의 순서를 지정.
+    그걸 바탕으로 예시를 생성.
   
   step은 example에서의 flow를 따라야한다.
 */
 
-// 모든 스텝은 연결되어야한다? 시작점과 끝점을 바탕으로 연결관계를 찾아라. -> 이 연결관계를 바탕으로 순서를 정리 . '선후관계'를 바탕으로?
+// * 모든 스텝은 연결되어야한다? 시작점과 끝점을 바탕으로 연결관계를 찾아라. -> 이 연결관계를 바탕으로 순서를 정리 . '선후관계'를 바탕으로?
 // largest context to smaller context - 각 layer에서의 요소들의 연결관계를 파악. 이 연결관계를 바탕으로 시작점과 끝점 / 대입의 방법.
+
+/*
+  * input text에 대해 대입할 수 있는 parameter를 지정해라. to create example of input text.
+  *그 parameter를 기준으로 step을 생성해라. 
+
+*/
+
 // '연결구조'
-const rule_guide_displayType_example = ` 
-  a. Create a specific, step-by-step example based on the provided input text.
-  b. Organize the steps in a logical sequence, ensuring that each step follows naturally from the previous one based on their causal relationships.
-  c. For each primary step, break it down into smaller sub-steps that derive from the main action or idea.
-  d. Repeat the process recursively, ensuring that each sub-step is broken down further as needed to maintain clarity.
-  e. Ensure that each step and sub-step is detailed, explaining all relevant actions or decisions.
-  f. Provide enough examples, ensuring that recursive processes contain at least 5 well-defined steps.
+// const rule_guide_displayType_example = `
+//   (n은 5에서부터 시작)
+//   a. please create step-by-step example of INPUT TEXT in detail.
+//   b. the example should be able to be applied as an actual use case.
+//   c. when creating steps, check if the step has progressed to the end of the given example.
+// `;
+
+// const rule_guide_displayType_example = `
+//   a. indentify all elements that can be used to create an example.
+//   b. create an step-by-step example in order.
+//   c. every time you create a step, check about all the elements and identify all changes.
+//   d. ensure each step is developed in detail. it should show all the steps in a logical order.
+// `;
+
+// const rule_guide_displayType_example = `
+//   a. create an step-by-step example that is specific to the largest context.
+//   b. the example should be able to be applied as an actual use case.
+//   c. The examples of sub step must be derived from the larger examples. (An example that comes up by substituting a larger example)
+//   d. repeat the above process to configure sub steps.
+//   e. ensure there are enough examples.
+// `;
+const rule_guide_displayType_example = `
 `;
 
 const rule_guide_displayType_logical_progression = `
@@ -87,7 +106,7 @@ const rule_guide_displayType_logical_progression = `
 
 // * Based on divided element .. 뒤 문장에 RULE: YOU MUST TRANSLATE IT INTO KOREAN. 박으니까 한국어로 나옴. (근데 일본어로는 안된다..)
 const userContent_rule_format_tree = `
-  2. Based on divided elements, generate a JSON structure that represents relationship of elements. Each element in the JSON should follow this format:
+  2. Based on divided elements, generate a JSON structure that represents relationship of elements.  Each element in the JSON should follow this format:
   {
     displayType: tree,
     content: [ 
@@ -110,21 +129,117 @@ const userContent_rule_format_list_compare = `
   2. Based on divided elements, generate a JSON structure that represents relationship of elements. Each element in the JSON should follow this format:
 `;
 
-// * 그냥 displayType을 response format에 {displayType: "example", content: "response"} 이런식으로 넣어주자.
+//* 현재까지 best
+// const userContent_rule_format_example = `
+//   1. Create step-by-step example by actual use case to represent progression of INPUT TEXT.
+//     1-1. if there is final result value of INPUT TEXT, all steps should be a process of deriving final based on logical context.
+//   2. Child steps must be derived from the progression of parent step.
+//   3. Based on the logical context of parent step, define each child step comprehensively.
+//   4. Create a JSON structure where each element follows this format:
+//     {
+//       "target": "<Identify the largest element of the INPUT TEXT in its logical context>",
+//       "example": "<Create a specific example by substituting the target with an actual use case>",
+//       "steps": [
+//         {
+//           "step": "<Order of the step>",
+//           "target": "<actual element of the INPUT TEXT in this step>",
+//           "example": "<An actual example that could come out if the parent example is applied to the target at this step>",
+//           "description": "<Explanation of what happens when the example is applied and how it affects other elements>",
+//           "result": {<element that is result from execution of the step in logical context>}, // change of elements derived from the step.
+//           "steps": [
+//             // Include any further actions that follow from this example.
+//             // **For recursive processes, fully expand every steps.**
+//             // **Each recursive step should be represented as a new step within the 'steps' array.**
+//             // **Continue this process until end of the example is reached, ensuring all steps are included without skipping any levels of recursion.**
+//           ]
+//         }s
+//       ]
+//     }
+//   5. When expanding recursive functions, each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached. Do not skip any levels of recursion.
+// `;
+
+// * 결과의 정확도로는 이게 젤 좋음.
+// const userContent_rule_format_example = `
+//   Create an step-by-step example following the below guide:
+//     {
+//       "target": <Identify main largest target based on the logical context of INPUT TEXT>,
+//       "example": <Provide a specific use case applicable to the target>,
+//       "steps": [
+//         //** Develop step-by-step example by actual use case to represent progression of INPUT TEXT. **
+//         //** if there is final result value of INPUT TEXT, all steps should be a process of deriving final based on logical context. **
+//         //** Child steps must be derived from the progression of parent step. **
+//         {
+//           //** next step should be based on the previous step in the logical context **
+//           //** When creating the step, ensure that it is logically connected to the previous step. **
+//           "step": <Step number>,
+//           "target": <Specific element of the INPUT TEXT relevant at this step>,
+//           "example": <Actual example applied to the target at this step>,
+//           "description": <Explanation of the effects when the example is applied and its impact on other elements>,
+//           "result": {
+//             <Outcome resulting from this step within the logical context>,
+//           },
+//           "steps": [
+//             // Include any subsequent actions derived from this step.
+//             // Continue expanding each step fully, especially for recursive functions, until the final result is reached.
+//           ]
+//         }
+//         // Repeat the structure for each subsequent step.
+//       ]
+//     }
+// `;
+
+// const userContent_rule_format_example = `
+//   Create an step-by-step example following the below guide:
+//     {
+//       "target": <Identify main largest target in the logical context of INPUT TEXT>,
+//       "example": <Provide a specific use case applicable to the target>,
+//       "steps": [
+//         //** Provide a step-by-step example that progressively develops the INPUT TEXT while maintaining a consistent context or theme. **
+//         //** Each step should be part of a logical progression, leading to a final conclusion. **
+//         {
+//           "step": <Step number>,
+//           "target": <Specific element of the INPUT TEXT relevant at this step>,
+//           "example": <A specific use case applicable to the target at this step>,
+//           "description": <Explanation of the effects when the example is applied and its impact on other elements>,
+//           "result": {
+//             <Outcome resulting from this step within the logical context>,
+//           },
+//           "steps": [
+//             // Include any subsequent actions derived from this step.
+//             // Continue expanding each step fully, especially for recursive functions, until the final result is reached.
+//           ]
+//         }
+//       ]
+//       //** When developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached. **
+//     }
+// `;
+
 const userContent_rule_format_example = `
-  2. Based on created example, generate a JSON structure based on example. Each element in the JSON should follow this format:
-   {
-    target: element of INPUT TEXT corresponding to the example,
-    example: actual example corresponding to the step by substituting the target,
-    description: explanation of the step,
-    steps: [ // if there are sub steps.
-      {
-        step: 1,2,3,4 ..., 
-        ... // add the above process to configure sub steps. ( you have to include step, target, example, description )
-      }
-    ]
-  }
+  Create an step-by-step example following the below guide:
+    {
+      "target": <Identify main largest target in the logical context of INPUT TEXT>,
+      "example": <Provide a specific use case applicable to the target>,
+      "steps": [
+        //** Provide a step-by-step example that progressively develops the INPUT TEXT while maintaining a consistent context or theme. **
+        //** Each step should be part of a logical progression, leading to a final conclusion. **
+        {
+          "step": <Step number>,
+          "target": <Specific element of the INPUT TEXT relevant at this step>,
+          "example": <A specific use case applicable to the target at this step>,
+          "description": <Explanation of the effects when the example is applied and its impact on other elements>,
+          "result": {
+            <Outcome resulting from this step within the logical context>,
+          },
+          "steps": [
+            // Include any subsequent actions derived from this step.
+            // Continue expanding each step fully, especially for recursive functions, until the final result is reached.
+          ]
+        }
+      ]
+      //** When developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached. **
+    }
 `;
+
 const userContent_rule_format_logical_progression = `
   2. Based on divided elements, generate a JSON structure that represents relationship of elements. Each element in the JSON should follow this format:
 `;
@@ -177,7 +292,8 @@ const setUserContentByInquiryType = (inquiryType: string, input: string) => {
   }
 };
 
-const setUserContentRuleByLanguage = (lang: string = "KR") => {
+// * 프롬프트를 한국어로 적는 방향은? (근데 이건 정확도 떨어질듯..?)
+const setUserContentRuleByLanguage = (lang: string = "EN") => {
   let language = "English";
   switch (lang) {
     case "EN":
@@ -214,7 +330,7 @@ const setUserContentRuleByLanguage = (lang: string = "KR") => {
       : `
         RESPONSE RULE:
           - Respond strictly in JSON format.
-          - Translate all descriptions and explanations into ${language} language
+          - Translate all JSON into ${language} language
             Only use ${language} language for translation.
 
           INPUT TEXT:
@@ -250,7 +366,7 @@ export async function POST(request: Request) {
     const checkService = (service: string) => {
       if (service === "groq") {
         return new ChatGroq({
-          apiKey: process.env.GROQ_API_KEY,
+          apiKey: process.env.GROQ_API_KEY2,
           model: serviceInfo.model,
           temperature: 0.1,
           maxTokens: undefined,
