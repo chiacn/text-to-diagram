@@ -10,7 +10,7 @@ import { NextResponse } from "next/server";
 */
 
 const userContent_rule_guide = `
-  You must follow below 'Guide line' about 'INPUT TEXT'.
+  You must follow below 'Guide line' about [INPUT TEXT].
   Guide line:
 `;
 
@@ -130,114 +130,77 @@ const userContent_rule_format_list_compare = `
 `;
 
 //* 현재까지 best
+//* Note: 1-1. Next step must be derived from the previous step based on the logical context of parent step.를 넣어줘서 논리적 연결성을 강화했더니 정확도가 높아짐. (오답률이 낮아졌다.)
 // const userContent_rule_format_example = `
-//   1. Create step-by-step example by actual use case to represent progression of INPUT TEXT.
-//     1-1. if there is final result value of INPUT TEXT, all steps should be a process of deriving final based on logical context.
-//   2. Child steps must be derived from the progression of parent step.
-//   3. Based on the logical context of parent step, define each child step comprehensively.
-//   4. Create a JSON structure where each element follows this format:
-//     {
-//       "target": "<Identify the largest element of the INPUT TEXT in its logical context>",
-//       "example": "<Create a specific example by substituting the target with an actual use case>",
-//       "steps": [
-//         {
-//           "step": "<Order of the step>",
-//           "target": "<actual element of the INPUT TEXT in this step>",
-//           "example": "<An actual example that could come out if the parent example is applied to the target at this step>",
-//           "description": "<Explanation of what happens when the example is applied and how it affects other elements>",
-//           "result": {<element that is result from execution of the step in logical context>}, // change of elements derived from the step.
-//           "steps": [
-//             // Include any further actions that follow from this example.
-//             // **For recursive processes, fully expand every steps.**
-//             // **Each recursive step should be represented as a new step within the 'steps' array.**
-//             // **Continue this process until end of the example is reached, ensuring all steps are included without skipping any levels of recursion.**
-//           ]
-//         }s
-//       ]
-//     }
-//   5. When expanding recursive functions, each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached. Do not skip any levels of recursion.
+//   Complete an [step-by-step example] following the guideline below:
+//   {
+//     "target": <Identify main largest target based on the logical context of INPUT TEXT>,
+//     "example": <Create [use case] applicable to the target>,
+//     "steps": [
+//       {
+//         [Creating steps guide]:
+//         1. Create a step-by-step example that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
+//         2. Each step should be a part of the logical progression, leading to a final conclusion.
+//         3. Ensure that example must be created in a consistent logical context in which the INPUT TEXT develops.
+
+//         "step": <Step number>,
+//         "target": <Specific context matching the INPUT TEXT at this step>,
+//         "example": <Create [use case] applicable to the target at this step>,
+//         "description": <Explanation of the effects when the example is applied and its impact on other elements>,
+//         "result": {
+//           <Outcome resulting from this step within the logical context>,
+//         },
+//         "steps": [
+//           [Developing sub steps guide]:
+//           1. Each sub-step should contribute to the overall progression of the parent step, moving sequentially from the starting point to the endpoint.
+//           1-1. Next step must be derived from the previous step based on the logical context of parent step.
+//           2. Continue expanding each step fully, especially for recursive functions, until the final result is reached.
+//           3. the criteria for subdividing sub-steps should be based on the progression of the higher-level step.
+//           4. The progression of the higher-level steps and the logic of the input text should logically, consistently lead to the final result.
+//         ]
+//       }
+//     ]
+//     Note: When developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached. **
+//   }
 // `;
 
-// * 결과의 정확도로는 이게 젤 좋음.
-// const userContent_rule_format_example = `
-//   Create an step-by-step example following the below guide:
-//     {
-//       "target": <Identify main largest target based on the logical context of INPUT TEXT>,
-//       "example": <Provide a specific use case applicable to the target>,
-//       "steps": [
-//         //** Develop step-by-step example by actual use case to represent progression of INPUT TEXT. **
-//         //** if there is final result value of INPUT TEXT, all steps should be a process of deriving final based on logical context. **
-//         //** Child steps must be derived from the progression of parent step. **
-//         {
-//           //** next step should be based on the previous step in the logical context **
-//           //** When creating the step, ensure that it is logically connected to the previous step. **
-//           "step": <Step number>,
-//           "target": <Specific element of the INPUT TEXT relevant at this step>,
-//           "example": <Actual example applied to the target at this step>,
-//           "description": <Explanation of the effects when the example is applied and its impact on other elements>,
-//           "result": {
-//             <Outcome resulting from this step within the logical context>,
-//           },
-//           "steps": [
-//             // Include any subsequent actions derived from this step.
-//             // Continue expanding each step fully, especially for recursive functions, until the final result is reached.
-//           ]
-//         }
-//         // Repeat the structure for each subsequent step.
-//       ]
-//     }
-// `;
+// * 변수화한다? 그리고 그 변수들을 바탕으로 step 생성??
+// * 시도 2 - gpt에 넣고 돌려보기..? gpt에 넣고 돌려서 example같은거 제대로 대체 안 될 경우 프롬프트 개선해달라고하기..?
 
-// const userContent_rule_format_example = `
-//   Create an step-by-step example following the below guide:
-//     {
-//       "target": <Identify main largest target in the logical context of INPUT TEXT>,
-//       "example": <Provide a specific use case applicable to the target>,
-//       "steps": [
-//         //** Provide a step-by-step example that progressively develops the INPUT TEXT while maintaining a consistent context or theme. **
-//         //** Each step should be part of a logical progression, leading to a final conclusion. **
-//         {
-//           "step": <Step number>,
-//           "target": <Specific element of the INPUT TEXT relevant at this step>,
-//           "example": <A specific use case applicable to the target at this step>,
-//           "description": <Explanation of the effects when the example is applied and its impact on other elements>,
-//           "result": {
-//             <Outcome resulting from this step within the logical context>,
-//           },
-//           "steps": [
-//             // Include any subsequent actions derived from this step.
-//             // Continue expanding each step fully, especially for recursive functions, until the final result is reached.
-//           ]
-//         }
-//       ]
-//       //** When developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached. **
-//     }
-// `;
+// *아니면 그냥 답을 내놓고 그거의 step을 나누는 방법으로 역설계하는식??
 
+// 3. Note that examples must be made in the logical context in which the INPUT TEXT unfolds.
 const userContent_rule_format_example = `
-  Create an step-by-step example following the below guide:
-    {
-      "target": <Identify main largest target in the logical context of INPUT TEXT>,
-      "example": <Provide a specific use case applicable to the target>,
-      "steps": [
-        //** Provide a step-by-step example that progressively develops the INPUT TEXT while maintaining a consistent context or theme. **
-        //** Each step should be part of a logical progression, leading to a final conclusion. **
-        {
-          "step": <Step number>,
-          "target": <Specific element of the INPUT TEXT relevant at this step>,
-          "example": <A specific use case applicable to the target at this step>,
-          "description": <Explanation of the effects when the example is applied and its impact on other elements>,
-          "result": {
-            <Outcome resulting from this step within the logical context>,
-          },
-          "steps": [
-            // Include any subsequent actions derived from this step.
-            // Continue expanding each step fully, especially for recursive functions, until the final result is reached.
-          ]
-        }
-      ]
-      //** When developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached. **
-    }
+  Complete an [step-by-step example] following the guideline below:
+  {
+    "target": <Identify main largest target based on the logical context of INPUT TEXT>,
+    "example": <Create [use case] applicable to the target>,
+    "steps": [
+      {
+        [Creating steps guide]:
+        1. Create a step-by-step example that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
+        2. Each step should be a part of the logical progression, leading to a final conclusion.
+        3. Ensure that example must be created in a consistent logical context in which the INPUT TEXT develops.
+
+        "step": <Step number>,
+        "target": <Specific context matching the INPUT TEXT at this step>,
+        "example": <Create [use case] applicable to the target at this step>,
+        "description": <Explanation of the effects when the example is applied and its impact on other elements>,
+        "result": {
+          <Outcome resulting from this step within the logical context>,
+        },
+        "steps": [
+          [Developing sub steps guide]:
+          1. Each sub-step should contribute to the overall progression of the parent step, moving sequentially from the starting point to the endpoint.
+          1-1. Next step must be derived from the previous step based on the logical context of parent step.
+          2. Continue expanding each step fully, especially for recursive functions, until the final result is reached.
+          3. the criteria for subdividing sub-steps should be based on the progression of the higher-level step.
+          4. The progression of the higher-level steps and the logic of the input text should logically, consistently lead to the final result.
+        ]
+      }
+    ]
+    Note: When developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached. **
+  }
 `;
 
 const userContent_rule_format_logical_progression = `
@@ -248,9 +211,9 @@ const userContent_rule_format_logical_progression = `
 
 let userContent_rule_response = `
   RESPONSE RULE:
-  - Respond strictly in JSON format.
+  - You must respond strictly in only JSON format.
 
-  INPUT TEXT:
+  [INPUT TEXT]:
 `;
 
 const setUserContentByInquiryType = (inquiryType: string, input: string) => {
@@ -329,11 +292,11 @@ const setUserContentRuleByLanguage = (lang: string = "EN") => {
       `
       : `
         RESPONSE RULE:
-          - Respond strictly in JSON format.
+          - You must respond strictly in only JSON format.
           - Translate all JSON into ${language} language
             Only use ${language} language for translation.
 
-          INPUT TEXT:
+          [INPUT TEXT]:
       `;
 };
 
