@@ -132,10 +132,10 @@ const userContent_rule_format_list_compare = `
 //* 현재까지 best
 //* Note: 1-1. Next step must be derived from the previous step based on the logical context of parent step.를 넣어줘서 논리적 연결성을 강화했더니 정확도가 높아짐. (오답률이 낮아졌다.)
 // const userContent_rule_format_example = `
-//   Complete an [step-by-step example] following the guideline below:
+//   Create a [step-by-step example] following the guideline below:
 //   {
-//     "target": <Identify main largest target based on the logical context of INPUT TEXT>,
-//     "example": <Create [use case] applicable to the target>,
+//     "target": <Identify main largest context based on the logical context of INPUT TEXT>,
+//     "example": <Create a [use case] applicable to the target>,
 //     "steps": [
 //       {
 //         [Creating steps guide]:
@@ -145,18 +145,18 @@ const userContent_rule_format_list_compare = `
 
 //         "step": <Step number>,
 //         "target": <Specific context matching the INPUT TEXT at this step>,
-//         "example": <Create [use case] applicable to the target at this step>,
+//         "example": <Create a [use case] applicable to the target at this step>,
 //         "description": <Explanation of the effects when the example is applied and its impact on other elements>,
 //         "result": {
-//           <Outcome resulting from this step within the logical context>,
+//           <The specific outcome that results from this step within the logical context>,
 //         },
 //         "steps": [
 //           [Developing sub steps guide]:
-//           1. Each sub-step should contribute to the overall progression of the parent step, moving sequentially from the starting point to the endpoint.
+//           1. Each sub-step should contribute to the overall progression of the parent step, progressing sequentially from the starting point to the endpoint.
 //           1-1. Next step must be derived from the previous step based on the logical context of parent step.
 //           2. Continue expanding each step fully, especially for recursive functions, until the final result is reached.
-//           3. the criteria for subdividing sub-steps should be based on the progression of the higher-level step.
-//           4. The progression of the higher-level steps and the logic of the input text should logically, consistently lead to the final result.
+//           3. The criteria for subdividing sub-steps should be based on the progression of the higher-level step.
+//           4. The progression of the higher-level steps and the logic of the input text should consistently and logically lead to the final result.
 //         ]
 //       }
 //     ]
@@ -169,12 +169,20 @@ const userContent_rule_format_list_compare = `
 
 // *아니면 그냥 답을 내놓고 그거의 step을 나누는 방법으로 역설계하는식??
 
-// 3. Note that examples must be made in the logical context in which the INPUT TEXT unfolds.
+// "result": {
+//   <The specific outcome that results from this step within the logical context>,
+// },
+
+// ! 이제 남은 단계는 solution(3) 이렇게 넣더라도 구체적인 예시가 나오는거.
+//*  => USER REQUES를 활용할까..?
+// * practical이라는 표현..? 사용하기?
+// !  "target": <Specific element matching the INPUT TEXT at this step>, 라고 하면 solution(3)넣어도 구체적인 예시로 나옴.
+// => 근데 이건 solution(3) 빼면 또 .. 부정확..
 const userContent_rule_format_example = `
-  Complete an [step-by-step example] following the guideline below:
+  Create a [step-by-step example] following the guideline below:
   {
-    "target": <Identify main largest target based on the logical context of INPUT TEXT>,
-    "example": <Create [use case] applicable to the target>,
+    "target": <Identify main largest context based on the logical context of INPUT TEXT>,
+    "example": <Create a [use case] applicable to the target>,
     "steps": [
       {
         [Creating steps guide]:
@@ -184,18 +192,18 @@ const userContent_rule_format_example = `
 
         "step": <Step number>,
         "target": <Specific context matching the INPUT TEXT at this step>,
-        "example": <Create [use case] applicable to the target at this step>,
+        "example": <Create a [use case] applicable to the target at this step>,
         "description": <Explanation of the effects when the example is applied and its impact on other elements>,
         "result": {
-          <Outcome resulting from this step within the logical context>,
+          <The specific outcome that results from this step within the logical context>,
         },
         "steps": [
           [Developing sub steps guide]:
-          1. Each sub-step should contribute to the overall progression of the parent step, moving sequentially from the starting point to the endpoint.
+          1. Each sub-step should contribute to the overall progression of the parent step, progressing sequentially from the starting point to the endpoint.
           1-1. Next step must be derived from the previous step based on the logical context of parent step.
           2. Continue expanding each step fully, especially for recursive functions, until the final result is reached.
-          3. the criteria for subdividing sub-steps should be based on the progression of the higher-level step.
-          4. The progression of the higher-level steps and the logic of the input text should logically, consistently lead to the final result.
+          3. The criteria for subdividing sub-steps should be based on the progression of the higher-level step.
+          4. The progression of the higher-level steps and the logic of the input text should consistently and logically lead to the final result.
         ]
       }
     ]
@@ -329,7 +337,7 @@ export async function POST(request: Request) {
     const checkService = (service: string) => {
       if (service === "groq") {
         return new ChatGroq({
-          apiKey: process.env.GROQ_API_KEY2,
+          apiKey: process.env.GROQ_API_KEY,
           model: serviceInfo.model,
           temperature: 0.1,
           maxTokens: undefined,
@@ -340,7 +348,7 @@ export async function POST(request: Request) {
 
       // TODO: 추후 GPT 연동? (Usage Limits 옵션이 있어서 안전성 높음)
       return new ChatGroq({
-        apiKey: process.env.GROQ_API_KEY,
+        apiKey: process.env.GROQ_API_KEY2,
         model: serviceInfo.model,
         temperature: 0.2,
         maxTokens: undefined,
