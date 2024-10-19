@@ -134,25 +134,25 @@ const userContent_rule_format_list_compare = `
 // const userContent_rule_format_example = `
 //   Create a [step-by-step example] following the guideline below:
 //   {
-//     "target": <Identify main largest context based on the logical context of INPUT TEXT>,
+//     "target": <Identify a main context of INPUT TEXT>,
 //     "example": <Create a [use case] applicable to the target>,
 //     "steps": [
 //       {
 //         [Creating steps guide]:
-//         1. Create a step-by-step example that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
+//         1. Create a [step-by-step example] that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
 //         2. Each step should be a part of the logical progression, leading to a final conclusion.
-//         3. Ensure that example must be created in a consistent logical context in which the INPUT TEXT develops.
+//         3. Ensure that the example is created in a consistent logical context in which the example develops.
 
 //         "step": <Step number>,
 //         "target": <Specific context matching the INPUT TEXT at this step>,
 //         "example": <Create a [use case] applicable to the target at this step>,
 //         "description": <Explanation of the effects when the example is applied and its impact on other elements>,
 //         "result": {
-//           <The specific outcome that results from this step within the logical context>,
+//           <Provide specific elements that are changed as a result at this step within the logical context.>,
 //         },
 //         "steps": [
 //           [Developing sub steps guide]:
-//           1. Each sub-step should contribute to the overall progression of the parent step, progressing sequentially from the starting point to the endpoint.
+//           1. Each sub-step should contribute to the overall progression of the parent step, progressing sequentially from the start point to the end point.
 //           1-1. Next step must be derived from the previous step based on the logical context of parent step.
 //           2. Continue expanding each step fully, especially for recursive functions, until the final result is reached.
 //           3. The criteria for subdividing sub-steps should be based on the progression of the higher-level step.
@@ -178,28 +178,29 @@ const userContent_rule_format_list_compare = `
 // * practical이라는 표현..? 사용하기?
 // !  "target": <Specific element matching the INPUT TEXT at this step>, 라고 하면 solution(3)넣어도 구체적인 예시로 나옴.
 // => 근데 이건 solution(3) 빼면 또 .. 부정확..
+// * The specific changed elements that result from this step within the logical context>
 const userContent_rule_format_example = `
   Create a [step-by-step example] following the guideline below:
   {
-    "target": <Identify main largest context based on the logical context of INPUT TEXT>,
+    "target": <Identify a main context of INPUT TEXT>,
     "example": <Create a [use case] applicable to the target>,
     "steps": [
       {
         [Creating steps guide]:
-        1. Create a step-by-step example that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
+        1. Create a [step-by-step example] that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
         2. Each step should be a part of the logical progression, leading to a final conclusion.
-        3. Ensure that example must be created in a consistent logical context in which the INPUT TEXT develops.
+        3. Ensure that the example is created in a consistent logical context in which the example develops.
 
         "step": <Step number>,
         "target": <Specific context matching the INPUT TEXT at this step>,
         "example": <Create a [use case] applicable to the target at this step>,
         "description": <Explanation of the effects when the example is applied and its impact on other elements>,
         "result": {
-          <The specific outcome that results from this step within the logical context>,
+          <Provide specific elements that are changed as a result at this step within the logical context.>,
         },
         "steps": [
           [Developing sub steps guide]:
-          1. Each sub-step should contribute to the overall progression of the parent step, progressing sequentially from the starting point to the endpoint.
+          1. Each sub-step should contribute to the overall progression of the parent step, progressing sequentially from the start point to the end point.
           1-1. Next step must be derived from the previous step based on the logical context of parent step.
           2. Continue expanding each step fully, especially for recursive functions, until the final result is reached.
           3. The criteria for subdividing sub-steps should be based on the progression of the higher-level step.
@@ -337,7 +338,7 @@ export async function POST(request: Request) {
     const checkService = (service: string) => {
       if (service === "groq") {
         return new ChatGroq({
-          apiKey: process.env.GROQ_API_KEY,
+          apiKey: process.env.GROQ_API_KEY2,
           model: serviceInfo.model,
           temperature: 0.1,
           maxTokens: undefined,
