@@ -10,8 +10,8 @@ import { NextResponse } from "next/server";
 */
 
 const userContent_rule_guide = `
-  You must follow below 'Guide line' about [INPUT TEXT].
-  Guide line:
+  You must follow below 'Guideline' about [INPUT TEXT].
+  Guideline:
 `;
 
 const rule_guide_displayType_tree = `
@@ -134,14 +134,14 @@ const userContent_rule_format_list_compare = `
 // const userContent_rule_format_example = `
 //   Create a [step-by-step example] following the guideline below:
 //   {
-//     "target": <Identify a main context of INPUT TEXT>,
+//     "target": <Identify main largest context based on the logical context of INPUT TEXT>,
 //     "example": <Create a [use case] applicable to the target>,
 //     "steps": [
 //       {
 //         [Creating steps guide]:
-//         1. Create a [step-by-step example] that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
+//         1. Create a step-by-step example that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
 //         2. Each step should be a part of the logical progression, leading to a final conclusion.
-//         3. Ensure that the example is created in a consistent logical context in which the example develops.
+//         3. Ensure that example must be created in a consistent logical context in which the INPUT TEXT develops.
 
 //         "step": <Step number>,
 //         "target": <Specific context matching the INPUT TEXT at this step>,
@@ -152,7 +152,7 @@ const userContent_rule_format_list_compare = `
 //         },
 //         "steps": [
 //           [Developing sub steps guide]:
-//           1. Each sub-step should contribute to the overall progression of the parent step, progressing sequentially from the start point to the end point.
+//           1. Each sub-step should contribute to the overall progression of the parent step, progressing sequentially from the starting point to the endpoint.
 //           1-1. Next step must be derived from the previous step based on the logical context of parent step.
 //           2. Continue expanding each step fully, especially for recursive functions, until the final result is reached.
 //           3. The criteria for subdividing sub-steps should be based on the progression of the higher-level step.
@@ -182,14 +182,14 @@ const userContent_rule_format_list_compare = `
 const userContent_rule_format_example = `
   Create a [step-by-step example] following the guideline below:
   {
-    "target": <Identify a main context of INPUT TEXT>,
+    "target": <Identify main largest context based on the logical context of INPUT TEXT>,
     "example": <Create a [use case] applicable to the target>,
     "steps": [
       {
         [Creating steps guide]:
-        1. Create a [step-by-step example] that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
+        1. Create a step-by-step example that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
         2. Each step should be a part of the logical progression, leading to a final conclusion.
-        3. Ensure that the example is created in a consistent logical context in which the example develops.
+        3. Ensure that example must be created in a consistent logical context in which the INPUT TEXT develops.
 
         "step": <Step number>,
         "target": <Specific context matching the INPUT TEXT at this step>,
@@ -200,7 +200,7 @@ const userContent_rule_format_example = `
         },
         "steps": [
           [Developing sub steps guide]:
-          1. Each sub-step should contribute to the overall progression of the parent step, progressing sequentially from the start point to the end point.
+          1. Each sub-step should contribute to the overall progression of the parent step, progressing sequentially from the starting point to the endpoint.
           1-1. Next step must be derived from the previous step based on the logical context of parent step.
           2. Continue expanding each step fully, especially for recursive functions, until the final result is reached.
           3. The criteria for subdividing sub-steps should be based on the progression of the higher-level step.
@@ -294,10 +294,7 @@ const setUserContentRuleByLanguage = (lang: string = "EN") => {
   userContent_rule_response =
     lang === "EN"
       ? `
-        RESPONSE RULE:
-          - Respond strictly in JSON format.
-
-          INPUT TEXT:
+        [INPUT TEXT]:
       `
       : `
         RESPONSE RULE:
