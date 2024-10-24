@@ -132,23 +132,23 @@ const userContent_rule_format_list_compare = `
 //* 현재까지 best
 //* Note: 1-1. Next step must be derived from the previous step based on the logical context of parent step.를 넣어줘서 논리적 연결성을 강화했더니 정확도가 높아짐. (오답률이 낮아졌다.)
 // const userContent_rule_format_example = `
-//   Create a [step-by-step example] following the guideline below:
+//   Complete a [step-by-step example] following the guide below:
 //   {
-//     "target": <Identify main largest context based on the logical context of INPUT TEXT>,
+//     "target": <Identify main largest element within the logical context of INPUT TEXT>,
 //     "example": <Create a [use case] applicable to the target>,
 //     "steps": [
 //       {
 //         [Creating steps guide]:
-//         1. Create a step-by-step example that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
+//         1. Generate a step-by-step example that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
 //         2. Each step should be a part of the logical progression, leading to a final conclusion.
-//         3. Ensure that example must be created in a consistent logical context in which the INPUT TEXT develops.
+//         3. Ensure that the example is created in a consistent logical context in which the INPUT TEXT develops.
 
 //         "step": <Step number>,
-//         "target": <Specific context matching the INPUT TEXT at this step>,
-//         "example": <Create a [use case] applicable to the target at this step>,
-//         "description": <Explanation of the effects when the example is applied and its impact on other elements>,
+//         "target": <Identify the element that corresponds to the INPUT TEXT within the logical context>,
+//         "example": <Create a [use case] that applies to the target at this step>,
+//         "description": <Explain the effects when the example is applied>,
 //         "result": {
-//           <Provide specific elements that are changed as a result at this step within the logical context.>,
+//           <Provide specific elements that are changed as a result at this step in the logical context>,
 //         },
 //         "steps": [
 //           [Developing sub steps guide]:
@@ -160,43 +160,86 @@ const userContent_rule_format_list_compare = `
 //         ]
 //       }
 //     ]
-//     Note: When developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached. **
+//     Note: When developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached.
 //   }
 // `;
 
-// * 변수화한다? 그리고 그 변수들을 바탕으로 step 생성??
-// * 시도 2 - gpt에 넣고 돌려보기..? gpt에 넣고 돌려서 example같은거 제대로 대체 안 될 경우 프롬프트 개선해달라고하기..?
+// *과도기?
+// const userContent_rule_format_example = `
+//   Complete a [step-by-step example] following the guide below:
+//   {
+//     "target": <Identify main largest element within the logical context of INPUT TEXT>,
+//     "example": <Create a [use case] applicable to the target>,
+//     "steps": [
+//       {
+//         [Developing steps guide]:
+//         1. Generate a step-by-step example that logically builds upon each step, maintaining a consistent context.
+//         2. Each step should be a part of the logical progression, leading to a final conclusion.
+//         3. Ensure that the example is created in a consistent logical context in which the INPUT TEXT develops.
 
-// *아니면 그냥 답을 내놓고 그거의 step을 나누는 방법으로 역설계하는식??
-
-// "result": {
-//   <The specific outcome that results from this step within the logical context>,
-// },
+//         "step": <Step number>,
+//         "target": <Identify the element that corresponds to the INPUT TEXT within the logical context>,
+//         "example": <Create a [use case] that applies to the target at this step>,
+//         "description": <Explain the effects when the example is applied>,
+//         "result": {
+//           <Provide specific elements that are changed as a result at this step in the logical context>,
+//         },
+//         "steps": [
+//           [Developing sub steps guide]:
+//           1. Each sub-step should contribute to the overall progression of the parent step, progressing sequentially from the starting point to the endpoint.
+//           1-1. Next step must be derived from the previous step based on the logical context of parent step.
+//           2. Continue expanding each step fully, especially for recursive functions, until the final result is reached.
+//           3. The criteria for subdividing sub-steps should be based on the progression of the higher-level step.
+//           4. The progression of the higher-level steps and the logic of the input text should consistently and logically lead to the final result.
+//         ]
+//       }
+//     ]
+//     Note: When developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached.
+//   }
+// `;
 
 // ! 이제 남은 단계는 solution(3) 이렇게 넣더라도 구체적인 예시가 나오는거.
-//*  => USER REQUES를 활용할까..?
-// * practical이라는 표현..? 사용하기?
-// !  "target": <Specific element matching the INPUT TEXT at this step>, 라고 하면 solution(3)넣어도 구체적인 예시로 나옴.
-// => 근데 이건 solution(3) 빼면 또 .. 부정확..
-// * The specific changed elements that result from this step within the logical context>
+//* Create a [use case] -> a [use case]로 바꾸니까 구체적인 예시 나오기시작함. => 통일성이 되게 중요한듯..?
+//* ★ Creating steps guide에서 Create a step-by-step example -> Generate a step-by-step example로 바꾸니까 solution(3)도 제대로 나옴.
+//* 여기 각 프롬프트에다 바로 korean 쓰면 한국어 적용되긴 함.
+//* 각 프로퍼티들의 정확도(프롬프트에서 요구하는대로 나왔는지)가 올라가야 전체 로직의 정확도가 올라감.
+//* 문맥이 길어지면 []로 묶어주는게 도움이 될지도..?
+
+//* 언어 문제는 SYSTEM 역할 지정 프롬프트에다가 해놓으면 될듯 ..?
+
+/*
+  * 현재 실험 중인 사항
+  context -> contextual element
+  target에서 identify -> extract
+
+  use case는 어떠려나..?
+*/
+
+/*
+  * 아래 두 프롬프트 중 뭐가 나을지..
+  1. Generate a step-by-step example that logically builds upon each step, maintaining a consistent context
+  2. Generate a step-by-step example that progressively develops the logic of INPUT TEXT, maintaining a consistent context.
+
+*/
+
 const userContent_rule_format_example = `
-  Create a [step-by-step example] following the guideline below:
+  Complete a [step-by-step example] following the guide below:
   {
-    "target": <Identify main largest context based on the logical context of INPUT TEXT>,
+    "target": <Identify main largest element within the logical context of INPUT TEXT>,
     "example": <Create a [use case] applicable to the target>,
     "steps": [
       {
         [Creating steps guide]:
-        1. Create a step-by-step example that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
+        1. Generate a step-by-step example that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
         2. Each step should be a part of the logical progression, leading to a final conclusion.
-        3. Ensure that example must be created in a consistent logical context in which the INPUT TEXT develops.
+        3. Ensure that the example is created in a consistent logical context in which the INPUT TEXT develops.
 
         "step": <Step number>,
-        "target": <Specific context matching the INPUT TEXT at this step>,
-        "example": <Create a [use case] applicable to the target at this step>,
-        "description": <Explanation of the effects when the example is applied and its impact on other elements>,
+        "target": <Identify the element that corresponds to the INPUT TEXT within the logical context>,
+        "example": <Create a [use case] that applies to the target at this step>,
+        "description": <Explain the effects when the example is applied>,
         "result": {
-          <Provide specific elements that are changed as a result at this step within the logical context.>,
+          <Provide specific elements that are changed as a result at this step in the logical context>,
         },
         "steps": [
           [Developing sub steps guide]:
@@ -208,7 +251,7 @@ const userContent_rule_format_example = `
         ]
       }
     ]
-    Note: When developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached. **
+    Note: When developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached.
   }
 `;
 
@@ -313,7 +356,7 @@ const createPrompt = (
 ): ChatPromptTemplate => {
   const inputTopic = topic || "topic user inputs";
   const systemContent_default = `
-    You are an expert on ${inputTopic}. you should understand INPUT TEXT to explain it with best way.
+    You should understand [INPUT TEXT] and structure it following guideline.
   `;
 
   setUserContentRuleByLanguage(); // 언어 설정.
