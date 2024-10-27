@@ -11,42 +11,46 @@ export default function DiagramContainer() {
     useLLM({});
   const [question, setQuestion] = useState("");
 
-  const [structure, setStructure] = useState([]);
+  const [structure, setStructure] = useState(null);
 
-  // --------------------------------------------------------
-
-  // --------------------------------------------------------
+  function fixJSON(jsonString: string) {
+    return jsonString.replace(/"step":\s*([\d.]+)/g, '"step": "$1"');
+  }
 
   const submitPrompt = async () => {
-    const json = JSON.parse((await getAnswerFromModel(question)) as string);
-    console.log("json --- ", json);
-    setStructure(json);
-    console.log("structure ---- ", structure);
+    const response = await getAnswerFromModel(question);
+
+    // JSON 추출
+    const match = response.match(/{[\s\S]*}/);
+    let jsonString = match ? match[0] : "{}";
+    console.log("jsonString", jsonString);
+
+    const fixedJSONString = fixJSON(jsonString);
+
+    try {
+      const json = JSON.parse(fixedJSONString);
+      setStructure({ ...json });
+    } catch (error) {
+      console.error("Failed to parse JSON:", error);
+    }
   };
 
-  // 주입식으로?
-  // useFlowContainer
-  const injectElementStyle = () => {};
-  const dummyElement = [
-    {
-      diagramId: 1,
-      style: {
-        width: 200,
-        height: 200,
-        top: 100,
-        left: 100,
-      },
-    },
-    {
-      diagramId: 2,
-      style: {
-        width: 200,
-        height: 200,
-        top: 100,
-        left: 140,
-      },
-    },
-  ];
+  const renderDiagramItems = (item: any, depth = 0) => (
+    <DiagramItem
+      key={item.step}
+      diagramId={item.step}
+      depth={depth}
+      target={item.target}
+      example={item.example}
+      description={item.description}
+      result={item.result}
+    >
+      {item.steps &&
+        item.steps.map((childItem: any) =>
+          renderDiagramItems(childItem, depth + 1),
+        )}
+    </DiagramItem>
+  );
 
   return (
     <>
@@ -65,35 +69,8 @@ export default function DiagramContainer() {
         ></textarea>
         <button onClick={submitPrompt}>Submit!!</button>
       </div>
-      <div style={{ position: "relative" }}>
-        {/* 둘 사이의 관계성은 어떻게..? => 공통 컴포넌트로 하자.*/}
 
-        {dummyElement.map((item) => {
-          return (
-            <DiagramItem
-              key={item.diagramId}
-              diagramId={item.diagramId}
-              style={{
-                position: "absolute",
-                ...item.style,
-              }}
-            />
-          );
-        })}
-
-        {/* {structure[0].map((item) => {
-          return (
-            <DiagramItem
-              key={item.diagramId}
-              diagramId={item.diagramId}
-              style={{
-                position: "absolute",
-                ...item.style,
-              }}
-            />
-          );
-        })} */}
-      </div>
+      <div>{structure && renderDiagramItems(structure)}</div>
     </>
   );
 }
