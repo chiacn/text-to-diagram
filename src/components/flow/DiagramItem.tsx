@@ -19,33 +19,31 @@ export default function DiagramItem({
   result,
   children,
 }: DiagramItemProps) {
-  const defaultStyle: React.CSSProperties = {
-    borderRadius: "12px",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-    border: "1px solid black",
-    padding: "10px",
-    margin: "5px",
-    marginLeft: `${depth * 20}px`, // depth에 따라 들여쓰기
-  };
-
   return (
-    <div style={defaultStyle}>
-      <div>
-        <strong>Step {diagramId}</strong>
+    <div
+      className={`rounded-lg shadow-md border p-4 my-2 transition-all duration-300 transform bg-gray-100
+                  hover:shadow-lg hover:translate-y-[-4px] hover:border-teal-500 hover:bg-teal-50 ml-${
+                    depth * 5
+                  }`}
+    >
+      <div className="text-lg font-semibold text-gray-800 mb-2">
+        Step {diagramId}
       </div>
-      <div>
+      <div className="text-gray-700">
         <strong>Target:</strong> {target}
       </div>
-      <div>
+      <div className="text-gray-700">
         <strong>Example:</strong> {example}
       </div>
-      <div>
+      <div className="text-gray-700">
         <strong>Description:</strong> {description}
       </div>
-      <div>
+      <div className="text-gray-700">
         <strong>Result:</strong> {JSON.stringify(result)}
       </div>
-      <div style={{ marginTop: "10px" }}>{children}</div>
+      {/*  TODO: 여기 flex-row 임시 적용 */}
+      {/* <div className="mt-3">{children}</div> */}
+      <div className="mt-3 flex flex-row">{children}</div>
     </div>
   );
 }
