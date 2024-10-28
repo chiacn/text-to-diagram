@@ -67,3 +67,33 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .scrollbar-custom {
+    overflow: auto;
+    /* FIXME: 왜 FIREFOX CSS가 크롬에서 적용되지 ..? */
+    /* scrollbar-width: auto; 
+    scrollbar-color: #888 #e0e0e0;  */
+  }
+  /* 스크롤바의 폭 */
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 8px;
+    height: 12px;
+  }
+
+  /* 스크롤바의 색상 및 모양 */
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    background: rgba(160, 160, 160, 0.8); /* 밝은 그레이 */
+    border-radius: 10px;
+  }
+
+  /* 스크롤바 배경 */
+  .scrollbar-custom::-webkit-scrollbar-track {
+    background: rgba(240, 240, 240, 0.5); /* 연한 그레이 */
+  }
+
+  /* 스크롤바 마우스 오버 시 색상 */
+  .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 100, 100, 0.9); /* 어두운 그레이 */
+  }
+}
