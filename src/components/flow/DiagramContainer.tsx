@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import DiagramItem from "./DiagramItem";
 import useLLM from "@/commonHooks/useLLM";
 import CommonToggleGroups from "../CommonTogleGroup";
@@ -331,30 +331,57 @@ export default function DiagramContainer() {
   };
 
   // -------------------------------------------------------
+  const [contentWidth, setContentWidth] = useState(0);
+  const contentWrapperRef = useRef<any>(null); // 최상위 depth=1의 width만 추적할 ref
 
-  const renderDiagramItems = (item: any, depth = 0) => (
-    <div
-      className={`flex ${depth > 0 ? "pl-5" : ""} flex-row space-x-4`}
-      key={`${depth}-${item.step}`}
-    >
-      <DiagramItem
-        diagramId={item.step}
-        depth={depth}
-        target={item.target}
-        example={item.example}
-        description={item.description}
-        result={item.result}
+  // 최상위 depth의 width 값을 useEffect로 추적합니다.
+  useLayoutEffect(() => {
+    if (contentWrapperRef.current) {
+      // Note: +40은 padding, margin 등에 의해 제대로 측정 못 된 값 (임시)
+      setContentWidth(contentWrapperRef.current.offsetWidth + 40);
+    }
+  }, [contentWrapperRef.current?.offsetWidth]);
+
+  const renderDiagramItems = (item: any, depth = 0) => {
+    const isTopLevel = depth === 1;
+
+    return (
+      <div
+        className={`flex ${depth > 0 ? "pl-5" : ""} flex-row space-x-4`}
+        key={`${depth}-${item.step}`}
+        ref={isTopLevel ? contentWrapperRef : null}
       >
-        {item.steps &&
-          item.steps.map((childItem: any) =>
-            renderDiagramItems(childItem, depth + 1),
-          )}
-      </DiagramItem>
-    </div>
-  );
+        <DiagramItem
+          diagramId={item.step}
+          depth={depth}
+          target={item.target}
+          example={item.example}
+          description={item.description}
+          result={item.result}
+        >
+          {item.steps &&
+            item.steps.map((childItem: any) =>
+              renderDiagramItems(childItem, depth + 1),
+            )}
+        </DiagramItem>
+      </div>
+    );
+  };
+
+  const topScrollRef = useRef<HTMLDivElement | any>(null);
+  const bottomScrollRef = useRef<HTMLDivElement | any>(null);
+
+  const syncScroll = (source: string) => {
+    if (source === "top") {
+      bottomScrollRef.current.scrollLeft = topScrollRef.current.scrollLeft;
+    } else {
+      topScrollRef.current.scrollLeft = bottomScrollRef.current.scrollLeft;
+    }
+  };
 
   return (
-    <>
+    // Note: <></>로 구성 시 DOM 요소를 생성하지 않아서 flow에 문제가 발생할 수 있음.
+    <div>
       <div className="flex flex-col">
         <CommonToggleGroups
           items={inquiryTypeList}
@@ -371,8 +398,27 @@ export default function DiagramContainer() {
         <button onClick={submitPrompt}>Submit!!</button>
       </div>
 
+      {/* 상단 스크롤 ---------------------------------------------------- */}
       <div
-        // scrollbar 모양 변경
+        ref={topScrollRef}
+        onScroll={() => syncScroll("top")}
+        className="scrollbar-custom"
+        style={{
+          width: "800px",
+          marginBottom: "4px",
+          position: "sticky",
+          top: "0",
+          zIndex: 20,
+        }}
+      >
+        <div
+          style={{ width: `${contentWidth}px`, height: "2px" }} // Inner div
+        ></div>
+      </div>
+      {/* ---------------------------------------------------------------- */}
+      <div
+        ref={bottomScrollRef}
+        onScroll={() => syncScroll("bottom")}
         className="scrollbar-custom"
         style={{
           width: "800px",
@@ -383,8 +429,9 @@ export default function DiagramContainer() {
         }}
       >
         {/* {structure && renderDiagramItems(structure)} */}
+
         {testStructure && renderDiagramItems(testStructure)}
       </div>
-    </>
+    </div>
   );
 }
