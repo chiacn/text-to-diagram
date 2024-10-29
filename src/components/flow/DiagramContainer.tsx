@@ -402,34 +402,22 @@ export default function DiagramContainer() {
       <div
         ref={topScrollRef}
         onScroll={() => syncScroll("top")}
-        className="scrollbar-custom"
-        style={{
-          width: "800px",
-          marginBottom: "4px",
-          position: "sticky",
-          top: "0",
-          zIndex: 20,
-        }}
+        className="scrollbar-custom w-[800px] mb-1 sticky top-0 z-20"
       >
         <div
-          style={{ width: `${contentWidth}px`, height: "2px" }} // Inner div
+          className="h-[2px]"
+          style={{ width: `${contentWidth}px` }} // Inner div
         ></div>
       </div>
+
       {/* ---------------------------------------------------------------- */}
+
       <div
         ref={bottomScrollRef}
         onScroll={() => syncScroll("bottom")}
-        className="scrollbar-custom"
-        style={{
-          width: "800px",
-          minHeight: "min-content",
-          display: "flex",
-          flexDirection: "column",
-          overflowX: "auto",
-        }}
+        className="scrollbar-custom w-[800px] min-h-min flex flex-col overflow-x-auto"
       >
         {/* {structure && renderDiagramItems(structure)} */}
-
         {testStructure && renderDiagramItems(testStructure)}
       </div>
     </div>
