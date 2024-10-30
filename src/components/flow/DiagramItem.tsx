@@ -47,9 +47,9 @@ export default function DiagramItem({
 
   return (
     <div
-      className={`rounded-lg shadow-md border p-4 my-2 transition-all duration-300 transform bg-gray-100 cursor-pointer
+      className={`rounded-xl border-[1px] p-4 my-2 transition-all duration-300 transform bg-gray-100 cursor-pointer
                    ml-${depth * 5}  ${
-        isHighlighted ? "bg-yellow-200" : "bg-gray-100"
+        isHighlighted ? "bg-amber-100" : "bg-white"
       }`}
       onClick={(e) => clickDiagramItem(e)}
     >
