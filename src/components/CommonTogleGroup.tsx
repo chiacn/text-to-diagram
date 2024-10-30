@@ -7,6 +7,7 @@ interface ToggleGroupsProps {
   setSelectedToggle:
     | ((value: string) => void)
     | Dispatch<SetStateAction<string | null>>;
+  gap?: number;
 }
 type ToggleItem = {
   value: string;
@@ -16,12 +17,14 @@ export default function CommonToggleGroups({
   items,
   selectedValue,
   setSelectedToggle,
+  gap,
 }: ToggleGroupsProps) {
   return (
     <ToggleGroup
       type="single"
       onValueChange={(value: string) => setSelectedToggle(value)}
-      className="flex gap-2"
+      className="flex"
+      style={{ gap: `${gap ? gap : 12}px` }}
     >
       {items.map((item) => (
         <ToggleGroupItem

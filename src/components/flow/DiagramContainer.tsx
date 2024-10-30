@@ -460,6 +460,7 @@ export default function DiagramContainer() {
           items={inquiryTypeList}
           selectedValue={inquiryType}
           setSelectedToggle={setInquiryType}
+          gap={20}
         />
         {/* <textarea
           name="postContent"
@@ -469,23 +470,28 @@ export default function DiagramContainer() {
           className="border border-gray-300 mt-2"
         ></textarea> */}
 
-        <Textarea
-          name="postContent"
-          rows={4}
-          cols={40}
-          onChange={(e) => setQuestion(e.target.value)}
-          className={`border border-gray-300 mt-2`}
-        ></Textarea>
-        <Button onClick={submitPrompt} className="mt-4 w-32">
-          Submit
-        </Button>
+        <div className="flex w-full mt-4">
+          <Textarea
+            name="postContent"
+            rows={4}
+            cols={40}
+            onChange={(e) => setQuestion(e.target.value)}
+            className={`border border-gray-300 flex-4 w-full h-[90px]`}
+          ></Textarea>
+          <Button
+            onClick={submitPrompt}
+            className="w-32 h-[90px] ml-2 flex-1 justify-center item-center"
+          >
+            Submit
+          </Button>
+        </div>
       </div>
 
       {/* 상단 스크롤 ---------------------------------------------------- */}
       <div
         ref={topScrollRef}
         onScroll={() => syncScroll("top")}
-        className="scrollbar-custom w-[80vw] mb-1 sticky top-0 z-20"
+        className="scrollbar-custom w-[80vw] mt-4 sticky top-0 z-20"
       >
         <div
           className="h-[2px]"
