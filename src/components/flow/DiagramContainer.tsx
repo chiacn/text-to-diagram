@@ -346,6 +346,10 @@ export default function DiagramContainer() {
   useEffect(() => {
     const updateContentWidth = () => {
       if (contentWrapperRef.current) {
+        console.log(
+          "contentWrapperRef.current.offsetWidth",
+          contentWrapperRef.current.offsetWidth,
+        );
         setContentWidth(contentWrapperRef.current.offsetWidth + 40);
       }
     };
@@ -358,11 +362,7 @@ export default function DiagramContainer() {
     };
   }, []);
 
-  const renderDiagramItems = (
-    item: any,
-    depth = 0,
-    parentDiagramId = undefined,
-  ) => {
+  const renderDiagramItems = (item: any, depth = 0, parentDiagramId = 0) => {
     const isTopLevel = depth === 1;
 
     // Collect diagram item information
@@ -461,7 +461,11 @@ export default function DiagramContainer() {
     <div>
       <div
         className="flex flex-col justify-center items-center w-[80vw]"
-        style={{ maxWidth: `${contentWidth}px` }}
+        style={{
+          maxWidth: `${
+            !contentWidth || contentWidth < 500 ? 1000 : contentWidth
+          }px`,
+        }}
       >
         <CommonToggleGroups
           items={inquiryTypeList}
@@ -513,8 +517,8 @@ export default function DiagramContainer() {
         onScroll={() => syncScroll("bottom")}
         className="scrollbar-custom w-[80vw] min-h-min flex flex-col overflow-x-auto"
       >
-        {/* {structure && renderDiagramItems(structure)} */}
-        {testStructure && renderDiagramItems(testStructure)}
+        {structure && renderDiagramItems(structure)}
+        {/* {testStructure && renderDiagramItems(testStructure)} */}
       </div>
     </div>
   );
