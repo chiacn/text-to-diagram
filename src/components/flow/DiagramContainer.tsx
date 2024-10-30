@@ -3,6 +3,8 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import DiagramItem from "./DiagramItem";
 import useLLM from "@/commonHooks/useLLM";
 import CommonToggleGroups from "../CommonTogleGroup";
+import { Textarea } from "../ui/textarea";
+import { Button } from "../ui/button";
 
 export default function DiagramContainer() {
   // LLM 테스트 ---------------------------------------------
@@ -450,20 +452,33 @@ export default function DiagramContainer() {
   return (
     // Note: <></>로 구성 시 DOM 요소를 생성하지 않아서 flow에 문제가 발생할 수 있음.
     <div>
-      <div className="flex flex-col">
+      <div
+        className="flex flex-col justify-center items-center w-[80vw]"
+        style={{ maxWidth: `${contentWidth}px` }}
+      >
         <CommonToggleGroups
           items={inquiryTypeList}
           selectedValue={inquiryType}
           setSelectedToggle={setInquiryType}
         />
-        <textarea
+        {/* <textarea
           name="postContent"
           rows={4}
           cols={40}
           onChange={(e) => setQuestion(e.target.value)}
           className="border border-gray-300 mt-2"
-        ></textarea>
-        <button onClick={submitPrompt}>Submit!!</button>
+        ></textarea> */}
+
+        <Textarea
+          name="postContent"
+          rows={4}
+          cols={40}
+          onChange={(e) => setQuestion(e.target.value)}
+          className={`border border-gray-300 mt-2`}
+        ></Textarea>
+        <Button onClick={submitPrompt} className="mt-4 w-32">
+          Submit
+        </Button>
       </div>
 
       {/* 상단 스크롤 ---------------------------------------------------- */}
