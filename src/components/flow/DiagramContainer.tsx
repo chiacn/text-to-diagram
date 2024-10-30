@@ -334,6 +334,10 @@ export default function DiagramContainer() {
   const [contentWidth, setContentWidth] = useState(0);
   const contentWrapperRef = useRef<any>(null); // 최상위 depth=1의 width만 추적할 ref
 
+  const [highlightItems, setHighlightItems] = useState<Array<string | number>>(
+    [],
+  );
+
   // 최상위 depth의 width 값을 useEffect로 추적합니다.
   useLayoutEffect(() => {
     if (contentWrapperRef.current) {
@@ -358,6 +362,8 @@ export default function DiagramContainer() {
           example={item.example}
           description={item.description}
           result={item.result}
+          handleDiagramItem={handleDiagramItem}
+          highlightItems={highlightItems}
         >
           {item.steps &&
             item.steps.map((childItem: any) =>
@@ -366,6 +372,33 @@ export default function DiagramContainer() {
         </DiagramItem>
       </div>
     );
+  };
+
+  const handleDiagramItem = (
+    diagramId: string | number,
+    depth: number,
+    effectType: string,
+  ) => {
+    switch (effectType) {
+      // depth 기준으로 highlight
+      case "highlight":
+        // Note: 여러 개 선택할 수 있게
+        // setHighlightItems((prev: Array<string | number>) => {
+        //   return prev.includes(depth)
+        //     ? prev.filter((id) => id !== depth)
+        //     : [...prev, depth];
+        // });
+
+        // Note: 단일 선택
+        highlightItems.includes(depth)
+          ? setHighlightItems([])
+          : setHighlightItems([depth]);
+        break;
+      default:
+        break;
+    }
+    console.log(`diagramId :: ${diagramId} | depth :: ${depth}`);
+    console.log("Trigger !!!");
   };
 
   const topScrollRef = useRef<HTMLDivElement | any>(null);
@@ -402,7 +435,7 @@ export default function DiagramContainer() {
       <div
         ref={topScrollRef}
         onScroll={() => syncScroll("top")}
-        className="scrollbar-custom w-[800px] mb-1 sticky top-0 z-20"
+        className="scrollbar-custom w-[80vw] mb-1 sticky top-0 z-20"
       >
         <div
           className="h-[2px]"
@@ -415,7 +448,7 @@ export default function DiagramContainer() {
       <div
         ref={bottomScrollRef}
         onScroll={() => syncScroll("bottom")}
-        className="scrollbar-custom w-[800px] min-h-min flex flex-col overflow-x-auto"
+        className="scrollbar-custom w-[80vw] min-h-min flex flex-col overflow-x-auto"
       >
         {/* {structure && renderDiagramItems(structure)} */}
         {testStructure && renderDiagramItems(testStructure)}
