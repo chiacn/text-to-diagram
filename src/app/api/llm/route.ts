@@ -95,8 +95,6 @@ const rule_guide_displayType_list_compare = `
 //   d. repeat the above process to configure sub steps.
 //   e. ensure there are enough examples.
 // `;
-const rule_guide_displayType_example = `
-`;
 
 const rule_guide_displayType_logical_progression = `
 
@@ -262,9 +260,6 @@ const userContent_rule_format_logical_progression = `
 // ===========================================================================
 
 let userContent_rule_response = `
-  RESPONSE RULE:
-  - You must respond strictly in only JSON format.
-
   [INPUT TEXT]:
 `;
 
@@ -289,7 +284,6 @@ const setUserContentByInquiryType = (inquiryType: string, input: string) => {
     case "example":
       return (
         userContent_rule_guide +
-        rule_guide_displayType_example +
         userContent_rule_format_example +
         userContent_rule_response +
         `${input}`
@@ -307,48 +301,6 @@ const setUserContentByInquiryType = (inquiryType: string, input: string) => {
   }
 };
 
-// * 프롬프트를 한국어로 적는 방향은? (근데 이건 정확도 떨어질듯..?)
-const setUserContentRuleByLanguage = (lang: string = "EN") => {
-  let language = "English";
-  switch (lang) {
-    case "EN":
-      return;
-    case "KO":
-      language = "Korean";
-      break;
-    case "JP":
-      language = "Japanese";
-      break;
-    case "CN":
-      language = "Chinese";
-      break;
-    case "SP":
-      language = "Spanish";
-      break;
-    case "FR":
-      language = "French";
-      break;
-    case "RU":
-      language = "Russian";
-      break;
-    default:
-      break;
-  }
-  userContent_rule_response =
-    lang === "EN"
-      ? `
-        [INPUT TEXT]:
-      `
-      : `
-        RESPONSE RULE:
-          - You must respond strictly in only JSON format.
-          - Translate all JSON into ${language} language
-            Only use ${language} language for translation.
-
-          [INPUT TEXT]:
-      `;
-};
-
 const createPrompt = (
   input: string,
   inquiryType: string,
@@ -358,8 +310,6 @@ const createPrompt = (
   const systemContent_default = `
     You should understand [INPUT TEXT] and structure it following guideline.
   `;
-
-  setUserContentRuleByLanguage(); // 언어 설정.
 
   const systemContent = systemContent_default;
   const userContent = setUserContentByInquiryType(inquiryType, input);

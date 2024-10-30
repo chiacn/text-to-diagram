@@ -343,13 +343,20 @@ export default function DiagramContainer() {
     Array<{ diagramId: string | number; parentDiagramId?: string | number }>
   >([]);
 
-  // 최상위 depth의 width 값을 useEffect로 추적합니다.
-  useLayoutEffect(() => {
-    if (contentWrapperRef.current) {
-      // Note: +40은 padding, margin 등에 의해 제대로 측정 못 된 값 (임시)
-      setContentWidth(contentWrapperRef.current.offsetWidth + 40);
-    }
-  }, [contentWrapperRef.current?.offsetWidth]);
+  useEffect(() => {
+    const updateContentWidth = () => {
+      if (contentWrapperRef.current) {
+        setContentWidth(contentWrapperRef.current.offsetWidth + 40);
+      }
+    };
+
+    updateContentWidth(); // 초기 렌더링 시 설정
+
+    window.addEventListener("resize", updateContentWidth); // 윈도우 리사이즈 시 업데이트
+    return () => {
+      window.removeEventListener("resize", updateContentWidth); // 컴포넌트 언마운트 시 클린업
+    };
+  }, []);
 
   const renderDiagramItems = (
     item: any,
