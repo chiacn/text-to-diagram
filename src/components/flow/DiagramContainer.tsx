@@ -337,6 +337,9 @@ export default function DiagramContainer() {
   const [highlightItems, setHighlightItems] = useState<Array<string | number>>(
     [],
   );
+  const diagramItemsListRef = useRef<
+    Array<{ diagramId: string | number; parentDiagramId?: string | number }>
+  >([]);
 
   // 최상위 depth의 width 값을 useEffect로 추적합니다.
   useLayoutEffect(() => {
@@ -346,8 +349,18 @@ export default function DiagramContainer() {
     }
   }, [contentWrapperRef.current?.offsetWidth]);
 
-  const renderDiagramItems = (item: any, depth = 0) => {
+  const renderDiagramItems = (
+    item: any,
+    depth = 0,
+    parentDiagramId = undefined,
+  ) => {
     const isTopLevel = depth === 1;
+
+    // Collect diagram item information
+    diagramItemsListRef.current.push({
+      diagramId: item.step,
+      parentDiagramId: parentDiagramId,
+    });
 
     return (
       <div
@@ -357,6 +370,7 @@ export default function DiagramContainer() {
       >
         <DiagramItem
           diagramId={item.step}
+          parentDiagramId={parentDiagramId}
           depth={depth}
           target={item.target}
           example={item.example}
@@ -367,7 +381,7 @@ export default function DiagramContainer() {
         >
           {item.steps &&
             item.steps.map((childItem: any) =>
-              renderDiagramItems(childItem, depth + 1),
+              renderDiagramItems(childItem, depth + 1, item.step),
             )}
         </DiagramItem>
       </div>
@@ -375,31 +389,52 @@ export default function DiagramContainer() {
   };
 
   const handleDiagramItem = (
-    diagramId: string | number,
-    depth: number,
     effectType: string,
+    params: {
+      diagramId: number | string;
+      depth: number;
+      parentDiagramId?: number | string;
+    },
   ) => {
     switch (effectType) {
       // depth 기준으로 highlight
       case "highlight":
         // Note: 여러 개 선택할 수 있게
         // setHighlightItems((prev: Array<string | number>) => {
-        //   return prev.includes(depth)
+        //   return prev.includes(params.depth)
         //     ? prev.filter((id) => id !== depth)
-        //     : [...prev, depth];
+        //     : [...prev, params.depth];
         // });
 
         // Note: 단일 선택
-        highlightItems.includes(depth)
-          ? setHighlightItems([])
-          : setHighlightItems([depth]);
+        // highlightItems.includes(params.depth)
+        //   ? setHighlightItems([])
+        //   : setHighlightItems([params.depth]);
+
+        const { parentDiagramId } = params;
+        // Get all diagramIds with matching parentDiagramId
+        const diagramIdsToHighlight = diagramItemsListRef.current
+          .filter((item) => item.parentDiagramId === parentDiagramId)
+          .map((item) => item.diagramId);
+
+        // Toggle highlight
+        const isAlreadyHighlighted =
+          highlightItems.length > 0 &&
+          diagramIdsToHighlight.every((id) => highlightItems.includes(id));
+
+        if (isAlreadyHighlighted) {
+          setHighlightItems([]);
+        } else {
+          setHighlightItems(diagramIdsToHighlight);
+        }
         break;
       default:
         break;
     }
-    console.log(`diagramId :: ${diagramId} | depth :: ${depth}`);
-    console.log("Trigger !!!");
   };
+
+  // Reset diagramItemsListRef before rendering
+  diagramItemsListRef.current = [];
 
   const topScrollRef = useRef<HTMLDivElement | any>(null);
   const bottomScrollRef = useRef<HTMLDivElement | any>(null);

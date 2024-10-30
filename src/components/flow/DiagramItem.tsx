@@ -2,15 +2,19 @@ import React, { useEffect, useState } from "react";
 
 interface DiagramItemProps {
   diagramId: number | string;
+  parentDiagramId?: number | string;
   depth: number;
   target: string;
   example: string;
   description: string;
   result: { answer: any[] };
   handleDiagramItem: (
-    diagram: string | number,
-    depth: number,
     effectType: string,
+    params: {
+      diagramId: number | string;
+      depth: number;
+      parentDiagramId?: number | string;
+    },
   ) => void;
   highlightItems?: Array<number | string>;
   children?: React.ReactNode[];
@@ -18,6 +22,7 @@ interface DiagramItemProps {
 
 export default function DiagramItem({
   diagramId,
+  parentDiagramId,
   depth,
   target,
   example,
@@ -33,12 +38,12 @@ export default function DiagramItem({
 
   const clickDiagramItem = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
-    handleDiagramItem(diagramId, depth, "highlight");
+    handleDiagramItem("highlight", { diagramId, depth, parentDiagramId });
   };
 
   const changeDiagramColor = () => {
     // `highlightItems` 배열에 `depth`가 포함되어 있다면 true로 설정하여 색상을 변경
-    setIsHighlighted(highlightItems?.includes(depth) ?? false);
+    setIsHighlighted(highlightItems?.includes(diagramId) ?? false);
   };
 
   useEffect(() => {
