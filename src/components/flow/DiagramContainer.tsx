@@ -13,6 +13,7 @@ export default function DiagramContainer() {
     useLLM({});
   const [question, setQuestion] = useState("");
   const [structure, setStructure] = useState(null);
+  const [submittedText, setSubmittedText] = useState("");
 
   function fixJSON(jsonString: string) {
     return jsonString.replace(/"step":\s*([\d.]+)/g, '"step": "$1"');
@@ -29,6 +30,7 @@ export default function DiagramContainer() {
     try {
       const json = JSON.parse(fixedJSONString);
       setStructure({ ...json });
+      setSubmittedText(question);
     } catch (error) {
       console.error("Failed to parse JSON:", error);
     }
@@ -482,14 +484,6 @@ export default function DiagramContainer() {
           setSelectedToggle={setInquiryType}
           gap={20}
         />
-        {/* <textarea
-          name="postContent"
-          rows={4}
-          cols={40}
-          onChange={(e) => setQuestion(e.target.value)}
-          className="border border-gray-300 mt-2"
-        ></textarea> */}
-
         <div className="flex w-full mt-4">
           <Textarea
             name="postContent"
@@ -504,6 +498,17 @@ export default function DiagramContainer() {
           >
             Submit
           </Button>
+        </div>
+        {/* Submit된 텍스트 표시 영역 */}
+        {/* 제출된 질문 표시 영역 */}
+        <div
+          className={`w-full mt-4 transition-all duration-500 transform whitespace-pre-wrap text-left rounded-lg border border-gray-300 bg-gray-50 shadow-lg p-4 ${
+            submittedText
+              ? "opacity-100 translate-y-0 scale-100"
+              : "opacity-0 -translate-y-4 scale-95"
+          }`}
+        >
+          {submittedText}
         </div>
       </div>
 
@@ -526,8 +531,8 @@ export default function DiagramContainer() {
         onScroll={() => syncScroll("bottom")}
         className="scrollbar-custom w-[80vw] min-h-min flex flex-col overflow-x-auto"
       >
-        {/* {structure && renderDiagramItems(structure)} */}
-        {testStructure && renderDiagramItems(testStructure)}
+        {structure && renderDiagramItems(structure)}
+        {/* {testStructure && renderDiagramItems(testStructure)} */}
       </div>
     </div>
   );
