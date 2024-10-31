@@ -503,25 +503,27 @@ export default function DiagramContainer() {
           </Button>
         </div>
       </div>
-      <SubmittedText
-        submittedText={submittedText}
-        isOpenSubmittedText={isOpenSubmittedText}
-        setIsOpenSubmittedText={setIsOpenSubmittedText}
-      />
 
-      {/* 상단 스크롤 ---------------------------------------------------- */}
-      <div
-        ref={topScrollRef}
-        onScroll={() => syncScroll("top")}
-        className="scrollbar-custom w-[80vw] mt-4 sticky top-0 z-20"
-      >
+      <div className="sticky top-0 z-20">
+        <SubmittedText
+          submittedText={submittedText}
+          isOpenSubmittedText={isOpenSubmittedText}
+          setIsOpenSubmittedText={setIsOpenSubmittedText}
+        />
+
+        {/* 상단 스크롤 ---------------------------------------------------- */}
         <div
-          className="h-[2px]"
-          style={{ width: `${contentWidth}px` }} // Inner div
-        ></div>
+          ref={topScrollRef}
+          onScroll={() => syncScroll("top")}
+          className="scrollbar-custom w-[80vw] mt-2"
+        >
+          <div
+            className="h-[2px]"
+            style={{ width: `${contentWidth}px` }} // Inner div
+          ></div>
+        </div>
+        {/* ---------------------------------------------------------------- */}
       </div>
-
-      {/* ---------------------------------------------------------------- */}
 
       <div
         ref={bottomScrollRef}
