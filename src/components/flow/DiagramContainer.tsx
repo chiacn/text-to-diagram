@@ -362,13 +362,19 @@ export default function DiagramContainer() {
     };
   }, []);
 
-  const renderDiagramItems = (item: any, depth = 0, parentDiagramId = 0) => {
-    const isTopLevel = depth === 1;
+  const renderDiagramItems = (
+    item: any,
+    depth = 0,
+    parentDiagramId = undefined,
+  ) => {
+    const isTopLevel = depth === 0;
+    const diagramId = depth === 0 && !item.step ? "root" : item.step;
+    const parentId = depth === 0 ? "root" : parentDiagramId;
 
     // Collect diagram item information
     diagramItemsListRef.current.push({
-      diagramId: item.step,
-      parentDiagramId: parentDiagramId,
+      diagramId: diagramId,
+      parentDiagramId: parentId,
     });
 
     return (
@@ -378,8 +384,8 @@ export default function DiagramContainer() {
         ref={isTopLevel ? contentWrapperRef : null}
       >
         <DiagramItem
-          diagramId={item.step}
-          parentDiagramId={parentDiagramId}
+          diagramId={diagramId}
+          parentDiagramId={parentId}
           depth={depth}
           target={item.target}
           example={item.example}
@@ -421,6 +427,9 @@ export default function DiagramContainer() {
         //   : setHighlightItems([params.depth]);
 
         const { parentDiagramId } = params;
+
+        console.log("parentDiagramId", parentDiagramId);
+        console.log("diagramId", params.diagramId);
         // Get all diagramIds with matching parentDiagramId
         const diagramIdsToHighlight = diagramItemsListRef.current
           .filter((item) => item.parentDiagramId === parentDiagramId)
@@ -517,8 +526,8 @@ export default function DiagramContainer() {
         onScroll={() => syncScroll("bottom")}
         className="scrollbar-custom w-[80vw] min-h-min flex flex-col overflow-x-auto"
       >
-        {structure && renderDiagramItems(structure)}
-        {/* {testStructure && renderDiagramItems(testStructure)} */}
+        {/* {structure && renderDiagramItems(structure)} */}
+        {testStructure && renderDiagramItems(testStructure)}
       </div>
     </div>
   );
