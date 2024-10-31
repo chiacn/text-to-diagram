@@ -502,12 +502,12 @@ export default function DiagramContainer() {
             Submit
           </Button>
         </div>
-        <SubmittedText
-          submittedText={submittedText}
-          isOpenSubmittedText={isOpenSubmittedText}
-          setIsOpenSubmittedText={setIsOpenSubmittedText}
-        />
       </div>
+      <SubmittedText
+        submittedText={submittedText}
+        isOpenSubmittedText={isOpenSubmittedText}
+        setIsOpenSubmittedText={setIsOpenSubmittedText}
+      />
 
       {/* 상단 스크롤 ---------------------------------------------------- */}
       <div

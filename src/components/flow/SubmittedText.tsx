@@ -10,10 +10,10 @@ export default function SubmittedText({
   setIsOpenSubmittedText,
 }: SubmittedTextProps) {
   return (
-    <>
+    <div className="w-full sticky top-0 z-20">
       {/* Submit된 텍스트 표시 영역 */}
       <div
-        className={`w-full mt-8 bg-white border border-gray-300 rounded-lg shadow-lg overflow-hidden ${
+        className={`w-full mt-8 bg-white border border-gray-300 rounded-lg shadow-lg ${
           submittedText
             ? "opacity-100 max-h-[500px] scale-100"
             : "opacity-0 max-h-0 scale-95"
@@ -49,6 +49,6 @@ export default function SubmittedText({
           {submittedText}
         </div>
       </div>
-    </>
+    </div>
   );
 }
