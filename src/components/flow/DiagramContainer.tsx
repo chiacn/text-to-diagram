@@ -14,6 +14,7 @@ export default function DiagramContainer() {
   const [question, setQuestion] = useState("");
   const [structure, setStructure] = useState(null);
   const [submittedText, setSubmittedText] = useState("");
+  const [isOpenSubmittedText, setIsOpenSubmittedText] = useState(false); // 영역 접기/펼치기 상태
 
   function fixJSON(jsonString: string) {
     return jsonString.replace(/"step":\s*([\d.]+)/g, '"step": "$1"');
@@ -31,6 +32,7 @@ export default function DiagramContainer() {
       const json = JSON.parse(fixedJSONString);
       setStructure({ ...json });
       setSubmittedText(question);
+      setIsOpenSubmittedText(true);
     } catch (error) {
       console.error("Failed to parse JSON:", error);
     }
@@ -499,16 +501,44 @@ export default function DiagramContainer() {
             Submit
           </Button>
         </div>
+
         {/* Submit된 텍스트 표시 영역 */}
-        {/* 제출된 질문 표시 영역 */}
         <div
-          className={`w-full mt-4 transition-all duration-500 transform whitespace-pre-wrap text-left rounded-lg border border-gray-300 bg-gray-50 shadow-lg p-4 ${
+          className={`w-full mt-8 bg-white border border-gray-300 rounded-lg shadow-lg overflow-hidden ${
             submittedText
-              ? "opacity-100 translate-y-0 scale-100"
-              : "opacity-0 -translate-y-4 scale-95"
+              ? "opacity-100 max-h-[500px] scale-100"
+              : "opacity-0 max-h-0 scale-95"
           }`}
         >
-          {submittedText}
+          {/* 상단 바 -------------------------------------------------- */}
+          <div className="flex items-center justify-end p-2 bg-gray-100 border-b border-gray-300">
+            {/* 접기/펼치기 토글 버튼 */}
+            <button
+              onClick={() => setIsOpenSubmittedText(!isOpenSubmittedText)}
+              className="text-gray-600 hover:text-gray-800 transition-transform duration-300 transform"
+            >
+              <span
+                className={`inline-block transition-transform duration-300 ${
+                  isOpenSubmittedText ? "rotate-180" : "rotate-0"
+                }`}
+              >
+                ▲
+              </span>
+            </button>
+          </div>
+          {/* ----------------------------------------------------------- */}
+
+          {/* 제출된 텍스트 표시 영역 */}
+          <div
+            className={`transition-all duration-500 transform whitespace-pre-wrap text-left p-4 ${
+              isOpenSubmittedText
+                ? "opacity-100 max-h-[500px] scale-100"
+                : "opacity-0 max-h-0 scale-95"
+            }`}
+            style={{ overflow: "hidden" }}
+          >
+            {submittedText}
+          </div>
         </div>
       </div>
 
