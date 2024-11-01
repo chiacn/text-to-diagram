@@ -378,9 +378,9 @@ export default function DiagramContainer() {
   }, []);
 
   const renderDiagramItems = (
-    item: any,
+    item: DiagramItem,
     depth = 0,
-    parentDiagramId = undefined,
+    parentDiagramId: any = undefined,
   ) => {
     const isTopLevel = depth === 0;
     const parentId = depth === 0 ? "root" : parentDiagramId;
