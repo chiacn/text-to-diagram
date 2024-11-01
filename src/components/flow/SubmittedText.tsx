@@ -39,12 +39,12 @@ export default function SubmittedText({
 
         {/* 제출된 텍스트 표시 영역 */}
         <div
-          className={`transition-all duration-500 transform whitespace-pre-wrap text-left p-4 ${
+          className={`transition-all duration-500 transform whitespace-pre-wrap text-left p-4 overflow-scroll scrollbar-custom ${
             isOpenSubmittedText
-              ? "opacity-100 max-h-[500px] scale-100"
+              ? "opacity-100 max-h-[400px] scale-100"
               : "opacity-0 max-h-0 scale-95"
           }`}
-          style={{ overflow: "hidden" }}
+          style={{ overflowX: "hidden" }}
         >
           {submittedText}
         </div>
