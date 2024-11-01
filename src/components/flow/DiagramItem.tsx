@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 interface DiagramItemProps {
   diagramId: number | string;
+  step: number | string;
   parentDiagramId?: number | string;
   depth: number;
   target: string;
@@ -22,6 +23,7 @@ interface DiagramItemProps {
 
 export default function DiagramItem({
   diagramId,
+  step,
   parentDiagramId,
   depth,
   target,
@@ -59,7 +61,7 @@ export default function DiagramItem({
       onClick={(e) => clickDiagramItem(e)}
     >
       <div className="text-lg font-semibold text-gray-800 mb-2">
-        Step {diagramId}
+        Step {step}
       </div>
       <div className="text-gray-700">
         <strong>Target:</strong> {target}
