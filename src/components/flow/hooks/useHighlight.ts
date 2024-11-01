@@ -7,6 +7,12 @@ export default function useHighlight() {
   const diagramItemsListRef = useRef<
     Array<{ diagramId: string | number; parentDiagramId?: string | number }>
   >([]);
+  const HIGHLIGHT_STATUS = {
+    NONE: 0,
+    DEPTH: 1,
+    STEP_COLOR: 2,
+    SINGLE_STEP: 3,
+  };
 
   const currentHighlightStatus = useRef<number>(0);
 
@@ -34,51 +40,29 @@ export default function useHighlight() {
           // 다른 diagram 선택 시 currentHighlightStatus 초기화
           currentHighlightStatus.current = 0;
         } else {
-          setCurrentHighlightStatus();
+          incrementHighlightStatus();
         }
 
-        console.log(
-          "useHighlight - highlightStatus : ",
-          currentHighlightStatus.current,
-        );
+        const newHighlightItems =
+          {
+            [HIGHLIGHT_STATUS.NONE]: [],
+            [HIGHLIGHT_STATUS.DEPTH]: diagramIdsToHighlight,
+            [HIGHLIGHT_STATUS.STEP_COLOR]: [
+              ...highlightItems,
+              ...diagramIdsToHighlight,
+            ],
+            [HIGHLIGHT_STATUS.SINGLE_STEP]: [params.diagramId],
+          }[currentHighlightStatus.current] || [];
 
-        switch (currentHighlightStatus.current) {
-          case 0:
-            setHighlightItems([]);
-            break;
-          case 1:
-            setHighlightItems(diagramIdsToHighlight);
-            break;
-          case 2:
-            setHighlightItems((prev) => [...prev, ...diagramIdsToHighlight]);
-            break;
-          case 3:
-            setHighlightItems([params.diagramId]);
-            break;
-          default:
-            setHighlightItems([]);
-            break;
-        }
-
+        setHighlightItems(newHighlightItems);
         break;
       default:
         break;
     }
   };
 
-  const setCurrentHighlightStatus = () => {
-    /**
-     * currentHighlight
-     * 0: Highlight 없음
-     * 1: 해당 depth Highlight
-     * 2: 각 step 별 개별 색상 부여
-     * 3: 해당 step만 Highlight
-     */
-    if (currentHighlightStatus.current > 2) {
-      currentHighlightStatus.current = 0;
-    } else {
-      currentHighlightStatus.current++;
-    }
+  const incrementHighlightStatus = () => {
+    currentHighlightStatus.current = (currentHighlightStatus.current + 1) % 4;
   };
 
   // Reset diagramItemsListRef before rendering
