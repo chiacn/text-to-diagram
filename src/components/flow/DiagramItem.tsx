@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 
 interface DiagramItemProps {
   diagramId: number | string;
-  step: number | string;
+  step?: number | string;
   parentDiagramId?: number | string;
   depth: number;
   target: string;
   example: string;
   description: string;
-  result: { answer: any[] };
+  result?: { answer: any[] };
   handleDiagramItem: (
     effectType: string,
     params: {
