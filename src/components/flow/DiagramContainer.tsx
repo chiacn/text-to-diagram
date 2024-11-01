@@ -19,8 +19,12 @@ export default function DiagramContainer() {
   const [submittedText, setSubmittedText] = useState("");
   const [isOpenSubmittedText, setIsOpenSubmittedText] = useState(false); // 영역 접기/펼치기 상태
 
-  const { highlightItems, handleDiagramItem, diagramItemsListRef } =
-    useHighlight();
+  const {
+    highlightItems,
+    handleDiagramItem,
+    diagramItemsListRef,
+    currentHighlightStatus,
+  } = useHighlight();
   const {
     setSpreadSteps,
     entireSpreadedStep,
@@ -33,17 +37,17 @@ export default function DiagramContainer() {
   }
 
   const submitPrompt = async () => {
-    // const response = await getAnswerFromModel(question);
-    // const match = response.match(/{[\s\S]*}/);
-    // let jsonString = match ? match[0] : "{}";
-    // console.log("jsonString", jsonString);
+    const response = await getAnswerFromModel(question);
+    const match = response.match(/{[\s\S]*}/);
+    let jsonString = match ? match[0] : "{}";
+    console.log("jsonString", jsonString);
 
-    // const fixedJSONString = fixJSON(jsonString);
+    const fixedJSONString = fixJSON(jsonString);
 
     try {
-      // const json = JSON.parse(fixedJSONString);
+      const json = JSON.parse(fixedJSONString);
 
-      setStructure({ ...(assignDiagramIds(testStructure) as any) });
+      setStructure(assignDiagramIds(json));
       setSubmittedText(question);
       setIsOpenSubmittedText(true);
       setSpreadSteps(structure);
@@ -463,6 +467,7 @@ export default function DiagramContainer() {
           submittedText={submittedText}
           isOpenSubmittedText={isOpenSubmittedText}
           setIsOpenSubmittedText={setIsOpenSubmittedText}
+          currentHighlightStatus={currentHighlightStatus}
         />
 
         {/* 상단 스크롤 ---------------------------------------------------- */}

@@ -8,6 +8,8 @@ export default function useHighlight() {
     Array<{ diagramId: string | number; parentDiagramId?: string | number }>
   >([]);
 
+  const currentHighlightStatus = useRef<number>(0);
+
   const handleDiagramItem = (
     effectType: string,
     params: {
@@ -19,40 +21,63 @@ export default function useHighlight() {
     switch (effectType) {
       // depth 기준으로 highlight
       case "highlight":
-        // Note: 여러 개 선택할 수 있게
-        // setHighlightItems((prev: Array<string | number>) => {
-        //   return prev.includes(params.depth)
-        //     ? prev.filter((id) => id !== depth)
-        //     : [...prev, params.depth];
-        // });
-
-        // Note: 단일 선택
-        // highlightItems.includes(params.depth)
-        //   ? setHighlightItems([])
-        //   : setHighlightItems([params.depth]);
-
         const { parentDiagramId } = params;
-
-        console.log("parentDiagramId", parentDiagramId);
-        console.log("diagramId", params.diagramId);
         // Get all diagramIds with matching parentDiagramId
         const diagramIdsToHighlight = diagramItemsListRef.current
           .filter((item) => item.parentDiagramId === parentDiagramId)
           .map((item) => item.diagramId);
 
-        // Toggle highlight
-        const isAlreadyHighlighted =
+        if (
           highlightItems.length > 0 &&
-          diagramIdsToHighlight.every((id) => highlightItems.includes(id));
-
-        if (isAlreadyHighlighted) {
-          setHighlightItems([]);
+          diagramIdsToHighlight.some((id) => !highlightItems.includes(id))
+        ) {
+          // 다른 diagram 선택 시 currentHighlightStatus 초기화
+          currentHighlightStatus.current = 0;
         } else {
-          setHighlightItems(diagramIdsToHighlight);
+          setCurrentHighlightStatus();
         }
+
+        console.log(
+          "useHighlight - highlightStatus : ",
+          currentHighlightStatus.current,
+        );
+
+        switch (currentHighlightStatus.current) {
+          case 0:
+            setHighlightItems([]);
+            break;
+          case 1:
+            setHighlightItems(diagramIdsToHighlight);
+            break;
+          case 2:
+            setHighlightItems((prev) => [...prev, ...diagramIdsToHighlight]);
+            break;
+          case 3:
+            setHighlightItems([params.diagramId]);
+            break;
+          default:
+            setHighlightItems([]);
+            break;
+        }
+
         break;
       default:
         break;
+    }
+  };
+
+  const setCurrentHighlightStatus = () => {
+    /**
+     * currentHighlight
+     * 0: Highlight 없음
+     * 1: 해당 depth Highlight
+     * 2: 각 step 별 개별 색상 부여
+     * 3: 해당 step만 Highlight
+     */
+    if (currentHighlightStatus.current > 2) {
+      currentHighlightStatus.current = 0;
+    } else {
+      currentHighlightStatus.current++;
     }
   };
 
@@ -63,5 +88,6 @@ export default function useHighlight() {
     handleDiagramItem,
     highlightItems,
     diagramItemsListRef,
+    currentHighlightStatus,
   };
 }

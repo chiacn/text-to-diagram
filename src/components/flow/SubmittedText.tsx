@@ -1,13 +1,21 @@
+import { MutableRefObject } from "react";
+
 interface SubmittedTextProps {
   submittedText: string;
   isOpenSubmittedText: boolean;
   setIsOpenSubmittedText: (isOpenSubmittedText: boolean) => void;
+  entireSpreadedStep?: object[];
+  focusSpreadedStep?: object[];
+  currentHighlightStatus?: MutableRefObject<number>;
 }
 
 export default function SubmittedText({
   submittedText,
   isOpenSubmittedText,
   setIsOpenSubmittedText,
+  entireSpreadedStep,
+  focusSpreadedStep,
+  currentHighlightStatus,
 }: SubmittedTextProps) {
   return (
     <div className="w-full">

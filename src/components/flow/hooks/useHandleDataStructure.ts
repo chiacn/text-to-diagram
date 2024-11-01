@@ -6,13 +6,6 @@ interface HandleDataStructureProps {
 export default function useHandleDataStructure({
   highlightItems,
 }: HandleDataStructureProps) {
-  /*
-    * 기능 구현 정리
-      1. structure를 dfs로 훑고 직렬적으로 스텝별로 묶는다. (entireSpreadedStep)
-      2. 만약 특정 step에 대해서 하이라이트 시, focusSpreadedStep으로 entireSpreadedStep을 잘라서 사용한다.
-      3. SubmittedText에 props로 보낸다.
-  */
-
   const [entireSpreadedStep, setEntireSpreadedStep] = useState<any[]>([]);
   const [focusSpreadedStep, setFocusSpreadedStep] = useState<any[]>([]);
 
