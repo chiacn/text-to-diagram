@@ -14,7 +14,8 @@ export default function useHighlight() {
     SINGLE_STEP: 3,
   };
 
-  const currentHighlightStatus = useRef<number>(0);
+  const [currentHighlightStatus, setCurrentHighlightStatus] =
+    useState<number>(0);
 
   const handleDiagramItem = (
     effectType: string,
@@ -38,31 +39,35 @@ export default function useHighlight() {
           diagramIdsToHighlight.some((id) => !highlightItems.includes(id))
         ) {
           // 다른 diagram 선택 시 currentHighlightStatus 초기화
-          currentHighlightStatus.current = 0;
+          setCurrentHighlightStatus(0);
+          setHighlightItems(setHighlightItemsByStatus(0));
         } else {
-          incrementHighlightStatus();
+          setCurrentHighlightStatus((prevHighlightStatus) => {
+            const newHighlightStatus = (prevHighlightStatus + 1) % 4;
+            setHighlightItems(setHighlightItemsByStatus(newHighlightStatus));
+            return newHighlightStatus;
+          });
         }
 
-        const newHighlightItems =
-          {
-            [HIGHLIGHT_STATUS.NONE]: [],
-            [HIGHLIGHT_STATUS.DEPTH]: diagramIdsToHighlight,
-            [HIGHLIGHT_STATUS.STEP_COLOR]: [
-              ...highlightItems,
-              ...diagramIdsToHighlight,
-            ],
-            [HIGHLIGHT_STATUS.SINGLE_STEP]: [params.diagramId],
-          }[currentHighlightStatus.current] || [];
-
-        setHighlightItems(newHighlightItems);
+        // * Note: 주의 currentHighlightStatus는 비동기적으로 업데이트되고, 다음 렌더링 사이클에 상태 업데이트를 적용하므로
+        // * currentHighlightStatus를 찍어도 업데이트 되지 않은 상태가 보여짐.
+        function setHighlightItemsByStatus(status: number) {
+          return (
+            {
+              [HIGHLIGHT_STATUS.NONE]: [],
+              [HIGHLIGHT_STATUS.DEPTH]: diagramIdsToHighlight,
+              [HIGHLIGHT_STATUS.STEP_COLOR]: [
+                ...highlightItems,
+                ...diagramIdsToHighlight,
+              ],
+              [HIGHLIGHT_STATUS.SINGLE_STEP]: [params.diagramId],
+            }[status] || []
+          );
+        }
         break;
       default:
         break;
     }
-  };
-
-  const incrementHighlightStatus = () => {
-    currentHighlightStatus.current = (currentHighlightStatus.current + 1) % 4;
   };
 
   // Reset diagramItemsListRef before rendering
