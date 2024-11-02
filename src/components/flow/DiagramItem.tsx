@@ -54,7 +54,7 @@ export default function DiagramItem({
 
   return (
     <div
-      className={`rounded-xl border-[1px] p-4 my-2 transition-all duration-300 transform bg-gray-100 cursor-pointer
+      className={`rounded-xl border-[1px] p-4 my-2 transition-all duration-300 transform cursor-pointer
                    ml-${depth * 5}  ${
         isHighlighted ? "bg-amber-100" : "bg-white"
       }`}
