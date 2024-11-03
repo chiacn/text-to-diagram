@@ -63,16 +63,12 @@ export default function useHandleDataStructure({
   }
 
   useEffect(() => {
-    console.log("highlightItems", highlightItems);
-    console.log("entireSpreadedStep", entireSpreadedStep);
     if (highlightItems.length > 0 && entireSpreadedStep.length > 0) {
       console.log("highlightItems", highlightItems);
       const focusSteps = getSubstructureByStep(
         entireSpreadedStep,
         highlightItems,
       );
-
-      console.log("focusSteps --- ", focusSteps);
       setFocusSpreadedStep(focusSteps);
     } else {
       setFocusSpreadedStep(entireSpreadedStep);
