@@ -44,7 +44,7 @@ export default function useHighlight() {
           setHighlightItems(setHighlightItemsByStatus(0));
         } else {
           setCurrentHighlightStatus((prevHighlightStatus) => {
-            const newHighlightStatus = (prevHighlightStatus + 1) % 3;
+            const newHighlightStatus = (prevHighlightStatus + 1) % 4;
             setHighlightItems(setHighlightItemsByStatus(newHighlightStatus));
             return newHighlightStatus;
           });
