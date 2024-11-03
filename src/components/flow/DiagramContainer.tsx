@@ -31,7 +31,7 @@ export default function DiagramContainer() {
     entireSpreadedStep,
     focusSpreadedStep,
     assignDiagramIds,
-  } = useHandleDataStructure({ highlightItems });
+  } = useHandleDataStructure({ highlightItems, currentHighlightStatus });
 
   function fixJSON(jsonString: string) {
     return jsonString.replace(/"step":\s*([\d.]+)/g, '"step": "$1"');
@@ -51,7 +51,9 @@ export default function DiagramContainer() {
       setStructure(assignDiagramIds(json));
       setSubmittedText(question);
       setIsOpenSubmittedText(true);
-      setSpreadSteps(structure);
+      // Note: setState - 비동기적으로 업데이트되고, 다음 렌더링 사이클에 상태 업데이트를 적용되므로
+      // structure를 사용하지 않고 assignDiagramIds(json) 그대로 사용.
+      setSpreadSteps(assignDiagramIds(json));
     } catch (error) {
       console.error("Failed to parse JSON:", error);
     }
@@ -477,6 +479,8 @@ export default function DiagramContainer() {
           isOpenSubmittedText={isOpenSubmittedText}
           setIsOpenSubmittedText={setIsOpenSubmittedText}
           currentHighlightStatus={currentHighlightStatus}
+          entireSpreadedStep={entireSpreadedStep}
+          focusSpreadedStep={focusSpreadedStep}
         />
 
         {/* 상단 스크롤 ---------------------------------------------------- */}

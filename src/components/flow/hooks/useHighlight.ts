@@ -56,7 +56,7 @@ export default function useHighlight() {
           return (
             {
               [HIGHLIGHT_STATUS.NONE]: [],
-              [HIGHLIGHT_STATUS.SAME_DEPTH]: diagramIdsToHighlight,
+              [HIGHLIGHT_STATUS.SAME_DEPTH]: [...diagramIdsToHighlight],
               [HIGHLIGHT_STATUS.SEPARATE_COLOR]: [
                 ...highlightItems,
                 ...diagramIdsToHighlight,

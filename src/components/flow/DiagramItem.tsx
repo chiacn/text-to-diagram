@@ -36,8 +36,6 @@ export default function DiagramItem({
   highlightColor,
   children,
 }: DiagramItemProps) {
-  // TODO: Next, Prev 버튼 추가?
-
   const [isHighlighted, setIsHighlighted] = useState(false);
 
   const clickDiagramItem = (e: React.MouseEvent<HTMLDivElement>) => {

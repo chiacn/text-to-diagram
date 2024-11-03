@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 
 interface HandleDataStructureProps {
   highlightItems: Array<string | number>;
+  currentHighlightStatus: number;
 }
 export default function useHandleDataStructure({
   highlightItems,
+  currentHighlightStatus,
 }: HandleDataStructureProps) {
   const [entireSpreadedStep, setEntireSpreadedStep] = useState<any[]>([]);
   const [focusSpreadedStep, setFocusSpreadedStep] = useState<any[]>([]);
@@ -43,8 +45,8 @@ export default function useHandleDataStructure({
 
     if (structure) {
       const steps = dfsStructure(structure); // * 여기서 diagramId 할당
-      setEntireSpreadedStep(steps);
-      setFocusSpreadedStep(steps); // 초기에는 전체 스텝을 설정
+      setEntireSpreadedStep([...steps]);
+      setFocusSpreadedStep([...steps]); // 초기에는 전체 스텝을 설정
     }
   };
 
@@ -64,16 +66,15 @@ export default function useHandleDataStructure({
 
   useEffect(() => {
     if (highlightItems.length > 0 && entireSpreadedStep.length > 0) {
-      console.log("highlightItems", highlightItems);
       const focusSteps = getSubstructureByStep(
         entireSpreadedStep,
         highlightItems,
       );
-      setFocusSpreadedStep(focusSteps);
+      setFocusSpreadedStep([...focusSteps]);
     } else {
-      setFocusSpreadedStep(entireSpreadedStep);
+      setFocusSpreadedStep([...entireSpreadedStep]);
     }
-  }, [highlightItems, entireSpreadedStep]);
+  }, [currentHighlightStatus]); // highlightItems (array) 변경되는거 얕은 비교로 감지 못하니까 currentHighlightStatus 감지
 
   return {
     setSpreadSteps,
