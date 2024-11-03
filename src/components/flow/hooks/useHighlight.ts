@@ -17,6 +17,7 @@ export default function useHighlight() {
   const [currentHighlightStatus, setCurrentHighlightStatus] =
     useState<number>(0);
   const colorPalette = ["#E3FDFD", "#D4F3EF", "#F9E2E3", "#F0F7EE", "#D2E4F2"];
+  const targetColorMap = useRef<any>({});
 
   const handleDiagramItem = (
     effectType: string,
@@ -80,5 +81,6 @@ export default function useHighlight() {
     diagramItemsListRef,
     currentHighlightStatus,
     colorPalette,
+    targetColorMap,
   };
 }

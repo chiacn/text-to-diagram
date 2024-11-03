@@ -1,12 +1,13 @@
-import { MutableRefObject } from "react";
+import { MutableRefObject, useEffect, useState } from "react";
 
 interface SubmittedTextProps {
   submittedText: string;
   isOpenSubmittedText: boolean;
   setIsOpenSubmittedText: (isOpenSubmittedText: boolean) => void;
-  entireSpreadedStep?: object[];
-  focusSpreadedStep?: object[];
-  currentHighlightStatus?: MutableRefObject<number>;
+  entireSpreadedStep?: DiagramItem[];
+  focusSpreadedStep?: DiagramItem[];
+  currentHighlightStatus: number;
+  targetColorMap: { [key: string]: string };
 }
 
 export default function SubmittedText({
@@ -16,7 +17,63 @@ export default function SubmittedText({
   entireSpreadedStep,
   focusSpreadedStep,
   currentHighlightStatus,
+  targetColorMap,
 }: SubmittedTextProps) {
+  const [displayText, setDisplayText] = useState<
+    string | (string | JSX.Element)[]
+  >(submittedText);
+
+  // 특수 문자를 이스케이프하는 함수
+  const escapeRegExp = (string: string) => {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  };
+
+  // highlightText 함수 정의: 여러 키워드와 일치하는 부분을 <span>으로 감싸기
+  const highlightText = (text: string, keywords: string[]) => {
+    if (!keywords || keywords.length === 0) return text; // 키워드가 없을 경우 원래 텍스트 반환
+
+    // 키워드를 이스케이프하여 정규식을 생성
+    const escapedKeywords = keywords.map((keyword) => escapeRegExp(keyword));
+    const regex = new RegExp(`(${escapedKeywords.join("|")})`, "gi"); // 키워드를 "|"로 연결하여 정규식을 생성
+
+    // 정규식으로 텍스트를 분리하고 일치하는 부분에 <span> 적용
+    const parts = text.split(regex);
+    return parts.map((part, index) => {
+      const matchedKeyword = keywords.find(
+        (keyword) => part.toLowerCase() === keyword.toLowerCase(),
+      );
+      if (matchedKeyword) {
+        const highlightColor = targetColorMap[matchedKeyword] || "#fef3c7";
+        return (
+          <span key={index} style={{ backgroundColor: highlightColor }}>
+            {part}
+          </span>
+        );
+      } else {
+        return part;
+      }
+    });
+  };
+
+  const setTextByHighlightStatus = () => {
+    if (currentHighlightStatus === 0) {
+      setDisplayText(submittedText);
+      return;
+    }
+
+    // 배열로 들어감.
+    const matchingTextArr = focusSpreadedStep?.map(
+      (item: DiagramItem) => item.target,
+    );
+
+    const highlightedText = highlightText(submittedText, matchingTextArr ?? []);
+    setDisplayText(highlightedText);
+  };
+
+  useEffect(() => {
+    setTextByHighlightStatus();
+  }, [focusSpreadedStep]); // currentHighlightStatus 변경 -> focusSpreadedStep 변경 -> highlightText 적용
+
   return (
     <div className="w-full">
       {/* Submit된 텍스트 표시 영역 */}
@@ -54,7 +111,7 @@ export default function SubmittedText({
           }`}
           style={{ overflowX: "hidden" }}
         >
-          {submittedText}
+          {displayText}
         </div>
       </div>
     </div>

@@ -25,6 +25,7 @@ export default function DiagramContainer() {
     diagramItemsListRef,
     currentHighlightStatus,
     colorPalette,
+    targetColorMap,
   } = useHighlight();
   const {
     setSpreadSteps,
@@ -401,6 +402,9 @@ export default function DiagramContainer() {
         ? colorPalette[itemIndex % colorPalette.length]
         : "#fef3c7";
 
+    // target과 highlightColor를 매핑
+    targetColorMap.current[item.target] = highlightColor;
+
     return (
       <div
         className={`flex ${depth > 0 ? "pl-5" : ""} flex-row space-x-4`}
@@ -481,6 +485,7 @@ export default function DiagramContainer() {
           currentHighlightStatus={currentHighlightStatus}
           entireSpreadedStep={entireSpreadedStep}
           focusSpreadedStep={focusSpreadedStep}
+          targetColorMap={targetColorMap.current}
         />
 
         {/* 상단 스크롤 ---------------------------------------------------- */}
