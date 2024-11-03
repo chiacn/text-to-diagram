@@ -18,6 +18,7 @@ interface DiagramItemProps {
     },
   ) => void;
   highlightItems?: Array<number | string>;
+  highlightColor?: string;
   children?: React.ReactNode[];
 }
 
@@ -32,6 +33,7 @@ export default function DiagramItem({
   result,
   handleDiagramItem,
   highlightItems,
+  highlightColor,
   children,
 }: DiagramItemProps) {
   // TODO: Next, Prev 버튼 추가?
@@ -55,9 +57,8 @@ export default function DiagramItem({
   return (
     <div
       className={`rounded-xl border-[1px] p-4 my-2 transition-all duration-300 transform cursor-pointer
-                   ml-${depth * 5}  ${
-        isHighlighted ? "bg-amber-100" : "bg-white"
-      }`}
+                   ml-${depth * 5}`}
+      style={{ backgroundColor: isHighlighted ? highlightColor : "white" }}
       onClick={(e) => clickDiagramItem(e)}
     >
       <div className="text-lg font-semibold text-gray-800 mb-2">

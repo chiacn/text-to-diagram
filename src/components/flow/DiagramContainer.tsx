@@ -24,6 +24,7 @@ export default function DiagramContainer() {
     handleDiagramItem,
     diagramItemsListRef,
     currentHighlightStatus,
+    colorPalette,
   } = useHighlight();
   const {
     setSpreadSteps,
@@ -385,11 +386,18 @@ export default function DiagramContainer() {
     const isTopLevel = depth === 0;
     const parentId = depth === 0 ? "root" : parentDiagramId;
 
+    const itemIndex = diagramItemsListRef.current.length; // 현재 아이템의 인덱스
     // Collect diagram item information
     diagramItemsListRef.current.push({
       diagramId: item.diagramId,
       parentDiagramId: parentId,
     });
+
+    // currentHighlightStatus === 2 (SEPARATE_COLOR) 상태일 때, 순서에 맞춰 색상 할당
+    const highlightColor =
+      currentHighlightStatus === 2
+        ? colorPalette[itemIndex % colorPalette.length]
+        : "#fef3c7";
 
     return (
       <div
@@ -408,6 +416,7 @@ export default function DiagramContainer() {
           result={item.result}
           handleDiagramItem={handleDiagramItem}
           highlightItems={highlightItems}
+          highlightColor={highlightColor}
         >
           {item.steps &&
             item.steps.map((childItem: any) =>

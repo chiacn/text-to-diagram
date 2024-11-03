@@ -9,13 +9,14 @@ export default function useHighlight() {
   >([]);
   const HIGHLIGHT_STATUS = {
     NONE: 0,
-    DEPTH: 1,
-    STEP_COLOR: 2,
+    SAME_DEPTH: 1,
+    SEPARATE_COLOR: 2,
     SINGLE_STEP: 3,
   };
 
   const [currentHighlightStatus, setCurrentHighlightStatus] =
     useState<number>(0);
+  const colorPalette = ["#E3FDFD", "#D4F3EF", "#F9E2E3", "#F0F7EE", "#D2E4F2"];
 
   const handleDiagramItem = (
     effectType: string,
@@ -43,7 +44,7 @@ export default function useHighlight() {
           setHighlightItems(setHighlightItemsByStatus(0));
         } else {
           setCurrentHighlightStatus((prevHighlightStatus) => {
-            const newHighlightStatus = (prevHighlightStatus + 1) % 4;
+            const newHighlightStatus = (prevHighlightStatus + 1) % 3;
             setHighlightItems(setHighlightItemsByStatus(newHighlightStatus));
             return newHighlightStatus;
           });
@@ -55,8 +56,8 @@ export default function useHighlight() {
           return (
             {
               [HIGHLIGHT_STATUS.NONE]: [],
-              [HIGHLIGHT_STATUS.DEPTH]: diagramIdsToHighlight,
-              [HIGHLIGHT_STATUS.STEP_COLOR]: [
+              [HIGHLIGHT_STATUS.SAME_DEPTH]: diagramIdsToHighlight,
+              [HIGHLIGHT_STATUS.SEPARATE_COLOR]: [
                 ...highlightItems,
                 ...diagramIdsToHighlight,
               ],
@@ -78,5 +79,6 @@ export default function useHighlight() {
     highlightItems,
     diagramItemsListRef,
     currentHighlightStatus,
+    colorPalette,
   };
 }
