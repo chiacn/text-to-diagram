@@ -8,8 +8,10 @@ export default function useHandleDataStructure({
   highlightItems,
   currentHighlightStatus,
 }: HandleDataStructureProps) {
-  const [entireSpreadedStep, setEntireSpreadedStep] = useState<any[]>([]);
-  const [focusSpreadedStep, setFocusSpreadedStep] = useState<any[]>([]);
+  const [entireSpreadedStep, setEntireSpreadedStep] = useState<DiagramItem[]>(
+    [],
+  );
+  const [focusSpreadedStep, setFocusSpreadedStep] = useState<DiagramItem[]>([]);
 
   function dfsStructure(node: any, steps: any[] = []) {
     if (!node) return steps;
