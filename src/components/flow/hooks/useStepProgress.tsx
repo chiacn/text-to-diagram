@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
 
 interface StepProgressProps {
-  isPlaying: boolean;
   currentHighlightStatus: number;
   submittedText: string;
   focusSpreadedStep?: DiagramItem[];
   targetColorMap: { [key: string]: string };
 }
 export default function useStepProgress({
-  isPlaying,
   currentHighlightStatus,
   submittedText,
   focusSpreadedStep,
   targetColorMap,
 }: StepProgressProps) {
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [progressActive, setProgressActive] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [highlightedTextByStep, setHighlightedTextByStep] = useState<
@@ -21,7 +20,7 @@ export default function useStepProgress({
   >(submittedText);
 
   const setHighlightTextByStep = (step: number) => {
-    const matchingTextArr = [focusSpreadedStep?.[0].target];
+    const matchingTextArr = [focusSpreadedStep?.[currentStep]?.target];
     const text = highlightText(
       submittedText,
       (matchingTextArr as string[]) ?? [],
@@ -59,7 +58,18 @@ export default function useStepProgress({
     });
   };
 
-  // TODO: 이제 currentStep 변경, currentStep에 따라 표시해 줄 StepProgressItem 개발할 차례.
+  const resetProgress = () => {
+    setIsPlaying(false);
+    setProgressActive(false);
+    setCurrentStep(0);
+  };
+
+  useEffect(() => {
+    if (currentHighlightStatus === 0 || currentHighlightStatus === 1) {
+      resetProgress();
+    }
+  }, [currentHighlightStatus]);
+
   useEffect(() => {
     progressActive && setHighlightTextByStep(currentStep);
   }, [progressActive, currentStep]); // currentHighlightStatus 변경 -> focusSpreadedStep 변경 -> highlightText 적용
@@ -70,13 +80,20 @@ export default function useStepProgress({
       case 1:
       case 2:
         if (isPlaying) setProgressActive(true);
-        else setProgressActive(false);
+        else resetProgress();
         break;
       default:
-        setProgressActive(false);
+        resetProgress();
         break;
     }
   }, [isPlaying]);
 
-  return { progressActive, highlightedTextByStep };
+  return {
+    isPlaying,
+    setIsPlaying,
+    progressActive,
+    highlightedTextByStep,
+    currentStep,
+    setCurrentStep,
+  };
 }

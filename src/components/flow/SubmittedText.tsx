@@ -25,9 +25,14 @@ export default function SubmittedText({
   const [displayText, setDisplayText] = useState<
     string | (string | JSX.Element)[]
   >(submittedText);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const { progressActive, highlightedTextByStep } = useStepProgress({
+  const {
     isPlaying,
+    setIsPlaying,
+    progressActive,
+    highlightedTextByStep,
+    currentStep,
+    setCurrentStep,
+  } = useStepProgress({
     currentHighlightStatus,
     submittedText,
     focusSpreadedStep,
@@ -86,7 +91,7 @@ export default function SubmittedText({
   }, [focusSpreadedStep]); // currentHighlightStatus 변경 -> focusSpreadedStep 변경 -> highlightText 적용
 
   return (
-    <div className="w-full">
+    <div className="w-full relative">
       {/* Submit된 텍스트 표시 영역 */}
       <div
         className={`w-full mt-8 bg-white border border-gray-300 rounded-lg shadow-lg ${
@@ -117,7 +122,7 @@ export default function SubmittedText({
 
         {/* 제출된 텍스트 표시 영역 */}
         <div
-          className={`relative transition-all duration-500 transform whitespace-pre-wrap text-left p-4 overflow-scroll scrollbar-custom ${
+          className={`transition-all duration-500 transform whitespace-pre-wrap text-left p-4 overflow-scroll scrollbar-custom ${
             isOpenSubmittedText
               ? "opacity-100 max-h-[400px] scale-100"
               : "opacity-0 max-h-0 scale-95"
@@ -128,6 +133,8 @@ export default function SubmittedText({
           <StepProgressContainer
             progressActive={progressActive}
             focusSpreadedStep={focusSpreadedStep}
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
           />
         </div>
       </div>
