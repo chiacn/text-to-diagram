@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import SubmittedText from "./SubmittedText";
 import useHighlight from "./hooks/useHighlight";
 import useHandleDataStructure from "./hooks/useHandleDataStructure";
+import test from "node:test";
 
 export default function DiagramContainer() {
   // LLM 테스트 ---------------------------------------------
@@ -26,13 +27,19 @@ export default function DiagramContainer() {
     currentHighlightStatus,
     colorPalette,
     targetColorMap,
+    resetHighlight,
   } = useHighlight();
   const {
     setSpreadSteps,
     entireSpreadedStep,
     focusSpreadedStep,
     assignDiagramIds,
-  } = useHandleDataStructure({ highlightItems, currentHighlightStatus });
+    resetDataStructure,
+  } = useHandleDataStructure({
+    highlightItems,
+    currentHighlightStatus,
+    structure,
+  });
 
   function fixJSON(jsonString: string) {
     return jsonString.replace(/"step":\s*([\d.]+)/g, '"step": "$1"');
@@ -42,19 +49,23 @@ export default function DiagramContainer() {
     const response = await getAnswerFromModel(question);
     const match = response.match(/{[\s\S]*}/);
     let jsonString = match ? match[0] : "{}";
-    console.log("jsonString", jsonString);
+    // console.log("jsonString", jsonString);
 
     const fixedJSONString = fixJSON(jsonString);
 
     try {
+      resetHighlight();
+      resetDataStructure();
+
+      // const json = testStructure;
       const json = JSON.parse(fixedJSONString);
 
-      setStructure(assignDiagramIds(json));
+      setStructure({ ...assignDiagramIds(json) });
       setSubmittedText(question);
       setIsOpenSubmittedText(true);
       // Note: setState - 비동기적으로 업데이트되고, 다음 렌더링 사이클에 상태 업데이트를 적용되므로
       // structure를 사용하지 않고 assignDiagramIds(json) 그대로 사용.
-      setSpreadSteps(assignDiagramIds(json));
+      setSpreadSteps({ ...assignDiagramIds(json) });
     } catch (error) {
       console.error("Failed to parse JSON:", error);
     }

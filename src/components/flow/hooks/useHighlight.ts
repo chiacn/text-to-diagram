@@ -72,6 +72,11 @@ export default function useHighlight() {
     }
   };
 
+  const resetHighlight = () => {
+    setHighlightItems([]);
+    setCurrentHighlightStatus(0);
+  };
+
   // Reset diagramItemsListRef before rendering
   diagramItemsListRef.current = [];
 
@@ -82,5 +87,6 @@ export default function useHighlight() {
     currentHighlightStatus,
     colorPalette,
     targetColorMap,
+    resetHighlight,
   };
 }

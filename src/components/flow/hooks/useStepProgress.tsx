@@ -82,7 +82,7 @@ export default function useStepProgress({
     if (currentHighlightStatus === 0 || currentHighlightStatus === 1) {
       resetProgress();
     }
-  }, [currentHighlightStatus]);
+  }, [currentHighlightStatus, focusSpreadedStep]);
 
   useEffect(() => {
     progressActive && setHighlightTextByStep(currentStep);

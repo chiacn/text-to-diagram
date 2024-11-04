@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 interface HandleDataStructureProps {
   highlightItems: Array<string | number>;
   currentHighlightStatus: number;
+  structure: any;
 }
 export default function useHandleDataStructure({
   highlightItems,
   currentHighlightStatus,
+  structure,
 }: HandleDataStructureProps) {
   const [entireSpreadedStep, setEntireSpreadedStep] = useState<DiagramItem[]>(
     [],
@@ -66,6 +68,11 @@ export default function useHandleDataStructure({
     );
   }
 
+  const resetDataStructure = () => {
+    setEntireSpreadedStep([]);
+    setFocusSpreadedStep([]);
+  };
+
   useEffect(() => {
     if (highlightItems.length > 0 && entireSpreadedStep.length > 0) {
       const focusSteps = getSubstructureByStep(
@@ -76,12 +83,13 @@ export default function useHandleDataStructure({
     } else {
       setFocusSpreadedStep([...entireSpreadedStep]);
     }
-  }, [currentHighlightStatus]); // highlightItems (array) 변경되는거 얕은 비교로 감지 못하니까 currentHighlightStatus 감지
+  }, [currentHighlightStatus, structure]); // highlightItems (array) 변경되는거 얕은 비교로 감지 못하니까 currentHighlightStatus 감지
 
   return {
     setSpreadSteps,
     entireSpreadedStep,
     focusSpreadedStep,
     assignDiagramIds,
+    resetDataStructure,
   };
 }
