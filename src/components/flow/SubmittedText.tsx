@@ -1,4 +1,7 @@
 import { MutableRefObject, useEffect, useState } from "react";
+import useStepProgress from "./hooks/useStepProgress";
+import StepProgressContainer from "./StepProgressContainer";
+import PlayButton from "./PlayButton";
 
 interface SubmittedTextProps {
   submittedText: string;
@@ -22,6 +25,14 @@ export default function SubmittedText({
   const [displayText, setDisplayText] = useState<
     string | (string | JSX.Element)[]
   >(submittedText);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const { progressActive, highlightedTextByStep } = useStepProgress({
+    isPlaying,
+    currentHighlightStatus,
+    submittedText,
+    focusSpreadedStep,
+    targetColorMap,
+  });
 
   // 특수 문자를 이스케이프하는 함수
   const escapeRegExp = (string: string) => {
@@ -85,7 +96,9 @@ export default function SubmittedText({
         }`}
       >
         {/* 상단 바 -------------------------------------------------- */}
-        <div className="flex items-center justify-end p-2 bg-gray-100 border-b border-gray-300">
+        <div className="flex items-center justify-between p-2 bg-gray-100 border-b border-gray-300">
+          {/* 재생 버튼 */}
+          <PlayButton isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
           {/* 접기/펼치기 토글 버튼 */}
           <button
             onClick={() => setIsOpenSubmittedText(!isOpenSubmittedText)}
@@ -104,14 +117,18 @@ export default function SubmittedText({
 
         {/* 제출된 텍스트 표시 영역 */}
         <div
-          className={`transition-all duration-500 transform whitespace-pre-wrap text-left p-4 overflow-scroll scrollbar-custom ${
+          className={`relative transition-all duration-500 transform whitespace-pre-wrap text-left p-4 overflow-scroll scrollbar-custom ${
             isOpenSubmittedText
               ? "opacity-100 max-h-[400px] scale-100"
               : "opacity-0 max-h-0 scale-95"
           }`}
           style={{ overflowX: "hidden" }}
         >
-          {displayText}
+          {progressActive ? highlightedTextByStep : displayText}
+          <StepProgressContainer
+            progressActive={progressActive}
+            focusSpreadedStep={focusSpreadedStep}
+          />
         </div>
       </div>
     </div>
