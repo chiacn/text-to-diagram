@@ -61,12 +61,15 @@ export default function SubmittedText({
       if (matchedKeyword) {
         const highlightColor = targetColorMap[matchedKeyword] || "#fef3c7";
         return (
-          <span key={index} style={{ backgroundColor: highlightColor }}>
+          <span
+            key={`submitted-${index}`}
+            style={{ backgroundColor: highlightColor }}
+          >
             {part}
           </span>
         );
       } else {
-        return part;
+        return <span key={`submitted-${index}`}>{part}</span>;
       }
     });
   };

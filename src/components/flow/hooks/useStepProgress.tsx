@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import StepProgressItem from "../StepProgressItem";
+import React from "react";
 
 interface StepProgressProps {
   currentHighlightStatus: number;
@@ -40,20 +42,32 @@ export default function useStepProgress({
     const escapedKeywords = keywords.map((keyword) => escapeRegExp(keyword));
     const regex = new RegExp(`(${escapedKeywords.join("|")})`, "gi"); // 키워드를 "|"로 연결하여 정규식을 생성
 
+    let alreadyHighlighted = false; // Note: 첫 번째 일치 키워드만 highlight 처리
+
     const parts = text.split(regex);
     return parts.map((part, index) => {
       const matchedKeyword = keywords.find(
         (keyword) => part.toLowerCase() === keyword.toLowerCase(),
       );
-      if (matchedKeyword) {
+      if (matchedKeyword && !alreadyHighlighted) {
+        alreadyHighlighted = true;
         const highlightColor = targetColorMap[matchedKeyword] || "#fef3c7";
         return (
-          <span key={index} style={{ backgroundColor: highlightColor }}>
-            {part}
-          </span>
+          <React.Fragment key={`fragment-${index}`}>
+            <span
+              key={`progress-${index}`}
+              style={{ backgroundColor: highlightColor }}
+            >
+              {part}
+            </span>
+            <StepProgressItem
+              key={`progress-item-${index}`}
+              item={focusSpreadedStep?.[currentStep] as DiagramItem}
+            />
+          </React.Fragment>
         );
       } else {
-        return part;
+        return <span key={`part-${index}`}>{part}</span>;
       }
     });
   };
