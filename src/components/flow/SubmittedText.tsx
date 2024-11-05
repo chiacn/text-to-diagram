@@ -32,7 +32,6 @@ export default function SubmittedText({
     highlightedTextByStep,
     currentStep,
     setCurrentStep,
-    stepProgressItemHeight,
     stepOffsetInfo,
     textContainerRef,
   } = useStepProgress({

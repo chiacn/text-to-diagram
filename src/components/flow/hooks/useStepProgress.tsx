@@ -34,8 +34,6 @@ export default function useStepProgress({
 
       => 이 세 가지 정보를 uiInfo로 관리?
   */
-  const [stepProgressItemHeight, setStepProgressItemHeight] =
-    useState<number>();
 
   const setHighlightTextByStep = (step: number) => {
     const matchingTextArr = [focusSpreadedStep?.[currentStep]?.target];
@@ -180,7 +178,6 @@ export default function useStepProgress({
     highlightedTextByStep,
     currentStep,
     setCurrentStep,
-    stepProgressItemHeight,
     stepOffsetInfo,
     textContainerRef,
   };
