@@ -32,7 +32,7 @@ export default function useStepProgress({
 
   // 특수 문자를 이스케이프하는 함수
   const escapeRegExp = (string: string) => {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return string?.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   };
 
   // highlightText 함수 정의: 여러 키워드와 일치하는 부분을 <span>으로 감싸기
@@ -47,7 +47,7 @@ export default function useStepProgress({
     const parts = text.split(regex);
     return parts.map((part, index) => {
       const matchedKeyword = keywords.find(
-        (keyword) => part.toLowerCase() === keyword.toLowerCase(),
+        (keyword) => part?.toLowerCase() === keyword?.toLowerCase(),
       );
       if (matchedKeyword && !alreadyHighlighted) {
         alreadyHighlighted = true;
