@@ -32,12 +32,19 @@ export default function SubmittedText({
     highlightedTextByStep,
     currentStep,
     setCurrentStep,
+    stepProgressItemHeight,
+    stepOffsetInfo,
+    textContainerRef,
   } = useStepProgress({
     currentHighlightStatus,
     submittedText,
     focusSpreadedStep,
     targetColorMap,
   });
+
+  useEffect(() => {
+    console.log("uiInfo ---- ", stepOffsetInfo);
+  }, [stepOffsetInfo]);
 
   // 특수 문자를 이스케이프하는 함수
   const escapeRegExp = (string: string) => {
@@ -125,6 +132,7 @@ export default function SubmittedText({
 
         {/* 제출된 텍스트 표시 영역 */}
         <div
+          ref={textContainerRef}
           className={`transition-all duration-500 transform whitespace-pre-wrap text-left p-4 overflow-scroll scrollbar-custom ${
             isOpenSubmittedText
               ? "opacity-100 max-h-[400px] scale-100"

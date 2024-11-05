@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import StepProgressItem from "../StepProgressItem";
 import React from "react";
 
@@ -21,6 +21,22 @@ export default function useStepProgress({
     string | (string | JSX.Element)[]
   >(submittedText);
 
+  /*
+    TODO: 추가로 필요한 기능
+    1. text 중 가장 긴 줄의 위치값 - StepProgressItem의 left 위치값 계산하는데 사용.
+    2. StepProgressItem의 height 값 - StepProgressItem의 top 위치값, 전체 SubmittedText의 최소 높이 최대 높이값 계산하는데 사용.
+    3. highlight된 text의 위치값 - SubmittedText의 스크롤  위치값 계산하는데 사용. (해당 부분으로 이동)
+
+    => 이 정보들을 구할 수 있는 시점. 
+      1. submittedText 들어오는 시점. 
+      2. highlightText 함수 - StepProgressItem 렌더링 시점. 
+      3. highlightText 함수 - 해당 text의 위치값 알아내기.
+
+      => 이 세 가지 정보를 uiInfo로 관리?
+  */
+  const [stepProgressItemHeight, setStepProgressItemHeight] =
+    useState<number>();
+
   const setHighlightTextByStep = (step: number) => {
     const matchingTextArr = [focusSpreadedStep?.[currentStep]?.target];
     const text = highlightText(
@@ -29,6 +45,19 @@ export default function useStepProgress({
     );
     setHighlightedTextByStep(text);
   };
+
+  // 추가된 상태 및 ref
+  const [stepOffsetInfo, setStepOffsetInfo] = useState({
+    longestLinePosition: 0,
+    stepProgressItemHeight: 0,
+    highlightedTextPosition: 0,
+    submittedTextMinHeight: 0,
+    submittedTextMaxHeight: 0,
+  });
+
+  const textContainerRef = useRef<HTMLDivElement>(null);
+  const highlightedTextRef = useRef<HTMLSpanElement>(null);
+  const stepProgressItemRef = useRef<HTMLDivElement>(null);
 
   // 특수 문자를 이스케이프하는 함수
   const escapeRegExp = (string: string) => {
@@ -53,18 +82,20 @@ export default function useStepProgress({
         alreadyHighlighted = true;
         const highlightColor = targetColorMap[matchedKeyword] || "#fef3c7";
         return (
-          <React.Fragment key={`fragment-${index}`}>
+          <span key={`fragment-${index}`}>
             <span
               key={`progress-${index}`}
               style={{ backgroundColor: highlightColor }}
+              ref={highlightedTextRef}
             >
               {part}
             </span>
             <StepProgressItem
               key={`progress-item-${index}`}
               item={focusSpreadedStep?.[currentStep] as DiagramItem}
+              stepProgressItemRef={stepProgressItemRef}
             />
-          </React.Fragment>
+          </span>
         );
       } else {
         return <span key={`part-${index}`}>{part}</span>;
@@ -102,6 +133,46 @@ export default function useStepProgress({
     }
   }, [isPlaying]);
 
+  useLayoutEffect(() => {
+    setUIInfoByStepChange();
+  }, [highlightedTextByStep]);
+
+  const setUIInfoByStepChange = () => {
+    if (highlightedTextRef.current) {
+      console.log("useLayoutEffect ----- highlightedTextPosition");
+      const rect = highlightedTextRef.current.getBoundingClientRect();
+      setStepOffsetInfo((prevUiInfo) => ({
+        ...prevUiInfo,
+        highlightedTextPosition: rect.top,
+      }));
+    }
+    if (stepProgressItemRef.current) {
+      const rect = stepProgressItemRef.current.getBoundingClientRect();
+      setStepOffsetInfo((prevUiInfo) => ({
+        ...prevUiInfo,
+        stepProgressItemHeight: rect.height,
+      }));
+    }
+    if (textContainerRef.current) {
+      const lines = textContainerRef.current.innerText.split("\n");
+      let longestLine = "";
+      lines.forEach((line) => {
+        if (line.length > longestLine.length) {
+          longestLine = line;
+        }
+      });
+      // 가장 긴 줄의 위치 계산 (예: index 또는 특정 위치)
+      // 여기서는 단순히 첫 번째로 긴 줄의 index를 사용
+      const longestLineIndex = lines.indexOf(longestLine);
+      setStepOffsetInfo((prevUiInfo) => ({
+        ...prevUiInfo,
+        longestLinePosition: longestLineIndex,
+        submittedTextMinHeight: textContainerRef.current?.clientHeight || 0,
+        submittedTextMaxHeight: textContainerRef.current?.scrollHeight || 0,
+      }));
+    }
+  };
+
   return {
     isPlaying,
     setIsPlaying,
@@ -109,5 +180,8 @@ export default function useStepProgress({
     highlightedTextByStep,
     currentStep,
     setCurrentStep,
+    stepProgressItemHeight,
+    stepOffsetInfo,
+    textContainerRef,
   };
 }
