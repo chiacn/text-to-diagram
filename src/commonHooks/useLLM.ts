@@ -23,7 +23,7 @@ export default function useLLM({
   // Constants ------------------------------------------------------
   const inquiryTypeList = [
     { value: "tree", label: "Tree" },
-    { value: "list_compare", label: "Compare" },
+    // { value: "list_compare", label: "Compare" },
     { value: "example", label: "Example" },
     { value: "logical_progression", label: "Logical Progression" },
   ];

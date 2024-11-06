@@ -9,6 +9,7 @@ import SubmittedText from "./SubmittedText";
 import useHighlight from "./hooks/useHighlight";
 import useHandleDataStructure from "./hooks/useHandleDataStructure";
 import test from "node:test";
+import useDiagram from "./hooks/useDiagram";
 
 export default function DiagramContainer() {
   // LLM 테스트 ---------------------------------------------
@@ -39,6 +40,15 @@ export default function DiagramContainer() {
     highlightItems,
     currentHighlightStatus,
     structure,
+  });
+
+  const { renderDiagramItems } = useDiagram({
+    diagramItemsListRef,
+    currentHighlightStatus,
+    colorPalette,
+    targetColorMap,
+    handleDiagramItem,
+    highlightItems,
   });
 
   function fixJSON(jsonString: string) {
@@ -391,58 +401,6 @@ export default function DiagramContainer() {
       window.removeEventListener("resize", updateContentWidth); // 컴포넌트 언마운트 시 클린업
     };
   }, []);
-
-  const renderDiagramItems = (
-    item: DiagramItem,
-    depth = 0,
-    parentDiagramId: any = undefined,
-  ) => {
-    const isTopLevel = depth === 0;
-    const parentId = depth === 0 ? "root" : parentDiagramId;
-
-    const itemIndex = diagramItemsListRef.current.length; // 현재 아이템의 인덱스
-    // Collect diagram item information
-    diagramItemsListRef.current.push({
-      diagramId: item.diagramId,
-      parentDiagramId: parentId,
-    });
-
-    // currentHighlightStatus === 2 (SEPARATE_COLOR) 상태일 때, 순서에 맞춰 색상 할당
-    const highlightColor =
-      currentHighlightStatus === 2
-        ? colorPalette[itemIndex % colorPalette.length]
-        : "#fef3c7";
-
-    // target과 highlightColor를 매핑
-    targetColorMap.current[item.target] = highlightColor;
-
-    return (
-      <div
-        className={`flex ${depth > 0 ? "pl-5" : ""} flex-row space-x-4`}
-        key={`${depth}-${item.step}`}
-        ref={isTopLevel ? contentWrapperRef : null}
-      >
-        <DiagramItem
-          diagramId={item.diagramId}
-          step={item.step}
-          parentDiagramId={parentId}
-          depth={depth}
-          target={item.target}
-          example={item.example}
-          description={item.description}
-          result={item.result}
-          handleDiagramItem={handleDiagramItem}
-          highlightItems={highlightItems}
-          highlightColor={highlightColor}
-        >
-          {item.steps &&
-            item.steps.map((childItem: any) =>
-              renderDiagramItems(childItem, depth + 1, item.step),
-            )}
-        </DiagramItem>
-      </div>
-    );
-  };
 
   const topScrollRef = useRef<HTMLDivElement | any>(null);
   const bottomScrollRef = useRef<HTMLDivElement | any>(null);
