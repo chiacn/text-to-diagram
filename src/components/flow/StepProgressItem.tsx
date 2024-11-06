@@ -4,11 +4,13 @@ interface StepProgressItemProps {
   item: DiagramItem;
   stepProgressItemRef: MutableRefObject<HTMLDivElement | null>;
   stepOffsetInfo: { [key: string]: number };
+  highlightColor: string;
 }
 export default function StepProgressItem({
   item,
   stepProgressItemRef,
   stepOffsetInfo,
+  highlightColor,
 }: StepProgressItemProps) {
   return (
     <div
@@ -25,7 +27,11 @@ export default function StepProgressItem({
         </div>
         <div className="text-sm text-gray-600 mb-2">
           <strong>Target:</strong>
-          <span className="ml-1 block">{item.target}</span>
+          <span className="ml-1 block">
+            <span style={{ backgroundColor: highlightColor }}>
+              {item.target}
+            </span>
+          </span>
         </div>
         <div className="text-sm text-gray-600 mb-2">
           <strong>Example:</strong>

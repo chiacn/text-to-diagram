@@ -35,20 +35,6 @@ export default function useStepProgress({
   const stepProgressItemRef = useRef<HTMLDivElement>(null);
   const longestLineRef = useRef<HTMLSpanElement>(null);
 
-  /*
-    TODO: 추가로 필요한 기능
-    1. text 중 가장 긴 줄의 위치값 - StepProgressItem의 left 위치값 계산하는데 사용.
-    2. StepProgressItem의 height 값 - StepProgressItem의 top 위치값, 전체 SubmittedText의 최소 높이 최대 높이값 계산하는데 사용.
-    3. highlight된 text의 위치값 - SubmittedText의 스크롤  위치값 계산하는데 사용. (해당 부분으로 이동)
-
-    => 이 정보들을 구할 수 있는 시점. 
-      1. submittedText 들어오는 시점. 
-      2. highlightText 함수 - StepProgressItem 렌더링 시점. 
-      3. highlightText 함수 - 해당 text의 위치값 알아내기.
-
-      => 이 세 가지 정보를 uiInfo로 관리?
-  */
-
   const setHighlightText = (step: number) => {
     const matchingTextArr = [focusSpreadedStep?.[currentStep]?.target];
     const text = highlightText(
@@ -97,6 +83,7 @@ export default function useStepProgress({
                   item={focusSpreadedStep?.[currentStep] as DiagramItem}
                   stepProgressItemRef={stepProgressItemRef}
                   stepOffsetInfo={stepOffsetInfo}
+                  highlightColor={highlightColor}
                 />
               </span>
             );
