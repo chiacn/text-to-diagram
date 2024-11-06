@@ -21,6 +21,20 @@ export default function useStepProgress({
     string | (string | JSX.Element)[]
   >(submittedText);
 
+  // 추가된 상태 및 ref
+  const [stepOffsetInfo, setStepOffsetInfo] = useState({
+    longestLinePosition: 0,
+    stepProgressItemHeight: 0,
+    highlightedTextPosition: 0,
+    submittedTextMinHeight: 0,
+    submittedTextMaxHeight: 0,
+  });
+
+  const textContainerRef = useRef<HTMLDivElement>(null);
+  const highlightedTextRef = useRef<HTMLSpanElement>(null);
+  const stepProgressItemRef = useRef<HTMLDivElement>(null);
+  const longestLineRef = useRef<HTMLSpanElement>(null);
+
   /*
     TODO: 추가로 필요한 기능
     1. text 중 가장 긴 줄의 위치값 - StepProgressItem의 left 위치값 계산하는데 사용.
@@ -41,21 +55,32 @@ export default function useStepProgress({
       submittedText,
       (matchingTextArr as string[]) ?? [],
     );
-    setHighlightedTextByStep(text);
+    const wrappedText = getWrappedText(text); // 가장 긴 줄 span으로 감싸서 위치 값 얻기.
+    setHighlightedTextByStep(wrappedText);
   };
+  const getWrappedText = (text: string | (string | JSX.Element)[]) => {
+    const contentArray = Array.isArray(text) ? text : [text];
+    let longestLineLength = 0;
+    let longestLineIndex = 0;
 
-  // 추가된 상태 및 ref
-  const [stepOffsetInfo, setStepOffsetInfo] = useState({
-    longestLinePosition: 0,
-    stepProgressItemHeight: 0,
-    highlightedTextPosition: 0,
-    submittedTextMinHeight: 0,
-    submittedTextMaxHeight: 0,
-  });
+    const lines = contentArray.map((item, index) => {
+      const lineContent = typeof item === "string" ? item : ""; // Assuming JSX elements are wrappers around strings
+      if (lineContent.length > longestLineLength) {
+        longestLineLength = lineContent.length;
+        longestLineIndex = index;
+      }
+      return item;
+    });
 
-  const textContainerRef = useRef<HTMLDivElement>(null);
-  const highlightedTextRef = useRef<HTMLSpanElement>(null);
-  const stepProgressItemRef = useRef<HTMLDivElement>(null);
+    return lines.map((line, index) => {
+      const isLongestLine = index === longestLineIndex;
+      return (
+        <span key={`line-${index}`} ref={isLongestLine ? longestLineRef : null}>
+          {line}
+        </span>
+      );
+    });
+  };
 
   // 특수 문자를 이스케이프하는 함수
   const escapeRegExp = (string: string) => {
@@ -92,6 +117,7 @@ export default function useStepProgress({
               key={`progress-item-${index}`}
               item={focusSpreadedStep?.[currentStep] as DiagramItem}
               stepProgressItemRef={stepProgressItemRef}
+              stepOffsetInfo={stepOffsetInfo}
             />
           </span>
         );
@@ -151,20 +177,12 @@ export default function useStepProgress({
         stepProgressItemHeight: rect.height,
       }));
     }
-    if (textContainerRef.current) {
-      const lines = textContainerRef.current.innerText.split("\n");
-      let longestLine = "";
-      lines.forEach((line) => {
-        if (line.length > longestLine.length) {
-          longestLine = line;
-        }
-      });
-      // 가장 긴 줄의 위치 계산 (예: index 또는 특정 위치)
-      // 여기서는 단순히 첫 번째로 긴 줄의 index를 사용
-      const longestLineIndex = lines.indexOf(longestLine);
+
+    if (longestLineRef.current) {
+      const rect = longestLineRef.current.getBoundingClientRect().right;
       setStepOffsetInfo((prevUiInfo) => ({
         ...prevUiInfo,
-        longestLinePosition: longestLineIndex,
+        longestLinePosition: rect,
         submittedTextMinHeight: textContainerRef.current?.clientHeight || 0,
         submittedTextMaxHeight: textContainerRef.current?.scrollHeight || 0,
       }));
