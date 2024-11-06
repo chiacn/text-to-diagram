@@ -140,7 +140,18 @@ export default function useStepProgress({
 
   useLayoutEffect(() => {
     setUIInfoByStepChange();
+    goToHighlightedText();
   }, [highlightedTextByStep]);
+
+  const goToHighlightedText = () => {
+    if (highlightedTextRef.current) {
+      highlightedTextRef.current.scrollIntoView({
+        behavior: "smooth", // FIXME: 바깥 scroll도 움직여서 block, inline - nearest로 바꾸니까 behavior: smooth 안 먹히는 이슈.
+        block: "nearest",
+        inline: "nearest",
+      });
+    }
+  };
 
   const setUIInfoByStepChange = () => {
     if (highlightedTextRef.current) {

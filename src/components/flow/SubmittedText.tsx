@@ -132,14 +132,24 @@ export default function SubmittedText({
         {/* 제출된 텍스트 표시 영역 */}
         <div
           ref={textContainerRef}
-          className={`transition-all duration-500 transform whitespace-pre-wrap text-left p-4 overflow-scroll scrollbar-custom ${
+          className={`transition-all duration-500 transform whitespace-pre-wrap text-left p-4 relative ${
             isOpenSubmittedText
               ? "opacity-100 max-h-[400px] scale-100"
               : "opacity-0 max-h-0 scale-95"
           }`}
-          style={{ overflowX: "hidden" }}
+          style={{ overflowX: "visible" }} // 수평 방향은 overflow 해제
         >
-          {progressActive ? highlightedTextByStep : displayText}
+          <div
+            className="inner-container overflow-y-scroll scrollbar-custom"
+            style={{
+              maxHeight: "380px", // 수직 스크롤 한도 설정
+              overflowX: "hidden", // 수평 스크롤은 숨김
+            }}
+          >
+            {progressActive ? highlightedTextByStep : displayText}
+          </div>
+
+          {/* StepProgressContainer는 스크롤 영역 외부에 시각적으로 표시 */}
           <StepProgressContainer
             progressActive={progressActive}
             focusSpreadedStep={focusSpreadedStep}

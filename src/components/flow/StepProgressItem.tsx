@@ -3,13 +3,22 @@ import { MutableRefObject, useEffect, useRef } from "react";
 interface StepProgressItemProps {
   item: DiagramItem;
   stepProgressItemRef: MutableRefObject<HTMLDivElement | null>;
+  stepOffsetInfo: { [key: string]: number };
 }
 export default function StepProgressItem({
   item,
   stepProgressItemRef,
+  stepOffsetInfo,
 }: StepProgressItemProps) {
   return (
-    <div className="absolute right-8" ref={stepProgressItemRef}>
+    <div
+      className="absolute"
+      ref={stepProgressItemRef}
+      style={{
+        left: stepOffsetInfo.longestLinePosition,
+        top: 80,
+      }}
+    >
       <div className="w-[520px] rounded-xl shadow-lg border border-gray-200 p-4 my-4 transition-transform transform hover:scale-105 hover:shadow-xl cursor-pointer bg-white">
         <div className="text-xl font-bold text-gray-900 mb-2">
           Step {item.step}
