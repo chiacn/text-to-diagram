@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { use, useEffect, useLayoutEffect, useRef, useState } from "react";
 import StepProgressItem from "../StepProgressItem";
 import React from "react";
 
@@ -49,37 +49,13 @@ export default function useStepProgress({
       => 이 세 가지 정보를 uiInfo로 관리?
   */
 
-  const setHighlightTextByStep = (step: number) => {
+  const setHighlightText = (step: number) => {
     const matchingTextArr = [focusSpreadedStep?.[currentStep]?.target];
     const text = highlightText(
       submittedText,
       (matchingTextArr as string[]) ?? [],
     );
-    const wrappedText = getWrappedText(text); // 가장 긴 줄 span으로 감싸서 위치 값 얻기.
-    setHighlightedTextByStep(wrappedText);
-  };
-  const getWrappedText = (text: string | (string | JSX.Element)[]) => {
-    const contentArray = Array.isArray(text) ? text : [text];
-    let longestLineLength = 0;
-    let longestLineIndex = 0;
-
-    const lines = contentArray.map((item, index) => {
-      const lineContent = typeof item === "string" ? item : ""; // Assuming JSX elements are wrappers around strings
-      if (lineContent.length > longestLineLength) {
-        longestLineLength = lineContent.length;
-        longestLineIndex = index;
-      }
-      return item;
-    });
-
-    return lines.map((line, index) => {
-      const isLongestLine = index === longestLineIndex;
-      return (
-        <span key={`line-${index}`} ref={isLongestLine ? longestLineRef : null}>
-          {line}
-        </span>
-      );
-    });
+    setHighlightedTextByStep(text as any);
   };
 
   // 특수 문자를 이스케이프하는 함수
@@ -97,34 +73,39 @@ export default function useStepProgress({
     let alreadyHighlighted = false; // Note: 첫 번째 일치 키워드만 highlight 처리
 
     const parts = text.split(regex);
-    return parts.map((part, index) => {
-      const matchedKeyword = keywords.find(
-        (keyword) => part?.toLowerCase() === keyword?.toLowerCase(),
-      );
-      if (matchedKeyword && !alreadyHighlighted) {
-        alreadyHighlighted = true;
-        const highlightColor = targetColorMap[matchedKeyword] || "#fef3c7";
-        return (
-          <span key={`fragment-${index}`}>
-            <span
-              key={`progress-${index}`}
-              style={{ backgroundColor: highlightColor }}
-              ref={highlightedTextRef}
-            >
-              {part}
-            </span>
-            <StepProgressItem
-              key={`progress-item-${index}`}
-              item={focusSpreadedStep?.[currentStep] as DiagramItem}
-              stepProgressItemRef={stepProgressItemRef}
-              stepOffsetInfo={stepOffsetInfo}
-            />
-          </span>
-        );
-      } else {
-        return <span key={`part-${index}`}>{part}</span>;
-      }
-    });
+    return (
+      // Note: 전체 parts를 span으로 감싸면 어차피 가장 긴 line을 찾을 수 있음.
+      <span ref={longestLineRef}>
+        {parts.map((part, index) => {
+          const matchedKeyword = keywords.find(
+            (keyword) => part?.toLowerCase() === keyword?.toLowerCase(),
+          );
+          if (matchedKeyword && !alreadyHighlighted) {
+            alreadyHighlighted = true;
+            const highlightColor = targetColorMap[matchedKeyword] || "#fef3c7";
+            return (
+              <span key={`fragment-${index}`}>
+                <span
+                  key={`progress-${index}`}
+                  style={{ backgroundColor: highlightColor }}
+                  ref={highlightedTextRef}
+                >
+                  {part}
+                </span>
+                <StepProgressItem
+                  key={`progress-item-${index}`}
+                  item={focusSpreadedStep?.[currentStep] as DiagramItem}
+                  stepProgressItemRef={stepProgressItemRef}
+                  stepOffsetInfo={stepOffsetInfo}
+                />
+              </span>
+            );
+          } else {
+            return <span key={`part-${index}`}>{part}</span>;
+          }
+        })}
+      </span>
+    );
   };
 
   const resetProgress = () => {
@@ -140,7 +121,7 @@ export default function useStepProgress({
   }, [currentHighlightStatus, focusSpreadedStep]);
 
   useEffect(() => {
-    progressActive && setHighlightTextByStep(currentStep);
+    progressActive && setHighlightText(currentStep);
   }, [progressActive, currentStep]); // currentHighlightStatus 변경 -> focusSpreadedStep 변경 -> highlightText 적용
 
   useEffect(() => {
@@ -182,7 +163,7 @@ export default function useStepProgress({
       const rect = longestLineRef.current.getBoundingClientRect().right;
       setStepOffsetInfo((prevUiInfo) => ({
         ...prevUiInfo,
-        longestLinePosition: rect,
+        longestLinePosition: Math.floor(rect),
         submittedTextMinHeight: textContainerRef.current?.clientHeight || 0,
         submittedTextMaxHeight: textContainerRef.current?.scrollHeight || 0,
       }));
