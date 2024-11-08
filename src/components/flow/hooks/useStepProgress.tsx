@@ -20,6 +20,7 @@ export default function useStepProgress({
   const [highlightedTextByStep, setHighlightedTextByStep] = useState<
     string | (string | JSX.Element)[]
   >(submittedText);
+  const [isSmaller, setIsSmaller] = useState<boolean>(false);
 
   // 추가된 상태 및 ref
   const [stepOffsetInfo, setStepOffsetInfo] = useState({
@@ -28,6 +29,7 @@ export default function useStepProgress({
     highlightedTextPosition: 0,
     submittedTextMinHeight: 0,
     submittedTextMaxHeight: 0,
+    submittedTextRightPosition: 0,
   });
 
   const textContainerRef = useRef<HTMLDivElement>(null);
@@ -99,6 +101,14 @@ export default function useStepProgress({
     setIsPlaying(false);
     setProgressActive(false);
     setCurrentStep(0);
+    setStepOffsetInfo({
+      longestLinePosition: 0,
+      stepProgressItemHeight: 0,
+      highlightedTextPosition: 0,
+      submittedTextMinHeight: 0,
+      submittedTextMaxHeight: 0,
+      submittedTextRightPosition: 0,
+    });
   };
 
   useEffect(() => {
@@ -125,6 +135,12 @@ export default function useStepProgress({
     }
   }, [isPlaying]);
 
+  /*
+    ? 왜 useLayoutEffect가 유리한가.
+    우선 useLayoutEffect는 useLayoutEffect가 재렌더링을 트리거하는 시점, 그 직후에 DOM 업데이트 직후, paint, layout 단계 이전에 
+    해당 로직이 동기적으로 실행되므로 정확한 DOM 값을 얻는데 유리, 깜빡임 현상 줄일 수 있음.
+    (다만 성능상으론 useLayoutEffect가 더 무거움)
+  */
   useLayoutEffect(() => {
     setUIInfoByStepChange();
     goToHighlightedText();
@@ -140,9 +156,19 @@ export default function useStepProgress({
     }
   };
 
+  // SubmittedText의 오른쪽 경계와, longestLinePosition (가장 긴 줄)의 차이를 통해 isSmaller를 결정
+  const checkIsSmaller = (
+    submittedTextRightPosition: number,
+    longestLinePosition: number,
+  ) => {
+    // * prev 값 - 이미 변경되었으면 다시 안 바뀌게. (최초에만 변경)
+    // * 여러번 바뀔 수 있게되면, isSmaller에 의해 바뀐 SubmittedText의 width에 의해 isSmaller가 자기 자신의 변동사항에 의해 계속 변경되게 됨.
+    const isSmaller = submittedTextRightPosition - longestLinePosition < 400;
+    setIsSmaller((prev) => (!prev ? isSmaller : prev));
+  };
+
   const setUIInfoByStepChange = () => {
     if (highlightedTextRef.current) {
-      console.log("useLayoutEffect ----- highlightedTextPosition");
       const rect = highlightedTextRef.current.getBoundingClientRect();
       setStepOffsetInfo((prevUiInfo) => ({
         ...prevUiInfo,
@@ -158,12 +184,26 @@ export default function useStepProgress({
     }
 
     if (longestLineRef.current) {
-      const rect = longestLineRef.current.getBoundingClientRect().right;
+      const submittedTextRightPosition = Math.floor(
+        textContainerRef.current?.getBoundingClientRect().right || 0,
+      );
+
+      const submittedTextLeftPosition = Math.floor(
+        textContainerRef.current?.getBoundingClientRect().left || 0,
+      );
+
+      const longestLineRightPosition = Number(
+        longestLineRef.current.offsetWidth,
+      );
+
+      checkIsSmaller(submittedTextRightPosition, longestLineRightPosition);
       setStepOffsetInfo((prevUiInfo) => ({
         ...prevUiInfo,
-        longestLinePosition: Math.floor(rect),
+        // Note: longestLineRightPosition 값은 초기에 한 번만 이루어지게 함.
+        longestLinePosition: longestLineRightPosition,
         submittedTextMinHeight: textContainerRef.current?.clientHeight || 0,
         submittedTextMaxHeight: textContainerRef.current?.scrollHeight || 0,
+        submittedTextRightPosition: submittedTextRightPosition,
       }));
     }
   };
@@ -177,5 +217,6 @@ export default function useStepProgress({
     setCurrentStep,
     stepOffsetInfo,
     textContainerRef,
+    isSmaller,
   };
 }

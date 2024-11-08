@@ -34,6 +34,7 @@ export default function SubmittedText({
     setCurrentStep,
     stepOffsetInfo,
     textContainerRef,
+    isSmaller,
   } = useStepProgress({
     currentHighlightStatus,
     submittedText,
@@ -142,8 +143,11 @@ export default function SubmittedText({
           <div
             className="inner-container overflow-y-scroll scrollbar-custom"
             style={{
-              maxHeight: "380px", // 수직 스크롤 한도 설정
+              maxHeight: progressActive && isSmaller ? "330px" : "380px", // 수직 스크롤 한도 설정
               overflowX: "hidden", // 수평 스크롤은 숨김
+              width:
+                progressActive && isSmaller ? "calc(100% - 300px)" : "100%",
+              marginTop: progressActive && isSmaller ? "40px" : "",
             }}
           >
             {progressActive ? highlightedTextByStep : displayText}

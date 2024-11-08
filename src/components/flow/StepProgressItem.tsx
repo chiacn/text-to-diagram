@@ -17,7 +17,7 @@ export default function StepProgressItem({
       className="absolute"
       ref={stepProgressItemRef}
       style={{
-        left: stepOffsetInfo.longestLinePosition,
+        left: stepOffsetInfo.longestLinePosition + 40,
         top: 80,
       }}
     >
