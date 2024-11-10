@@ -40,6 +40,7 @@ export default function DiagramContainer() {
     highlightItems,
     currentHighlightStatus,
     structure,
+    inquiryType,
   });
 
   const { renderDiagramItems } = useDiagram({

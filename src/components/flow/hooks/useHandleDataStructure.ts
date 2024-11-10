@@ -4,11 +4,13 @@ interface HandleDataStructureProps {
   highlightItems: Array<string | number>;
   currentHighlightStatus: number;
   structure: any;
+  inquiryType: string | null;
 }
 export default function useHandleDataStructure({
   highlightItems,
   currentHighlightStatus,
   structure,
+  inquiryType,
 }: HandleDataStructureProps) {
   const [entireSpreadedStep, setEntireSpreadedStep] = useState<DiagramItem[]>(
     [],
@@ -49,6 +51,11 @@ export default function useHandleDataStructure({
 
     if (structure) {
       const steps = dfsStructure(structure); // * 여기서 diagramId 할당
+      console.log("steps --- ", steps);
+      if (inquiryType === "logical_progression") {
+        // Note: example의 경우 최상위 노드도 포함시켜야하지만 logicalDiagram의 경우 최상위 노드는 제외
+        steps.shift();
+      }
       setEntireSpreadedStep([...steps]);
       setFocusSpreadedStep([...steps]); // 초기에는 전체 스텝을 설정
     }
