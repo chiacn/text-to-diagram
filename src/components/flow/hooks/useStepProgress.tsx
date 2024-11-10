@@ -7,12 +7,14 @@ interface StepProgressProps {
   submittedText: string;
   focusSpreadedStep?: DiagramItem[];
   targetColorMap: { [key: string]: string };
+  inquiryType: string | null;
 }
 export default function useStepProgress({
   currentHighlightStatus,
   submittedText,
   focusSpreadedStep,
   targetColorMap,
+  inquiryType,
 }: StepProgressProps) {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [progressActive, setProgressActive] = useState<boolean>(false);
@@ -86,6 +88,7 @@ export default function useStepProgress({
                   stepProgressItemRef={stepProgressItemRef}
                   stepOffsetInfo={stepOffsetInfo}
                   highlightColor={highlightColor}
+                  inquiryType={inquiryType}
                 />
               </span>
             );

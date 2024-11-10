@@ -166,6 +166,7 @@ export default function DiagramContainer() {
           entireSpreadedStep={entireSpreadedStep}
           focusSpreadedStep={focusSpreadedStep}
           targetColorMap={targetColorMap.current}
+          inquiryType={inquiryType}
         />
 
         {/* 상단 스크롤 ---------------------------------------------------- */}

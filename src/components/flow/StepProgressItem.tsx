@@ -1,17 +1,29 @@
-import { MutableRefObject, useEffect, useRef } from "react";
+import { MutableRefObject } from "react";
 
 interface StepProgressItemProps {
-  item: DiagramItem;
+  item: Record<string, any>; // 모든 속성을 동적으로 처리하기 위해 타입을 넓게 설정
   stepProgressItemRef: MutableRefObject<HTMLDivElement | null>;
   stepOffsetInfo: { [key: string]: number };
   highlightColor: string;
+  inquiryType: string | null;
 }
+
 export default function StepProgressItem({
   item,
   stepProgressItemRef,
   stepOffsetInfo,
   highlightColor,
+  inquiryType,
 }: StepProgressItemProps) {
+  const displayKeys: Record<
+    "example" | "logical_progression" | "tree" | string,
+    string[]
+  > = {
+    example: ["target", "example", "description", "result"],
+    logical_progression: ["target", "statement", "description", "implications"],
+    tree: ["target"], //TODO: 추후 추가
+  };
+  console.log("sfadfsadfd", Object.entries(item));
   return (
     <div
       className="absolute"
@@ -25,26 +37,31 @@ export default function StepProgressItem({
         <div className="text-xl font-bold text-gray-900 mb-2">
           Step {item.step}
         </div>
-        <div className="text-sm text-gray-600 mb-2">
-          <strong>Target:</strong>
-          <span className="ml-1 block">
-            <span style={{ backgroundColor: highlightColor }}>
-              {item.target}
-            </span>
-          </span>
-        </div>
-        <div className="text-sm text-gray-600 mb-2">
-          <strong>Example:</strong>
-          <span className="ml-1 block">{item.example}</span>
-        </div>
-        <div className="text-sm text-gray-600 mb-2">
-          <strong>Description:</strong>
-          <span className="ml-1 block">{item.description}</span>
-        </div>
-        <div className="text-sm text-gray-600">
-          <strong>Result:</strong>
-          <span className="ml-1 block">{JSON.stringify(item.result)}</span>
-        </div>
+        {Object.entries(item)
+          .filter(([key, value]) => {
+            console.log("key --- ", key);
+            const keys = displayKeys[inquiryType ?? "example"];
+            console.log("keys -------", keys);
+            return Array.isArray(keys) && keys.includes(key.toLowerCase());
+          })
+          .map(([key, value]) => {
+            if (key === "step") return null; // 이미 step은 위에서 렌더링되었으므로 제외
+
+            return (
+              <div key={key} className="text-sm text-gray-600 mb-2">
+                <strong>{key.charAt(0).toUpperCase() + key.slice(1)}:</strong>
+                <span className="ml-1 block">
+                  {key === "target" ? (
+                    <span style={{ backgroundColor: highlightColor }}>
+                      {value}
+                    </span>
+                  ) : (
+                    JSON.stringify(value)
+                  )}
+                </span>
+              </div>
+            );
+          })}
       </div>
     </div>
   );

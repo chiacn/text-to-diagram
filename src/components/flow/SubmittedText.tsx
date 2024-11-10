@@ -11,6 +11,7 @@ interface SubmittedTextProps {
   focusSpreadedStep?: DiagramItem[];
   currentHighlightStatus: number;
   targetColorMap: { [key: string]: string };
+  inquiryType: string | null;
 }
 
 export default function SubmittedText({
@@ -21,6 +22,7 @@ export default function SubmittedText({
   focusSpreadedStep,
   currentHighlightStatus,
   targetColorMap,
+  inquiryType,
 }: SubmittedTextProps) {
   const [displayText, setDisplayText] = useState<
     string | (string | JSX.Element)[]
@@ -40,6 +42,7 @@ export default function SubmittedText({
     submittedText,
     focusSpreadedStep,
     targetColorMap,
+    inquiryType,
   });
 
   useEffect(() => {
