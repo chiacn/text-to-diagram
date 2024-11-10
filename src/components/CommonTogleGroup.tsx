@@ -4,7 +4,7 @@ import type { Dispatch, SetStateAction } from "react";
 interface ToggleGroupsProps {
   items: ToggleItem[];
   selectedValue: string | null;
-  setSelectedToggle:
+  changeInquiryType:
     | ((value: string) => void)
     | Dispatch<SetStateAction<string | null>>;
   gap?: number;
@@ -16,13 +16,13 @@ type ToggleItem = {
 export default function CommonToggleGroups({
   items,
   selectedValue,
-  setSelectedToggle,
+  changeInquiryType,
   gap,
 }: ToggleGroupsProps) {
   return (
     <ToggleGroup
       type="single"
-      onValueChange={(value: string) => setSelectedToggle(value)}
+      onValueChange={(value: string) => changeInquiryType(value)}
       className="flex"
       style={{ gap: `${gap ? gap : 12}px` }}
     >
