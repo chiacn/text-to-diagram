@@ -97,7 +97,11 @@ const rule_guide_displayType_list_compare = `
 // `;
 
 const rule_guide_displayType_logical_progression = `
-
+  a. Identify the main logical flow or sequence of arguments presented in the INPUT TEXT.
+  b. Break down the content into a series of logical steps or stages that build upon each other.
+  c. Ensure each step logically follows from the previous one, creating a coherent progression toward a conclusion.
+  d. Highlight any assumptions, inferences, or implications made between steps.
+  e. Include all critical points from the INPUT TEXT, maintaining the integrity of the original logical argument.
 `;
 
 // User Content Rule Format ====================================================
@@ -254,12 +258,36 @@ const userContent_rule_format_example = `
 `;
 
 const userContent_rule_format_logical_progression = `
-  2. Based on divided elements, generate a JSON structure that represents relationship of elements. Each element in the JSON should follow this format:
+  Complete a [logical progression] following the guide below:
+  {
+    "title": <Provide a concise title summarizing the logical progression>,
+    "steps": [
+      {
+        "step": <Step number>,
+        "target": <Identify the matching element that corresponds to the INPUT TEXT within the logical context>,
+        "statement": <State the logical statement or argument at this step>,
+        "description": <Explain how this step follows from the previous step and contributes to the overall progression>,
+        "implications": <Describe any implications or consequences of this step>
+        "steps": [ // Optional, for nested logical progressions within this step
+          {
+            "step": <Sub-step number>,
+            "statement": <State the logical statement or argument at this sub-step>,
+            "description": <Explain how this sub-step relates to its parent step>,
+            "implications": <Describe any implications or consequences of this sub-step>
+          }
+        ]
+      }
+    ],
+    "conclusion": <Summarize the final conclusion or outcome of the logical progression>
+  }
 `;
 
 // ===========================================================================
 
 let userContent_rule_response = `
+  RESPONSE RULE:
+  - You must respond strictly in only JSON format.
+
   [INPUT TEXT]:
 `;
 
