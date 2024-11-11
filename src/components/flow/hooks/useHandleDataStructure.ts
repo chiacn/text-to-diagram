@@ -51,7 +51,6 @@ export default function useHandleDataStructure({
 
     if (structure) {
       const steps = dfsStructure(structure); // * 여기서 diagramId 할당
-      console.log("steps --- ", steps);
       if (inquiryType === "logical_progression") {
         // Note: example의 경우 최상위 노드도 포함시켜야하지만 logicalDiagram의 경우 최상위 노드는 제외
         steps.shift();

@@ -23,7 +23,7 @@ export default function StepProgressItem({
     logical_progression: ["target", "statement", "description", "implications"],
     tree: ["target"], //TODO: 추후 추가
   };
-  console.log("sfadfsadfd", Object.entries(item));
+
   return (
     <div
       className="absolute"
@@ -39,9 +39,7 @@ export default function StepProgressItem({
         </div>
         {Object.entries(item)
           .filter(([key, value]) => {
-            console.log("key --- ", key);
             const keys = displayKeys[inquiryType ?? "example"];
-            console.log("keys -------", keys);
             return Array.isArray(keys) && keys.includes(key.toLowerCase());
           })
           .map(([key, value]) => {
