@@ -120,9 +120,10 @@ export default function useStepProgress({
     }
   }, [currentHighlightStatus, focusSpreadedStep]);
 
+  // Note: longestLinePosition 할당 시 StepProgressItem가 그 값을 반영할 수 있도록 의존성 배열에 stepOffsetInfo.longestLinePosition 추가
   useEffect(() => {
     progressActive && setHighlightText(currentStep);
-  }, [progressActive, currentStep]); // currentHighlightStatus 변경 -> focusSpreadedStep 변경 -> highlightText 적용
+  }, [progressActive, currentStep, stepOffsetInfo.longestLinePosition]); // currentHighlightStatus 변경 -> focusSpreadedStep 변경 -> highlightText 적용
 
   useEffect(() => {
     switch (currentHighlightStatus) {
