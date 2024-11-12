@@ -1,6 +1,8 @@
 import { MutableRefObject, useEffect, useRef } from "react";
 import DiagramItem from "../DiagramItem";
 import DiagramProgressionItem from "../DiagramProgressionItem";
+import TreeDiagramItem from "../DiagramTreeItem";
+import DiagramTreeItem from "../DiagramTreeItem";
 
 interface ExampleDiagramItemType {
   diagramId: string;
@@ -27,6 +29,15 @@ interface LogicalProgressionStructureType {
   steps: LogicalStepType[];
   conclusion: string;
   diagramId: string;
+}
+
+// 트리 구조를 위한 인터페이스 정의
+interface TreeDiagramItemType {
+  element_name: string;
+  relationTypeWithParent?: string;
+  relationship?: any[];
+  description: string;
+  related_elements?: TreeDiagramItemType[];
 }
 
 interface UseDiagramProps {
@@ -67,7 +78,7 @@ export default function useDiagram({
   const renderDiagramItems = (structure: any) => {
     switch (inquiryType) {
       case "tree":
-        return null; // tree 구조 렌더링 추가 가능
+        return renderTreeDiagramItems(structure);
       case "example":
         return renderExampleDiagramItems(structure);
       case "logical_progression":
@@ -189,6 +200,70 @@ export default function useDiagram({
             </h3>
             <p className="text-gray-700">{item.conclusion}</p>
           </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderTreeDiagramItems = (structure: any): JSX.Element | null => {
+    // 트리 구조의 최상위 콘텐츠가 배열인지 확인
+    if (!structure.content || !Array.isArray(structure.content)) return null;
+
+    // 고유한 diagramId 생성을 위한 카운터
+    let idCounter = 0;
+
+    // 재귀적으로 트리 노드를 렌더링하는 함수
+    const renderTreeNode = (
+      node: TreeDiagramItemType,
+      depth: number,
+      parentDiagramId?: string | number,
+    ): JSX.Element => {
+      const diagramId = `tree-${idCounter++}`;
+      const isTopLevel = depth === 0;
+
+      // diagramItemsListRef에 현재 노드 추가
+      diagramItemsListRef.current.push({
+        diagramId,
+        parentDiagramId: parentDiagramId || "root",
+      });
+
+      // 하이라이트 색상 설정
+      const highlightColor = getHighlightColor(
+        diagramItemsListRef.current.length - 1,
+      );
+      targetColorMap.current[node.element_name] = highlightColor;
+
+      return (
+        <div
+          className={`flex ${depth > 0 ? "pl-5" : ""} flex-row space-x-4`}
+          key={diagramId}
+          ref={isTopLevel ? contentWrapperRef : null}
+        >
+          <DiagramTreeItem
+            diagramId={diagramId}
+            elementName={node.element_name}
+            relationTypeWithParent={node.relationTypeWithParent}
+            description={node.description}
+            relationship={node.relationship}
+            depth={depth}
+            parentDiagramId={parentDiagramId}
+            handleDiagramItem={handleDiagramItem}
+            highlightItems={highlightItems}
+            highlightColor={highlightColor}
+          >
+            {node.related_elements &&
+              node.related_elements.map((childNode) =>
+                renderTreeNode(childNode, depth + 1, diagramId),
+              )}
+          </DiagramTreeItem>
+        </div>
+      );
+    };
+
+    return (
+      <div className="tree-diagram-container">
+        {structure.content.map((node: TreeDiagramItemType) =>
+          renderTreeNode(node, 0, "root"),
         )}
       </div>
     );
