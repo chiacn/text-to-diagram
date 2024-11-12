@@ -22,7 +22,7 @@ export default function StepProgressController({
   };
 
   return (
-    <div className="sticky top-4 text-right">
+    <div className="sticky top-4 text-right pointer-events-auto">
       <div className="flex justify-end items-center space-x-1.5">
         <button
           onClick={handlePrev}
