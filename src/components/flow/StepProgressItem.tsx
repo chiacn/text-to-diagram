@@ -24,6 +24,23 @@ export default function StepProgressItem({
     tree: ["target"], //TODO: 추후 추가
   };
 
+  function customJSONStringify(value: string) {
+    return JSON.stringify(
+      value,
+      (key, val) => {
+        if (Array.isArray(val)) {
+          return JSON.stringify(val)
+            .replace(/^\[|\]$/g, "")
+            .replace(/,/g, ", ");
+        }
+        return val;
+      },
+      2,
+    )
+      .replace(/"(\[.*?\])"/g, "$1")
+      .replace(/},/g, "},\n");
+  }
+
   return (
     <div
       className="absolute"
@@ -48,11 +65,13 @@ export default function StepProgressItem({
             return (
               <div key={key} className="text-sm text-gray-600 mb-2">
                 <strong>{key.charAt(0).toUpperCase() + key.slice(1)}:</strong>
-                <span className="ml-1 block">
+                <span className="ml-1 block max-h-[200px] overflow-y-scroll scrollbar-custom">
                   {key === "target" ? (
                     <span style={{ backgroundColor: highlightColor }}>
                       {value}
                     </span>
+                  ) : key === "result" ? (
+                    customJSONStringify(value)
                   ) : (
                     JSON.stringify(value)
                   )}
