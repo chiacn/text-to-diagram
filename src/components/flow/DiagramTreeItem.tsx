@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { BiRectangle } from "react-icons/bi";
+import { GoDash } from "react-icons/go";
 
 interface DiagramTreeItemProps {
   diagramId: string | number;
@@ -35,6 +37,7 @@ const DiagramTreeItem: React.FC<DiagramTreeItemProps> = ({
   children,
 }) => {
   const [isHighlighted, setIsHighlighted] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false); // 펼쳐짐 상태 관리
 
   const clickDiagramItem = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
@@ -49,30 +52,55 @@ const DiagramTreeItem: React.FC<DiagramTreeItemProps> = ({
     changeDiagramColor();
   }, [highlightItems]);
 
+  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setIsExpanded((prev) => !prev); // 펼쳐짐 상태 토글
+  };
+
   return (
     <div
-      className={`rounded-xl border-[1px] p-4 my-2 transition-all duration-300 transform cursor-pointer
-                 ml-${depth * 5} bg-white`}
+      className={`relative rounded-xl border-[1px] p-4 my-2 transition-all duration-300 transform cursor-pointer max-w-[400px] min-w-[180px]
+                 ml-${depth * 5} bg-white ${
+        !isExpanded ? "max-w-min max-h-min" : ""
+      }`}
       style={{ backgroundColor: isHighlighted ? highlightColor : "white" }}
       onClick={clickDiagramItem}
     >
-      <div className="text-lg font-semibold text-gray-800 mb-2">
+      {/* 우측 상단 버튼 */}
+      <button
+        onClick={handleButtonClick}
+        className="absolute top-2 right-2 hover:bg-gray-200 rounded p-1 flex items-center justify-center"
+        style={{ width: "20px", height: "20px" }}
+      >
+        {isExpanded ? <GoDash /> : <BiRectangle />}
+      </button>
+
+      {/* elementName 항상 표시 */}
+      <div className="text-lg font-semibold text-gray-800 mb-2 mt-2 ml-4 mr-6">
         {elementName}
       </div>
-      {relationTypeWithParent && (
+
+      {/* 슬라이드 다운 효과 */}
+      <div
+        className={`transition-all duration-300 overflow-hidden ${
+          isExpanded ? "max-h-min opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        {relationTypeWithParent && (
+          <div className="text-gray-700">
+            <strong>Relationship with Parent:</strong> {relationTypeWithParent}
+          </div>
+        )}
         <div className="text-gray-700">
-          <strong>Relation:</strong> {relationTypeWithParent}
+          <strong>Description:</strong> {description}
         </div>
-      )}
-      <div className="text-gray-700">
-        <strong>Description:</strong> {description}
+        {relationship && relationship.length > 0 && (
+          <div className="text-gray-700">
+            <strong>Relationships:</strong> {JSON.stringify(relationship)}
+          </div>
+        )}
+        <div className="mt-3">{children}</div>
       </div>
-      {relationship && relationship.length > 0 && (
-        <div className="text-gray-700">
-          <strong>Relationships:</strong> {JSON.stringify(relationship)}
-        </div>
-      )}
-      <div className="mt-3">{children}</div>
     </div>
   );
 };

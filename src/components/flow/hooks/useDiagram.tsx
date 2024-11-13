@@ -261,7 +261,7 @@ export default function useDiagram({
     };
 
     return (
-      <div className="tree-diagram-container">
+      <div className="flex flex-row flex-wrap gap-4">
         {structure.content.map((node: TreeDiagramItemType) =>
           renderTreeNode(node, 0, "root"),
         )}
