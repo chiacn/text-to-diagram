@@ -39,8 +39,27 @@ export default function useStepProgress({
   const stepProgressItemRef = useRef<HTMLDivElement>(null);
   const longestLineRef = useRef<HTMLSpanElement>(null);
 
-  const setHighlightText = (step: number) => {
+  const setHighlightText = () => {
+    if (inquiryType === "tree") {
+      setHighlightWithTree();
+      return;
+    }
+
     const matchingTextArr = [focusSpreadedStep?.[currentStep]?.target];
+    const text = highlightText(
+      submittedText,
+      (matchingTextArr as string[]) ?? [],
+    );
+    setHighlightedTextByStep(text as any);
+  };
+
+  const setHighlightWithTree = () => {
+    if (focusSpreadedStep?.length === 0) return;
+
+    const matchingTextArr = focusSpreadedStep?.map(
+      (step: any) => step.element_name,
+    );
+
     const text = highlightText(
       submittedText,
       (matchingTextArr as string[]) ?? [],
@@ -71,7 +90,7 @@ export default function useStepProgress({
             (keyword) => part?.toLowerCase() === keyword?.toLowerCase(),
           );
           if (matchedKeyword && !alreadyHighlighted) {
-            alreadyHighlighted = true;
+            if (inquiryType !== "tree") alreadyHighlighted = true; // Note: tree일 경우 모든 요소 highlight
             const highlightColor = targetColorMap[matchedKeyword] || "#fef3c7";
             return (
               <span key={`fragment-${index}`}>
@@ -82,14 +101,16 @@ export default function useStepProgress({
                 >
                   {part}
                 </span>
-                <StepProgressItem
-                  key={`progress-item-${index}`}
-                  item={focusSpreadedStep?.[currentStep] as DiagramItem}
-                  stepProgressItemRef={stepProgressItemRef}
-                  stepOffsetInfo={stepOffsetInfo}
-                  highlightColor={highlightColor}
-                  inquiryType={inquiryType}
-                />
+                {inquiryType !== "tree" && (
+                  <StepProgressItem
+                    key={`progress-item-${index}`}
+                    item={focusSpreadedStep?.[currentStep] as DiagramItem}
+                    stepProgressItemRef={stepProgressItemRef}
+                    stepOffsetInfo={stepOffsetInfo}
+                    highlightColor={highlightColor}
+                    inquiryType={inquiryType}
+                  />
+                )}
               </span>
             );
           } else {
@@ -115,14 +136,18 @@ export default function useStepProgress({
   };
 
   useEffect(() => {
-    if (currentHighlightStatus === 0 || currentHighlightStatus === 1) {
+    // Note: tree일 경우 node 요소 클릭 시 highlight 되도록
+    if (currentHighlightStatus !== 0 && inquiryType === "tree") {
+      setProgressActive(true);
+      setHighlightText();
+    } else if (currentHighlightStatus === 0 || currentHighlightStatus === 1) {
       resetProgress();
     }
   }, [currentHighlightStatus, focusSpreadedStep]);
 
   // Note: longestLinePosition 할당 시 StepProgressItem가 그 값을 반영할 수 있도록 의존성 배열에 stepOffsetInfo.longestLinePosition 추가
   useEffect(() => {
-    progressActive && setHighlightText(currentStep);
+    progressActive && setHighlightText();
   }, [progressActive, currentStep, stepOffsetInfo.longestLinePosition]); // currentHighlightStatus 변경 -> focusSpreadedStep 변경 -> highlightText 적용
 
   useEffect(() => {
@@ -146,6 +171,7 @@ export default function useStepProgress({
     (다만 성능상으론 useLayoutEffect가 더 무거움)
   */
   useLayoutEffect(() => {
+    if (inquiryType === "tree") return;
     setUIInfoByStepChange();
     goToHighlightedText();
   }, [highlightedTextByStep]);
@@ -167,7 +193,10 @@ export default function useStepProgress({
   ) => {
     // * prev 값 - 이미 변경되었으면 다시 안 바뀌게. (최초에만 변경)
     // * 여러번 바뀔 수 있게되면, isSmaller에 의해 바뀐 SubmittedText의 width에 의해 isSmaller가 자기 자신의 변동사항에 의해 계속 변경되게 됨.
-    const isSmaller = submittedTextRightPosition - longestLinePosition < 400;
+    const isSmaller =
+      inquiryType === "tree"
+        ? false
+        : submittedTextRightPosition - longestLinePosition < 400;
     setIsSmaller((prev) => (!prev ? isSmaller : prev));
   };
 

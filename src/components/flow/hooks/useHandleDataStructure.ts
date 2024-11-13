@@ -22,7 +22,12 @@ export default function useHandleDataStructure({
 
     steps.push(node);
 
-    if (node.steps && node.steps.length > 0) {
+    // Note: tree일 경우 step이 아니라 content로 구성
+    if (inquiryType === "tree" && node.content && node.content.length > 0) {
+      node.content.forEach((child: any) => {
+        dfsStructure(child, steps);
+      });
+    } else if (node.steps && node.steps.length > 0) {
       node.steps.forEach((child: any) => {
         dfsStructure(child, steps);
       });
@@ -33,6 +38,23 @@ export default function useHandleDataStructure({
 
   const assignDiagramIds = (node: any, depth = 0) => {
     // diagramId를 depth와 step으로 구성하여 고유 ID로 설정
+
+    if (inquiryType === "tree") {
+      const diagramId = `${depth}-${node.content ? "root" : node.element_name}`;
+
+      node.diagramId = diagramId;
+      if (node.content && node.content.length > 0) {
+        node.content.forEach((child: any) => {
+          assignDiagramIds(child, depth + 1);
+        });
+      } else if (node.related_elements && node.related_elements.length > 0) {
+        node.related_elements.forEach((child: any) => {
+          assignDiagramIds(child, depth + 1);
+        });
+      }
+      return node;
+    }
+
     const diagramId = `${depth}-${node.step || "root"}`;
     node.diagramId = diagramId;
 
@@ -51,8 +73,8 @@ export default function useHandleDataStructure({
 
     if (structure) {
       const steps = dfsStructure(structure); // * 여기서 diagramId 할당
-      if (inquiryType === "logical_progression") {
-        // Note: example의 경우 최상위 노드도 포함시켜야하지만 logicalDiagram의 경우 최상위 노드는 제외
+      if (inquiryType === "logical_progression" || inquiryType === "tree") {
+        // Note: example의 경우 최상위 노드도 포함시켜야하지만 logicalDiagram, tree의 경우 최상위 노드는 제외
         steps.shift();
       }
       setEntireSpreadedStep([...steps]);

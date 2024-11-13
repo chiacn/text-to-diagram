@@ -51,7 +51,7 @@ export default function SubmittedText({
 
   // 특수 문자를 이스케이프하는 함수
   const escapeRegExp = (string: string) => {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return string?.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   };
 
   // highlightText 함수 정의: 여러 키워드와 일치하는 부분을 <span>으로 감싸기
@@ -66,7 +66,7 @@ export default function SubmittedText({
     const parts = text.split(regex);
     return parts.map((part, index) => {
       const matchedKeyword = keywords.find(
-        (keyword) => part.toLowerCase() === keyword.toLowerCase(),
+        (keyword) => part?.toLowerCase() === keyword?.toLowerCase(),
       );
       if (matchedKeyword) {
         const highlightColor = targetColorMap[matchedKeyword] || "#fef3c7";
@@ -163,12 +163,14 @@ export default function SubmittedText({
           </div>
 
           {/* StepProgressContainer는 스크롤 영역 외부에 시각적으로 표시 */}
-          <StepProgressContainer
-            progressActive={progressActive}
-            focusSpreadedStep={focusSpreadedStep}
-            currentStep={currentStep}
-            setCurrentStep={setCurrentStep}
-          />
+          {inquiryType !== "tree" && (
+            <StepProgressContainer
+              progressActive={progressActive}
+              focusSpreadedStep={focusSpreadedStep}
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+            />
+          )}
         </div>
       </div>
     </div>

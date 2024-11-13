@@ -33,6 +33,7 @@ interface LogicalProgressionStructureType {
 
 // 트리 구조를 위한 인터페이스 정의
 interface TreeDiagramItemType {
+  diagramId: string;
   element_name: string;
   relationTypeWithParent?: string;
   relationship?: any[];
@@ -218,7 +219,9 @@ export default function useDiagram({
       depth: number,
       parentDiagramId?: string | number,
     ): JSX.Element => {
-      const diagramId = `tree-${idCounter++}`;
+      // *Note: DiagramContainer에서 structure 받아올 때, assignDiagramIds로 diagramId를 할당해주니까 그거 사용하면 될듯 (여기서 만들어 줄 필요 x)
+      // const diagramId = `tree-${idCounter++}`;
+      const diagramId = node.diagramId;
       const isTopLevel = depth === 0;
 
       // diagramItemsListRef에 현재 노드 추가
