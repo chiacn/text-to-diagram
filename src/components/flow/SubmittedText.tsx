@@ -114,9 +114,15 @@ export default function SubmittedText({
         }`}
       >
         {/* 상단 바 -------------------------------------------------- */}
-        <div className="flex items-center justify-between p-2 bg-gray-100 border-b border-gray-300">
+        <div
+          className={`flex items-center p-2 bg-gray-100 border-b border-gray-300 ${
+            inquiryType === "tree" ? "justify-end" : "justify-between"
+          }`}
+        >
           {/* 재생 버튼 */}
-          <PlayButton isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+          {inquiryType !== "tree" && (
+            <PlayButton isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+          )}
           {/* 접기/펼치기 토글 버튼 */}
           <button
             onClick={() => setIsOpenSubmittedText(!isOpenSubmittedText)}
