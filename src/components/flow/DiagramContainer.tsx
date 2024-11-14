@@ -10,6 +10,7 @@ import useHighlight from "./hooks/useHighlight";
 import useHandleDataStructure from "./hooks/useHandleDataStructure";
 import test from "node:test";
 import useDiagram from "./hooks/useDiagram";
+import PromptButton from "./PromptButton";
 
 export default function DiagramContainer() {
   // LLM 테스트 ---------------------------------------------
@@ -154,6 +155,7 @@ export default function DiagramContainer() {
           >
             Submit
           </Button>
+          <PromptButton />
         </div>
       </div>
 
