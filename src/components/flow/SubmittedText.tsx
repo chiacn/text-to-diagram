@@ -145,12 +145,12 @@ export default function SubmittedText({
           className={`transition-all duration-500 transform whitespace-pre-wrap text-left p-4 relative ${
             isOpenSubmittedText
               ? "opacity-100 max-h-[400px] scale-100"
-              : "opacity-0 max-h-0 scale-95"
+              : "opacity-0 max-h-0 scale-95 pointer-events-none"
           }`}
           style={{ overflowX: "visible" }} // 수평 방향은 overflow 해제
         >
           <div
-            className="inner-container overflow-y-scroll scrollbar-custom"
+            className="inner-container overflow-y-scroll scrollbar-custom "
             style={{
               maxHeight: progressActive && isSmaller ? "330px" : "380px", // 수직 스크롤 한도 설정
               overflowX: "hidden", // 수평 스크롤은 숨김
