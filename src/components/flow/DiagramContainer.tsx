@@ -11,6 +11,7 @@ import useHandleDataStructure from "./hooks/useHandleDataStructure";
 import test from "node:test";
 import useDiagram from "./hooks/useDiagram";
 import PromptButton from "./PromptButton";
+import { toast } from "@/hooks/use-toast";
 
 export default function DiagramContainer() {
   // LLM 테스트 ---------------------------------------------
@@ -61,8 +62,11 @@ export default function DiagramContainer() {
 
   const getCopyPrompt = async (input: string) => {
     const copied = await getPromptByInputText(input);
-    navigator.clipboard.writeText(JSON.stringify(copied) || "");
-    alert("toast!!!!!!!!!!!!!!!!!!"); // TODO: TOAST 추가
+    await navigator.clipboard.writeText(JSON.stringify(copied) || "");
+    toast({
+      variant: "info",
+      description: "Copied!",
+    });
   };
 
   function fixJSON(jsonString: string) {
@@ -102,8 +106,11 @@ export default function DiagramContainer() {
       // Note: setState - 비동기적으로 업데이트되고, 다음 렌더링 사이클에 상태 업데이트를 적용되므로
       // structure를 사용하지 않고 assignDiagramIds(json) 그대로 사용.
       setSpreadSteps({ ...assignDiagramIds(json) });
-    } catch (error) {
-      // TODO: format 안 맞는거 등등 에러처리, toast 추가
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        description: error?.message,
+      });
       console.error("Failed to parse JSON:", error);
     }
   };

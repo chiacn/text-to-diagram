@@ -1,3 +1,4 @@
+import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 
 /*
@@ -39,7 +40,10 @@ export default function useLLM({
     const { result, message } = checkValidation();
     if (!result) {
       console.error("error :: ", message);
-      alert(message);
+      toast({
+        variant: "warning",
+        description: message,
+      });
       return;
     }
     const params = {
@@ -75,7 +79,10 @@ export default function useLLM({
     const { result, message } = checkValidation();
     if (!result) {
       console.error("error :: ", message);
-      alert(message);
+      toast({
+        variant: "warning",
+        description: message,
+      });
       return;
     }
     const params = {
