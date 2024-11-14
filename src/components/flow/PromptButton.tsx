@@ -10,7 +10,18 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 
-export default function PromptButton() {
+interface PromptButtonProps {
+  getCopyPrompt: (input: string) => void;
+  submitPrompt: (
+    json: string | null,
+    promptInput: string | null,
+  ) => Promise<void>;
+}
+
+export default function PromptButton({
+  getCopyPrompt,
+  submitPrompt,
+}: PromptButtonProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -26,7 +37,10 @@ export default function PromptButton() {
         <DialogDescription></DialogDescription>
       </DialogHeader>
       <DialogContent className="min-w-fit">
-        <PromptButtonDialog />
+        <PromptButtonDialog
+          getCopyPrompt={getCopyPrompt}
+          submitPrompt={submitPrompt}
+        />
       </DialogContent>
     </Dialog>
   );

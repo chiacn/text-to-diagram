@@ -351,8 +351,18 @@ const createPrompt = (
 
 export async function POST(request: Request) {
   try {
-    const { input, topic, inquiryType, serviceInfo } = await request.json();
+    const {
+      input,
+      topic,
+      inquiryType,
+      serviceInfo,
+      getOnlyPrompt = false,
+    } = await request.json();
 
+    if (getOnlyPrompt)
+      return NextResponse.json({
+        output: createPrompt(input, inquiryType, topic).promptMessages[1],
+      });
     const checkService = (service: string) => {
       if (service === "groq") {
         return new ChatGroq({

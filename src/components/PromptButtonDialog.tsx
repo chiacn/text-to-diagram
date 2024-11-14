@@ -2,22 +2,28 @@ import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 
-export default function PromptButtonDialog() {
+interface PromptButtonDialogProps {
+  getCopyPrompt: (input: string) => void;
+  submitPrompt: (
+    json: string | null,
+    promptInput: string | null,
+  ) => Promise<void>;
+}
+
+export default function PromptButtonDialog({
+  getCopyPrompt,
+  submitPrompt,
+}: PromptButtonDialogProps) {
   const [promptInput, setPromptInput] = useState("");
   const [jsonInput, setJsonInput] = useState("");
 
-  const handleGetPrompt = () => {
-    // handle prompt generation logic here
-    console.log("Prompt generated:", promptInput);
-  };
-
-  const handleSubmitJson = () => {
-    // handle JSON submission logic here
-    console.log("JSON submitted:", jsonInput);
-  };
-
   return (
     <div className="m-8">
+      <h3 className="mb-2 text-[16px] text-gray-80">
+        Use the copied prompt to generate JSON output using GPT or another LLM.
+        <br />
+        The input text for JSON should be filled in this textarea.
+      </h3>
       <div className="flex justify-center items-center gap-4 mb-8">
         <Textarea
           name="Input your question to get prompt."
@@ -32,12 +38,13 @@ export default function PromptButtonDialog() {
         <Button
           variant="outline"
           className="w-50 h-20 ml-2 flex-1 justify-center item-center"
-          onClick={handleGetPrompt}
+          onClick={() => getCopyPrompt(promptInput)}
         >
           Get Prompt
         </Button>
       </div>
 
+      <h3 className="mb-2 text-[16px] text-gray-80">Use the generated JSON</h3>
       <div className="flex justify-center items-center gap-4">
         <Textarea
           name="Follow the specified JSON format."
@@ -52,7 +59,7 @@ export default function PromptButtonDialog() {
         <Button
           variant="secondary"
           className="w-40 h-20 ml-2 flex-1 justify-center item-center border"
-          onClick={handleSubmitJson}
+          onClick={() => submitPrompt(jsonInput, promptInput)}
         >
           Submit JSON
         </Button>

@@ -15,8 +15,13 @@ import PromptButton from "./PromptButton";
 export default function DiagramContainer() {
   // LLM 테스트 ---------------------------------------------
 
-  const { getAnswerFromModel, inquiryType, setInquiryType, inquiryTypeList } =
-    useLLM({});
+  const {
+    getAnswerFromModel,
+    inquiryType,
+    setInquiryType,
+    inquiryTypeList,
+    getPromptByInputText,
+  } = useLLM({});
   const [question, setQuestion] = useState("");
   const [structure, setStructure] = useState(null);
   const [submittedText, setSubmittedText] = useState("");
@@ -54,12 +59,26 @@ export default function DiagramContainer() {
     inquiryType,
   });
 
+  const getCopyPrompt = async (input: string) => {
+    const copied = await getPromptByInputText(input);
+    navigator.clipboard.writeText(JSON.stringify(copied) || "");
+    alert("toast!!!!!!!!!!!!!!!!!!"); // TODO: TOAST 추가
+  };
+
   function fixJSON(jsonString: string) {
     return jsonString.replace(/"step":\s*([\d.]+)/g, '"step": "$1"');
   }
 
-  const submitPrompt = async () => {
-    const response = await getAnswerFromModel(question);
+  const submitPrompt = async (
+    json: string | null = null,
+    tempQuestion: string | null = null,
+  ) => {
+    let response;
+    if (json === null) {
+      response = await getAnswerFromModel(question);
+    } else {
+      response = json;
+    }
     const match = response.match(/{[\s\S]*}/);
     let jsonString = match ? match[0] : "{}";
     // console.log("jsonString", jsonString);
@@ -74,12 +93,17 @@ export default function DiagramContainer() {
       const json = JSON.parse(fixedJSONString);
 
       setStructure({ ...assignDiagramIds(json) });
-      setSubmittedText(question);
+      if (json && tempQuestion) {
+        setSubmittedText(tempQuestion);
+      } else {
+        setSubmittedText(question);
+      }
       setIsOpenSubmittedText(true);
       // Note: setState - 비동기적으로 업데이트되고, 다음 렌더링 사이클에 상태 업데이트를 적용되므로
       // structure를 사용하지 않고 assignDiagramIds(json) 그대로 사용.
       setSpreadSteps({ ...assignDiagramIds(json) });
     } catch (error) {
+      // TODO: format 안 맞는거 등등 에러처리, toast 추가
       console.error("Failed to parse JSON:", error);
     }
   };
@@ -150,12 +174,15 @@ export default function DiagramContainer() {
             className={`border border-gray-300 flex-4 w-full h-[90px]`}
           ></Textarea>
           <Button
-            onClick={submitPrompt}
+            onClick={() => submitPrompt()}
             className="w-32 h-[90px] ml-2 flex-1 justify-center item-center"
           >
             Submit
           </Button>
-          <PromptButton />
+          <PromptButton
+            getCopyPrompt={getCopyPrompt}
+            submitPrompt={submitPrompt}
+          />
         </div>
       </div>
 
