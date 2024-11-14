@@ -22,15 +22,24 @@ export default function useHandleDataStructure({
 
     steps.push(node);
 
-    // Note: tree일 경우 step이 아니라 content로 구성
-    if (inquiryType === "tree" && node.content && node.content.length > 0) {
-      node.content.forEach((child: any) => {
-        dfsStructure(child, steps);
-      });
-    } else if (node.steps && node.steps.length > 0) {
-      node.steps.forEach((child: any) => {
-        dfsStructure(child, steps);
-      });
+    // Note: tree일 경우 step이 아니라 content, related_elements로 구성
+    if (inquiryType === "tree") {
+      if (node.content && node.content.length > 0) {
+        node.content.forEach((child: any) => {
+          dfsStructure(child, steps);
+        });
+      } else if (node.related_elements && node.related_elements.length > 0) {
+        node.related_elements.forEach((child: any) => {
+          dfsStructure(child, steps);
+        });
+      }
+    } else {
+      // tree 제외 다른 inquiryType의 경우 steps로 구성
+      if (node.steps && node.steps.length > 0) {
+        node.steps.forEach((child: any) => {
+          dfsStructure(child, steps);
+        });
+      }
     }
 
     return steps;
