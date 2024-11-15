@@ -74,12 +74,13 @@ export default function useStepProgress({
 
   // highlightText 함수 정의: 여러 키워드와 일치하는 부분을 <span>으로 감싸기
   const highlightText = (text: string, keywords: string[]) => {
-    if (!keywords || keywords.length === 0) return text; // 키워드가 없을 경우 원래 텍스트 반환
+    if (!keywords || keywords.length === 0) return text;
 
     const escapedKeywords = keywords.map((keyword) => escapeRegExp(keyword));
-    const regex = new RegExp(`(${escapedKeywords.join("|")})`, "gi"); // 키워드를 "|"로 연결하여 정규식을 생성
+    const regex = new RegExp(`(${escapedKeywords.join("|")})`, "gi");
 
-    let alreadyHighlighted = false; // Note: 첫 번째 일치 키워드만 highlight 처리
+    let alreadyHighlighted = false;
+    let highlightColor = null;
 
     const parts = text.split(regex);
     return (
@@ -90,8 +91,8 @@ export default function useStepProgress({
             (keyword) => part?.toLowerCase() === keyword?.toLowerCase(),
           );
           if (matchedKeyword && !alreadyHighlighted) {
-            if (inquiryType !== "tree") alreadyHighlighted = true; // Note: tree일 경우 모든 요소 highlight
-            const highlightColor = targetColorMap[matchedKeyword] || "#fef3c7";
+            if (inquiryType !== "tree") alreadyHighlighted = true;
+            highlightColor = targetColorMap[matchedKeyword] || "#fef3c7";
             return (
               <span key={`fragment-${index}`}>
                 <span
@@ -101,22 +102,22 @@ export default function useStepProgress({
                 >
                   {part}
                 </span>
-                {inquiryType !== "tree" && (
-                  <StepProgressItem
-                    key={`progress-item-${index}`}
-                    item={focusSpreadedStep?.[currentStep] as DiagramItem}
-                    stepProgressItemRef={stepProgressItemRef}
-                    stepOffsetInfo={stepOffsetInfo}
-                    highlightColor={highlightColor}
-                    inquiryType={inquiryType}
-                  />
-                )}
               </span>
             );
           } else {
             return <span key={`part-${index}`}>{part}</span>;
           }
         })}
+        {inquiryType !== "tree" && (
+          <StepProgressItem
+            key={`progress-item`}
+            item={focusSpreadedStep?.[currentStep] as DiagramItem}
+            stepProgressItemRef={stepProgressItemRef}
+            stepOffsetInfo={stepOffsetInfo}
+            highlightColor={highlightColor ?? ""}
+            inquiryType={inquiryType}
+          />
+        )}
       </span>
     );
   };
