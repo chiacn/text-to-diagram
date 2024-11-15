@@ -77,14 +77,7 @@ export default function useLLM({
 
   const getPromptByInputText = async (input: string) => {
     const { result, message } = checkValidation();
-    if (!result) {
-      console.error("error :: ", message);
-      toast({
-        variant: "warning",
-        description: message,
-      });
-      return;
-    }
+    if (!result) throw new Error(message);
     const params = {
       input,
       inquiryType,
@@ -106,7 +99,11 @@ export default function useLLM({
 
       const data = await response.json();
       return data.output.kwargs.content;
-    } catch (e) {
+    } catch (e: any) {
+      toast({
+        variant: "warning",
+        description: e.message,
+      });
       console.error("error :: ", e);
     }
   };

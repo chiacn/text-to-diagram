@@ -1,3 +1,4 @@
+import { useState } from "react";
 import PromptButtonDialog from "../PromptButtonDialog";
 import { Button } from "../ui/button";
 import {
@@ -22,8 +23,9 @@ export default function PromptButton({
   getCopyPrompt,
   submitPrompt,
 }: PromptButtonProps) {
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
           variant="outline"
@@ -40,6 +42,7 @@ export default function PromptButton({
         <PromptButtonDialog
           getCopyPrompt={getCopyPrompt}
           submitPrompt={submitPrompt}
+          setIsOpen={setIsOpen}
         />
       </DialogContent>
     </Dialog>
