@@ -38,14 +38,7 @@ export default function useLLM({
 
   const getAnswerFromModel = async (input: string, topic?: string) => {
     const { result, message } = checkValidation();
-    if (!result) {
-      console.error("error :: ", message);
-      toast({
-        variant: "warning",
-        description: message,
-      });
-      return;
-    }
+    if (!result) throw new Error(message);
     const params = {
       input,
       inquiryType,
@@ -70,7 +63,11 @@ export default function useLLM({
       const data = await response.json();
       console.log("output --- ", data.output);
       return data.output;
-    } catch (e) {
+    } catch (e: any) {
+      toast({
+        variant: "warning",
+        description: e?.message,
+      });
       console.error("error :: ", e);
     }
   };

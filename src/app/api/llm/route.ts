@@ -134,69 +134,65 @@ const userContent_rule_format_list_compare = `
 //* 현재까지 best
 //* Note: 1-1. Next step must be derived from the previous step based on the logical context of parent step.를 넣어줘서 논리적 연결성을 강화했더니 정확도가 높아짐. (오답률이 낮아졌다.)
 // const userContent_rule_format_example = `
-//   Complete a [step-by-step example] following the guide below:
-//   {
-//     "target": <Identify main largest element within the logical context of INPUT TEXT>,
-//     "example": <Create a [use case] applicable to the target>,
-//     "steps": [
-//       {
-//         [Creating steps guide]:
-//         1. Generate a step-by-step example that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
-//         2. Each step should be a part of the logical progression, leading to a final conclusion.
-//         3. Ensure that the example is created in a consistent logical context in which the INPUT TEXT develops.
+// Complete a [step-by-step example] following the guide below:
+// {
+//   "target": <Identify main largest element within the logical context of INPUT TEXT>,
+//   "example": <Create a [use case] applicable to the target>,
+//   "steps": [
+//     {
+//       [Creating steps guide]:
+//       1. Generate a step-by-step example that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
+//       2. Each step should be a part of the logical progression, leading to a final conclusion.
+//       3. Ensure that the example is created in a consistent logical context in which the INPUT TEXT develops.
 
-//         "step": <Step number>,
-//         "target": <Identify the element that corresponds to the INPUT TEXT within the logical context>,
-//         "example": <Create a [use case] that applies to the target at this step>,
-//         "description": <Explain the effects when the example is applied>,
-//         "result": {
-//           <Provide specific elements that are changed as a result at this step in the logical context>,
-//         },
-//         "steps": [
-//           [Developing sub steps guide]:
-//           1. Each sub-step should contribute to the overall progression of the parent step, progressing sequentially from the starting point to the endpoint.
-//           1-1. Next step must be derived from the previous step based on the logical context of parent step.
-//           2. Continue expanding each step fully, especially for recursive functions, until the final result is reached.
-//           3. The criteria for subdividing sub-steps should be based on the progression of the higher-level step.
-//           4. The progression of the higher-level steps and the logic of the input text should consistently and logically lead to the final result.
-//         ]
-//       }
-//     ]
-//     Note: When developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached.
-//   }
+//       "step": <Step number>,
+//       "target": <Identify the element that corresponds to the INPUT TEXT within the logical context>,
+//       "example": <Create a [use case] that applies to the target at this step>,
+//       "description": <Explain the effects when the example is applied>,
+//       "result": {
+//         <Provide specific elements that are changed as a result at this step in the logical context>,
+//       },
+//       "steps": [
+//         [Developing sub steps guide]:
+//         1. Each sub-step should contribute to the overall progression of the parent step, progressing sequentially from the starting point to the endpoint.
+//         1-1. Next step must be derived from the previous step based on the logical context of parent step.
+//         2. Continue expanding each step fully, especially for recursive functions, until the final result is reached.
+//         3. The criteria for subdividing sub-steps should be based on the progression of the higher-level step.
+//         4. The progression of the higher-level steps and the logic of the input text should consistently and logically lead to the final result.
+//       ]
+//     }
+//   ]
+//   Note: When developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached.
+// }
 // `;
 
-// *과도기?
+// * 저장용 (다른 방식)
 // const userContent_rule_format_example = `
-//   Complete a [step-by-step example] following the guide below:
+//   Complete a [step-by-step example] following the [Guideline] and [format] below:
+//   [Guideline]:
+//     - Fully expand each 'steps' array for recursive calls or process, showing all intermediate results.
+//     - Each step should be a part of the logical progression, leading to a final conclusion.
+//     - Next step must be derived from the previous step based on the logical context of parent step.
+
+//   [format]:
 //   {
-//     "target": <Identify main largest element within the logical context of INPUT TEXT>,
-//     "example": <Create a [use case] applicable to the target>,
+//     "target": <Identify the key element from the INPUT TEXT>,
+//     "example": <Create a relevant use case for the target>,
 //     "steps": [
 //       {
-//         [Developing steps guide]:
-//         1. Generate a step-by-step example that logically builds upon each step, maintaining a consistent context.
-//         2. Each step should be a part of the logical progression, leading to a final conclusion.
-//         3. Ensure that the example is created in a consistent logical context in which the INPUT TEXT develops.
-
 //         "step": <Step number>,
 //         "target": <Identify the element that corresponds to the INPUT TEXT within the logical context>,
 //         "example": <Create a [use case] that applies to the target at this step>,
 //         "description": <Explain the effects when the example is applied>,
 //         "result": {
-//           <Provide specific elements that are changed as a result at this step in the logical context>,
+//           <Provide specific elements that are changed as a result at this step in the logical context>
 //         },
 //         "steps": [
-//           [Developing sub steps guide]:
-//           1. Each sub-step should contribute to the overall progression of the parent step, progressing sequentially from the starting point to the endpoint.
-//           1-1. Next step must be derived from the previous step based on the logical context of parent step.
-//           2. Continue expanding each step fully, especially for recursive functions, until the final result is reached.
-//           3. The criteria for subdividing sub-steps should be based on the progression of the higher-level step.
-//           4. The progression of the higher-level steps and the logic of the input text should consistently and logically lead to the final result.
+//           <Develop sub-steps sequentially, ensuring each builds logically on the prior step, continuing until final result>
+//           <Each step should be a part of the logical progression, leading to a final conclusion>
 //         ]
 //       }
 //     ]
-//     Note: When developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached.
 //   }
 // `;
 
@@ -224,37 +220,62 @@ const userContent_rule_format_list_compare = `
 
 */
 
-const userContent_rule_format_example = `
-  Complete a [step-by-step example] following the guide below:
-  {
-    "target": <Identify main largest element within the logical context of INPUT TEXT>,
-    "example": <Create a [use case] applicable to the target>,
-    "steps": [
-      {
-        [Creating steps guide]:
-        1. Generate a step-by-step example that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
-        2. Each step should be a part of the logical progression, leading to a final conclusion.
-        3. Ensure that the example is created in a consistent logical context in which the INPUT TEXT develops.
+// Complete a [step-by-step example] following the guide below:
+// {
+//   "target": <Identify main largest element within the logical context of INPUT TEXT>,
+//   "example": <Create a [use case] applicable to the target>,
+//   "steps": [
+//     {
+//       [Creating steps guide]:
+//       1. Generate a step-by-step example that progressively develops the logic or process of INPUT TEXT while maintaining a consistent context.
+//       2. Each step should be a part of the logical progression, leading to a final conclusion.
+//       3. Ensure that the example is created in a consistent logical context in which the INPUT TEXT develops.
 
-        "step": <Step number>,
-        "target": <Identify the element that corresponds to the INPUT TEXT within the logical context>,
-        "example": <Create a [use case] that applies to the target at this step>,
-        "description": <Explain the effects when the example is applied>,
+//       "step": <Step number>,
+//       "target": <Identify the element that corresponds to the INPUT TEXT within the logical context>,
+//       "example": <Create a [use case] that applies to the target at this step>,
+//       "description": <Explain the effects when the example is applied>,
+//       "result": {
+//         <Provide specific elements that are changed as a result at this step in the logical context>,
+//       },
+//       "steps": [
+//         [Developing sub steps guide]:
+//         1. Each sub-step should contribute to the overall progression of the parent step, progressing sequentially from the starting point to the endpoint.
+//         1-1. Next step must be derived from the previous step based on the logical context of parent step.
+//         2. Continue expanding each step fully, especially for recursive functions, until the final result is reached.
+//         3. The criteria for subdividing sub-steps should be based on the progression of the higher-level step.
+//         4. The progression of the higher-level steps and the logic of the input text should consistently and logically lead to the final result.
+//       ]
+//     }
+//   ]
+//   Note: When developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached.
+// }
+
+const userContent_rule_format_example = `
+  Complete a [step-by-step example] following the [Guideline] and [format] below:
+  [Guideline]:
+    - Fully expand each 'steps' array for recursive calls or process, showing all intermediate results.
+    - Each step should be a part of the logical progression, leading to a final conclusion.
+    - Next step must be derived from the previous step based on the logical context of parent step.
+    - All steps must be verified to ensure their validity by verifying that they are derived from valid logic.
+    
+  [format]:
+  {  
+    "target": <Identify the key element from the INPUT TEXT>,  
+    "example": <Create a relevant use case for the target>,  
+    "steps": [  
+      {  
+        "step": <Step number>,  
+        "target": <Identify the element that corresponds to the INPUT TEXT within the logical context>,  
+        "example": <Create a [use case] that applies to the target at this step>,  
+        "description": <Explain the effects when the example is applied>,  
         "result": {
-          <Provide specific elements that are changed as a result at this step in the logical context>,
-        },
-        "steps": [
-          [Developing sub steps guide]:
-          1. Each sub-step should contribute to the overall progression of the parent step, progressing sequentially from the starting point to the endpoint.
-          1-1. Next step must be derived from the previous step based on the logical context of parent step.
-          2. Continue expanding each step fully, especially for recursive functions, until the final result is reached.
-          3. The criteria for subdividing sub-steps should be based on the progression of the higher-level step.
-          4. The progression of the higher-level steps and the logic of the input text should consistently and logically lead to the final result.
-        ]
-      }
-    ]
-    Note: When developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached.
-  }
+          <Provide specific elements that are changed as a result at this step in the logical context>
+        },  
+        "steps": []
+      }  
+    ]  
+  }  
 `;
 
 const userContent_rule_format_logical_progression = `
