@@ -255,7 +255,7 @@ export default function DiagramContainer() {
           items={inquiryTypeList}
           selectedValue={inquiryType}
           changeInquiryType={changeInquiryType}
-          gap={20}
+          gap={80}
         />
         <div className="flex w-full mt-4">
           <Textarea
