@@ -37,8 +37,6 @@ export default function useLLM({
   };
 
   const getAnswerFromModel = async (input: string, topic?: string) => {
-    const { result, message } = checkValidation();
-    if (!result) throw new Error(message);
     const params = {
       input,
       inquiryType,
@@ -48,6 +46,9 @@ export default function useLLM({
       },
     };
     try {
+      const { result, message } = checkValidation();
+      if (!result) throw new Error(message);
+
       const response = await fetch("/api/llm", {
         method: "POST",
         headers: {
@@ -73,8 +74,6 @@ export default function useLLM({
   };
 
   const getPromptByInputText = async (input: string) => {
-    const { result, message } = checkValidation();
-    if (!result) throw new Error(message);
     const params = {
       input,
       inquiryType,
@@ -82,6 +81,9 @@ export default function useLLM({
       getOnlyPrompt: true,
     };
     try {
+      const { result, message } = checkValidation();
+      if (!result) throw new Error(message);
+
       const response = await fetch("/api/llm", {
         method: "POST",
         headers: {

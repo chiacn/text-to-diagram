@@ -85,11 +85,12 @@ export default function DiagramContainer() {
     }
     const match = response.match(/{[\s\S]*}/);
     let jsonString = match ? match[0] : "{}";
-    // console.log("jsonString", jsonString);
-
     const fixedJSONString = fixJSON(jsonString);
 
     try {
+      const validation = validateJsonFormat(fixedJSONString);
+      if (!validation.result) throw new Error(validation.message);
+
       resetHighlight();
       resetDataStructure();
 
@@ -112,7 +113,85 @@ export default function DiagramContainer() {
         description: error?.message,
       });
       console.error("Failed to parse JSON:", error);
+
+      return {
+        // PromptButtomDialog용
+        result: false,
+        message: error.message,
+      };
     }
+  };
+
+  const validateJsonFormat = (str: string) => {
+    try {
+      checkValidation();
+      parsingStr();
+      checkHasValidKey(str);
+      return {
+        result: true,
+        message: "Success!",
+      };
+    } catch (e: any) {
+      return {
+        result: false,
+        message: e.message,
+      };
+    }
+
+    function parsingStr() {
+      try {
+        JSON.parse(str.trim());
+        return {
+          result: true,
+          message: "Success!",
+        }; // 파싱에 성공하면 유효한 JSON
+      } catch (e: any) {
+        console.error("error :: ", e);
+        throw {
+          result: false,
+          message: "Invalid JSON format.",
+        }; // 파싱 중 에러 발생 시 유효하지 않음
+      }
+    }
+    function checkHasValidKey(str: string) {
+      const requiredKeysMap: any = {
+        example: ["target", "example", "steps"],
+        tree: ["content"],
+        progression: ["steps"],
+      };
+
+      const json = JSON.parse(str);
+      const keys = Object.keys(json);
+      const requiredKeys = requiredKeysMap[inquiryType ?? "example"];
+
+      if (!requiredKeys) {
+        throw {
+          result: false,
+          message: "Invalid inquiry type. Please try again.",
+        };
+      }
+
+      const missingKey = requiredKeys.find(
+        (key: string) => !keys.includes(key),
+      );
+      if (missingKey) {
+        throw {
+          result: false,
+          message: `A required key is missing in the JSON: ${missingKey}. Please try again.`,
+        };
+      }
+
+      return {
+        result: true,
+        message: "Success!",
+      };
+    }
+  };
+
+  const checkValidation = () => {
+    if (!inquiryType)
+      throw { result: false, message: "Please select inquiry type." };
+    return { result: true, message: "Success" };
   };
 
   const [contentWidth, setContentWidth] = useState(0);

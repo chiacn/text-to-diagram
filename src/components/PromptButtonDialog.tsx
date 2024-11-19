@@ -8,7 +8,7 @@ interface PromptButtonDialogProps {
   submitPrompt: (
     json: string | null,
     promptInput: string | null,
-  ) => Promise<void>;
+  ) => Promise<any>;
   setIsOpen: (isOpen: boolean) => void;
 }
 
@@ -20,54 +20,9 @@ export default function PromptButtonDialog({
   const [promptInput, setPromptInput] = useState("");
   const [jsonInput, setJsonInput] = useState("");
 
-  const submit = () => {
-    const validation = validateJsonFormat(jsonInput);
-    if (!validation.result)
-      return toast({
-        variant: "warning",
-        description: validation.message,
-      });
-    submitPrompt(jsonInput, promptInput);
-    setIsOpen(false);
-  };
-
-  function fixJSON(jsonString: string) {
-    return jsonString.replace(/"step":\s*([\d.]+)/g, '"step": "$1"');
-  }
-
-  const validateJsonFormat = (str: string) => {
-    try {
-      parsingStr();
-      return {
-        result: true,
-        message: "Success!",
-      };
-    } catch (e) {
-      switch (e) {
-        case "invalid_json":
-          return {
-            result: false,
-            message: "Invalid JSON format.",
-          };
-
-        default:
-          return {
-            result: false,
-            message: "Invalid JSON format.",
-          };
-      }
-    }
-
-    function parsingStr() {
-      try {
-        const test = JSON.parse(fixJSON(str.trim()));
-        return true; // 파싱에 성공하면 유효한 JSON
-      } catch (e: any) {
-        console.error("error :: ", e);
-        throw "invalid_json"; // 파싱 중 에러 발생 시 유효하지 않음
-      }
-    }
-    // TODO: 추후 format 체크 로직 추가
+  const submit = async () => {
+    const submit = await submitPrompt(jsonInput, promptInput);
+    if (submit.result) setIsOpen(false);
   };
 
   return (

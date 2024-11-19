@@ -16,7 +16,7 @@ interface PromptButtonProps {
   submitPrompt: (
     json: string | null,
     promptInput: string | null,
-  ) => Promise<void>;
+  ) => Promise<any>;
 }
 
 export default function PromptButton({
