@@ -12,6 +12,8 @@ import test from "node:test";
 import useDiagram from "./hooks/useDiagram";
 import PromptButton from "./PromptButton";
 import { toast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
+import CommonButton from "../CommonButton";
 
 export default function DiagramContainer() {
   // LLM 테스트 ---------------------------------------------
@@ -60,6 +62,8 @@ export default function DiagramContainer() {
     inquiryType,
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const getCopyPrompt = async (input: string) => {
     const copied = await getPromptByInputText(input);
     await navigator.clipboard.writeText(JSON.stringify(copied) || "");
@@ -77,27 +81,27 @@ export default function DiagramContainer() {
     json: string | null = null,
     tempQuestion: string | null = null,
   ) => {
-    let response;
-    if (json === null) {
-      response = await getAnswerFromModel(question);
-    } else {
-      response = json;
-    }
-    const match = response.match(/{[\s\S]*}/);
-    let jsonString = match ? match[0] : "{}";
-    const fixedJSONString = fixJSON(jsonString);
-
     try {
+      let response;
+      setIsLoading(true);
+      if (json === null) {
+        response = await getAnswerFromModel(question);
+      } else {
+        response = json;
+      }
+      const match = response.match(/{[\s\S]*}/);
+      let jsonString = match ? match[0] : "{}";
+      const fixedJSONString = fixJSON(jsonString);
+
       const validation = validateJsonFormat(fixedJSONString);
       if (!validation.result) throw new Error(validation.message);
 
       resetHighlight();
       resetDataStructure();
 
-      // const json = testStructure;
-      const json = JSON.parse(fixedJSONString);
+      const parsedJson = JSON.parse(fixedJSONString);
 
-      setStructure({ ...assignDiagramIds(json) });
+      setStructure({ ...assignDiagramIds(parsedJson) });
       if (json && tempQuestion) {
         setSubmittedText(tempQuestion);
       } else {
@@ -119,6 +123,8 @@ export default function DiagramContainer() {
         result: false,
         message: error.message,
       };
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -259,12 +265,13 @@ export default function DiagramContainer() {
             onChange={(e) => setQuestion(e.target.value)}
             className={`border border-gray-300 flex-4 w-full h-[90px]`}
           ></Textarea>
-          <Button
-            onClick={() => submitPrompt()}
-            className="w-32 h-[90px] ml-2 flex-1 justify-center item-center"
+          <CommonButton
+            onClick={submitPrompt}
+            className="min-w-[90px] h-[90px] ml-2 flex-1 justify-center item-center"
+            isLoading={isLoading}
           >
             Submit
-          </Button>
+          </CommonButton>
           <PromptButton
             getCopyPrompt={getCopyPrompt}
             submitPrompt={submitPrompt}
