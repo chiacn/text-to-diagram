@@ -116,9 +116,8 @@ export default function DiagramContainer() {
       setIsOpenSubmittedText(true);
       // Note: setState - 비동기적으로 업데이트되고, 다음 렌더링 사이클에 상태 업데이트를 적용되므로
       // structure를 사용하지 않고 assignDiagramIds(json) 그대로 사용.
-      setSpreadSteps({ ...assignDiagramIds(json) });
+      setSpreadSteps({ ...assignDiagramIds(parsedJson) });
     } catch (error: any) {
-      console.log("inquiryType", inquiryType);
       resetData();
       toast({
         variant: error.variant ? error.variant : "destructive",
