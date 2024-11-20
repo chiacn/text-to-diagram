@@ -67,7 +67,7 @@ export default function DiagramContainer() {
   const getCopyPrompt = async (input: string) => {
     try {
       const copied = await getPromptByInputText(input);
-      await navigator.clipboard.writeText(JSON.stringify(copied) || "");
+      await navigator.clipboard.writeText(copied || "");
       toast({
         variant: "info",
         description: "Copied!",
