@@ -65,12 +65,19 @@ export default function DiagramContainer() {
   const [isLoading, setIsLoading] = useState(false);
 
   const getCopyPrompt = async (input: string) => {
-    const copied = await getPromptByInputText(input);
-    await navigator.clipboard.writeText(JSON.stringify(copied) || "");
-    toast({
-      variant: "info",
-      description: "Copied!",
-    });
+    try {
+      const copied = await getPromptByInputText(input);
+      await navigator.clipboard.writeText(JSON.stringify(copied) || "");
+      toast({
+        variant: "info",
+        description: "Copied!",
+      });
+    } catch (error: any) {
+      toast({
+        variant: error.variant ? error.variant : "destructive",
+        description: error?.message,
+      });
+    }
   };
 
   function fixJSON(jsonString: string) {
@@ -113,7 +120,7 @@ export default function DiagramContainer() {
       setSpreadSteps({ ...assignDiagramIds(json) });
     } catch (error: any) {
       toast({
-        variant: "destructive",
+        variant: error.variant ? error.variant : "destructive",
         description: error?.message,
       });
       console.error("Failed to parse JSON:", error);

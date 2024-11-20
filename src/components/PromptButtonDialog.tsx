@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
+import CommonButton from "./CommonButton";
 
 interface PromptButtonDialogProps {
   getCopyPrompt: (input: string) => void;
@@ -18,10 +19,19 @@ export default function PromptButtonDialog({
 }: PromptButtonDialogProps) {
   const [promptInput, setPromptInput] = useState("");
   const [jsonInput, setJsonInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const submit = async () => {
+    setIsLoading(true);
     const submit = await submitPrompt(jsonInput, promptInput);
     if (submit.result) setIsOpen(false);
+    setIsLoading(false);
+  };
+
+  const copy = async (promptInput: string) => {
+    setIsLoading(true);
+    await getCopyPrompt(promptInput);
+    setIsLoading(false);
   };
 
   return (
@@ -42,13 +52,14 @@ export default function PromptButtonDialog({
           placeholder="Input your question to get prompt."
         ></Textarea>
 
-        <Button
+        <CommonButton
+          onClick={() => copy(promptInput)}
+          className="min-w-[124px] h-20 ml-2 flex-1 justify-center item-center"
+          isLoading={isLoading}
           variant="outline"
-          className="w-50 h-20 ml-2 flex-1 justify-center item-center"
-          onClick={() => getCopyPrompt(promptInput)}
         >
           Get Prompt
-        </Button>
+        </CommonButton>
       </div>
 
       <h3 className="mb-2 text-[16px] text-gray-80">Use the generated JSON</h3>

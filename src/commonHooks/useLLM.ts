@@ -65,11 +65,10 @@ export default function useLLM({
       console.log("output --- ", data.output);
       return data.output;
     } catch (e: any) {
-      toast({
+      throw {
         variant: "warning",
-        description: e?.message,
-      });
-      console.error("error :: ", e);
+        message: e?.message,
+      };
     }
   };
 
@@ -99,11 +98,10 @@ export default function useLLM({
       const data = await response.json();
       return data.output.kwargs.content;
     } catch (e: any) {
-      toast({
+      throw {
         variant: "warning",
-        description: e.message,
-      });
-      console.error("error :: ", e);
+        message: e?.message,
+      };
     }
   };
 
