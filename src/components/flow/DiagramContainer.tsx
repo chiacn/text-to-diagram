@@ -103,8 +103,7 @@ export default function DiagramContainer() {
       const validation = validateJsonFormat(fixedJSONString);
       if (!validation.result) throw new Error(validation.message);
 
-      resetHighlight();
-      resetDataStructure();
+      resetData();
 
       const parsedJson = JSON.parse(fixedJSONString);
 
@@ -119,6 +118,8 @@ export default function DiagramContainer() {
       // structure를 사용하지 않고 assignDiagramIds(json) 그대로 사용.
       setSpreadSteps({ ...assignDiagramIds(json) });
     } catch (error: any) {
+      console.log("inquiryType", inquiryType);
+      resetData();
       toast({
         variant: error.variant ? error.variant : "destructive",
         description: error?.message,
@@ -170,7 +171,7 @@ export default function DiagramContainer() {
       const requiredKeysMap: any = {
         example: ["target", "example", "steps"],
         tree: ["content"],
-        progression: ["steps"],
+        logical_progression: ["steps"],
       };
 
       const json = JSON.parse(str);
@@ -205,6 +206,14 @@ export default function DiagramContainer() {
     if (!inquiryType)
       throw { result: false, message: "Please select inquiry type." };
     return { result: true, message: "Success" };
+  };
+
+  const resetData = () => {
+    setStructure(null);
+    setSubmittedText("");
+    setIsOpenSubmittedText(false);
+    resetHighlight();
+    resetDataStructure();
   };
 
   const [contentWidth, setContentWidth] = useState(0);
