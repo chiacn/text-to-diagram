@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 interface HandleDataStructureProps {
   highlightItems: Array<string | number>;
-  currentHighlightStatus: number;
+  currentHighlightStatus: { value: number };
   structure: any;
   inquiryType: string | null;
 }

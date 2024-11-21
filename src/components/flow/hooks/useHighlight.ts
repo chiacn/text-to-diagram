@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface UseHighlightProps {
   inquiryType: string | null;
@@ -17,8 +17,9 @@ export default function useHighlight({ inquiryType }: UseHighlightProps) {
     SINGLE_STEP: 3,
   };
 
-  const [currentHighlightStatus, setCurrentHighlightStatus] =
-    useState<number>(0);
+  const [currentHighlightStatus, setCurrentHighlightStatus] = useState<{
+    value: number;
+  }>({ value: 0 });
   const colorPalette = ["#E3FDFD", "#D4F3EF", "#F9E2E3", "#F0F7EE", "#D2E4F2"];
   const targetColorMap = useRef<any>({});
 
@@ -50,9 +51,11 @@ export default function useHighlight({ inquiryType }: UseHighlightProps) {
           // 선택된 아이템이 있을 때는 SEPARATE_COLOR, 없을 때는 NONE으로 설정
 
           if (newHighlightItems.length > 0) {
-            setCurrentHighlightStatus(HIGHLIGHT_STATUS.SEPARATE_COLOR);
+            setCurrentHighlightStatus({
+              value: HIGHLIGHT_STATUS.SEPARATE_COLOR,
+            });
           } else {
-            setCurrentHighlightStatus(HIGHLIGHT_STATUS.NONE);
+            setCurrentHighlightStatus({ value: HIGHLIGHT_STATUS.NONE });
           }
           return;
         }
@@ -68,16 +71,18 @@ export default function useHighlight({ inquiryType }: UseHighlightProps) {
           diagramIdsToHighlight.some((id) => !highlightItems.includes(id))
         ) {
           // 다른 diagram 선택 시 currentHighlightStatus 초기화
-          setCurrentHighlightStatus(0);
+          setCurrentHighlightStatus({ value: 0 });
           setHighlightItems(
             setHighlightItemsByStatus(0, diagramIdsToHighlight),
           );
         } else {
           setCurrentHighlightStatus((prevHighlightStatus) => {
-            const newHighlightStatus = (prevHighlightStatus + 1) % 4;
+            const newHighlightStatus = {
+              value: (prevHighlightStatus.value + 1) % 4,
+            };
             setHighlightItems(
               setHighlightItemsByStatus(
-                newHighlightStatus,
+                newHighlightStatus.value,
                 diagramIdsToHighlight,
               ),
             );
@@ -111,7 +116,7 @@ export default function useHighlight({ inquiryType }: UseHighlightProps) {
 
   const resetHighlight = () => {
     setHighlightItems([]);
-    setCurrentHighlightStatus(0);
+    setCurrentHighlightStatus({ value: 0 });
   };
 
   // Reset diagramItemsListRef before rendering

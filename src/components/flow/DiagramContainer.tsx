@@ -304,7 +304,7 @@ export default function DiagramContainer() {
           submittedText={submittedText}
           isOpenSubmittedText={isOpenSubmittedText}
           setIsOpenSubmittedText={setIsOpenSubmittedText}
-          currentHighlightStatus={currentHighlightStatus}
+          currentHighlightStatus={currentHighlightStatus.value}
           entireSpreadedStep={entireSpreadedStep}
           focusSpreadedStep={focusSpreadedStep}
           targetColorMap={targetColorMap.current}

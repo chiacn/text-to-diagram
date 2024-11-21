@@ -46,7 +46,7 @@ interface UseDiagramProps {
   diagramItemsListRef: MutableRefObject<
     { diagramId: string | number; parentDiagramId?: string | number }[]
   >;
-  currentHighlightStatus: number;
+  currentHighlightStatus: { value: number };
   colorPalette: string[];
   targetColorMap: React.MutableRefObject<Record<string, string>>;
   handleDiagramItem: (
@@ -73,7 +73,7 @@ export default function useDiagram({
   const contentWrapperRef = useRef<HTMLDivElement | null>(null);
 
   const getHighlightColor = (index: number): string =>
-    currentHighlightStatus === 2
+    currentHighlightStatus.value === 2
       ? colorPalette[index % colorPalette.length]
       : "#fef3c7";
 
