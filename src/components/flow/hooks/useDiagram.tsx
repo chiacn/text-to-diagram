@@ -17,6 +17,7 @@ interface ExampleDiagramItemType {
 }
 
 interface LogicalStepType {
+  diagramId: string;
   step: string;
   target: string;
   statement: string;
@@ -166,11 +167,11 @@ export default function useDiagram({
 
         {/* 논리 단계 렌더링 */}
         {item.steps?.map((stepItem: LogicalStepType, index: number) => {
-          const stepDiagramId = `${index}`;
+          const stepDiagramId = stepItem.diagramId;
           const stepIndex = diagramItemsListRef.current.length;
           diagramItemsListRef.current.push({
             diagramId: stepDiagramId,
-            parentDiagramId: item.diagramId,
+            parentDiagramId: parentDiagramId || "root",
           });
           const stepHighlightColor = getHighlightColor(stepIndex);
           targetColorMap.current[stepItem.target] = stepHighlightColor;
@@ -180,7 +181,7 @@ export default function useDiagram({
               key={index}
               diagramId={stepDiagramId}
               step={stepItem.step}
-              parentDiagramId={item.diagramId}
+              parentDiagramId={parentDiagramId}
               depth={depth + 1}
               target={stepItem.target}
               statement={stepItem.statement}

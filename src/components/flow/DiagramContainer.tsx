@@ -38,7 +38,7 @@ export default function DiagramContainer() {
     colorPalette,
     targetColorMap,
     resetHighlight,
-  } = useHighlight();
+  } = useHighlight({ inquiryType });
   const {
     setSpreadSteps,
     entireSpreadedStep,
@@ -117,6 +117,11 @@ export default function DiagramContainer() {
       // Note: setState - 비동기적으로 업데이트되고, 다음 렌더링 사이클에 상태 업데이트를 적용되므로
       // structure를 사용하지 않고 assignDiagramIds(json) 그대로 사용.
       setSpreadSteps({ ...assignDiagramIds(parsedJson) });
+
+      return {
+        result: true,
+        message: "Success!",
+      };
     } catch (error: any) {
       resetData();
       toast({

@@ -22,10 +22,8 @@ export default function PromptButtonDialog({
   const [isLoading, setIsLoading] = useState(false);
 
   const submit = async () => {
-    setIsLoading(true);
     const submit = await submitPrompt(jsonInput, promptInput);
     if (submit.result) setIsOpen(false);
-    setIsLoading(false);
   };
 
   const copy = async (promptInput: string) => {

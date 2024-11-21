@@ -1,6 +1,9 @@
 import { useRef, useState } from "react";
 
-export default function useHighlight() {
+interface UseHighlightProps {
+  inquiryType: string | null;
+}
+export default function useHighlight({ inquiryType }: UseHighlightProps) {
   const [highlightItems, setHighlightItems] = useState<Array<string | number>>(
     [],
   );
@@ -30,6 +33,30 @@ export default function useHighlight() {
     switch (effectType) {
       // depth 기준으로 highlight
       case "highlight":
+        // * inquiryType이 logical_progression일 경우, highlightStatus에 따라 highlight 종류를 여러개 두는게 아니라 해당 step만 highlight되도록 변경.
+        if (inquiryType === "logical_progression") {
+          let newHighlightItems;
+          if (highlightItems.includes(params.diagramId)) {
+            // 이미 하이라이트된 경우 제거
+            newHighlightItems = highlightItems.filter(
+              (id) => id !== params.diagramId,
+            );
+          } else {
+            // 선택한 diagramId 추가
+            newHighlightItems = [...highlightItems, params.diagramId];
+          }
+          setHighlightItems(newHighlightItems);
+          // TODO: 여기까지함 - currentHighlightStatus 변경 시 -> currentHighlightStatus가 변경되고 그게 다시 useHandleDataStructure에서 감지돼서 focusSpreadedStep을 변경해줘야되는데 여기서 감지 안 돼서 그럼.
+          // 선택된 아이템이 있을 때는 SEPARATE_COLOR, 없을 때는 NONE으로 설정
+
+          if (newHighlightItems.length > 0) {
+            setCurrentHighlightStatus(HIGHLIGHT_STATUS.SEPARATE_COLOR);
+          } else {
+            setCurrentHighlightStatus(HIGHLIGHT_STATUS.NONE);
+          }
+          return;
+        }
+
         const { parentDiagramId } = params;
         // Get all diagramIds with matching parentDiagramId
         const diagramIdsToHighlight = diagramItemsListRef.current
@@ -42,25 +69,35 @@ export default function useHighlight() {
         ) {
           // 다른 diagram 선택 시 currentHighlightStatus 초기화
           setCurrentHighlightStatus(0);
-          setHighlightItems(setHighlightItemsByStatus(0));
+          setHighlightItems(
+            setHighlightItemsByStatus(0, diagramIdsToHighlight),
+          );
         } else {
           setCurrentHighlightStatus((prevHighlightStatus) => {
             const newHighlightStatus = (prevHighlightStatus + 1) % 4;
-            setHighlightItems(setHighlightItemsByStatus(newHighlightStatus));
+            setHighlightItems(
+              setHighlightItemsByStatus(
+                newHighlightStatus,
+                diagramIdsToHighlight,
+              ),
+            );
             return newHighlightStatus;
           });
         }
 
         // * Note: 주의 currentHighlightStatus는 비동기적으로 업데이트되고, 다음 렌더링 사이클에 상태 업데이트를 적용하므로
         // * currentHighlightStatus를 찍어도 업데이트 되지 않은 상태가 보여짐.
-        function setHighlightItemsByStatus(status: number) {
+        function setHighlightItemsByStatus(
+          status: number,
+          highlightDiagramIds: (string | number)[] = [],
+        ) {
           return (
             {
               [HIGHLIGHT_STATUS.NONE]: [],
-              [HIGHLIGHT_STATUS.SAME_DEPTH]: [...diagramIdsToHighlight],
+              [HIGHLIGHT_STATUS.SAME_DEPTH]: [...highlightDiagramIds],
               [HIGHLIGHT_STATUS.SEPARATE_COLOR]: [
                 ...highlightItems,
-                ...diagramIdsToHighlight,
+                ...highlightDiagramIds,
               ],
               [HIGHLIGHT_STATUS.SINGLE_STEP]: [params.diagramId],
             }[status] || []

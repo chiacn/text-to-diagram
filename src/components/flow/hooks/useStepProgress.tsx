@@ -74,6 +74,7 @@ export default function useStepProgress({
 
   // highlightText 함수 정의: 여러 키워드와 일치하는 부분을 <span>으로 감싸기
   const highlightText = (text: string, keywords: string[]) => {
+    if (!focusSpreadedStep || focusSpreadedStep.length === 0) return text;
     if (!keywords || keywords.length === 0) return text;
 
     const escapedKeywords = keywords.map((keyword) => escapeRegExp(keyword));
