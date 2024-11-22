@@ -59,7 +59,7 @@ const DiagramTreeItem: React.FC<DiagramTreeItemProps> = ({
 
   return (
     <div
-      className={`relative rounded-xl border-[1px] p-4 my-2 transition-all duration-300 transform cursor-pointer max-w-[400px] min-w-[180px]
+      className={`relative rounded-3xl border-[1px] p-4 my-2 transition-all duration-300 transform cursor-pointer max-w-[400px] min-w-[180px]
                  ml-${depth * 5} bg-white ${
         !isExpanded ? "max-w-min max-h-min" : ""
       }`}
