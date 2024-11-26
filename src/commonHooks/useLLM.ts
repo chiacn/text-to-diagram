@@ -1,5 +1,6 @@
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
+import useCallLLM from "./useCallLLM";
 
 /*
   고민 및 TODOLIST 
@@ -17,6 +18,8 @@ export default function useLLM({
   model = "llama3-groq-70b-8192-tool-use-preview",
   service = "groq",
 }: LLMProps) {
+  const { callLLM } = useCallLLM();
+
   // State ----------------------------------------------------------
   const [inquiryType, setInquiryType] = useState<string | null>(null);
   // ----------------------------------------------------------------
@@ -49,21 +52,24 @@ export default function useLLM({
       const { result, message } = checkValidation();
       if (!result) throw new Error(message);
 
-      const response = await fetch("/api/llm", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(params),
-      });
+      // const response = await fetch("/api/llm", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(params),
+      // });
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch data");
-      }
+      // if (!response.ok) {
+      //   throw new Error("Failed to fetch data");
+      // }
 
-      const data = await response.json();
-      console.log("output --- ", data.output);
-      return data.output;
+      // const data = await response.json();
+
+      // * Note: github pages 배포 시 정적 페이지만 배포 가능하므로 api route 못 사용하지 못 하는 문제가 있어서 변경.
+      const response = await callLLM(params);
+      const data = response;
+      return data;
     } catch (e: any) {
       throw {
         variant: "warning",

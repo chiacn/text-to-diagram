@@ -92,7 +92,7 @@ export default function DiagramContainer() {
       let response;
       setIsLoading(true);
       if (json === null) {
-        response = await getAnswerFromModel(question);
+        response = (await getAnswerFromModel(question)) as any; // TODO: any - 추후 변경
       } else {
         response = json;
       }
