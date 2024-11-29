@@ -35,9 +35,7 @@ export default function PromptButtonDialog({
   return (
     <div className="m-8">
       <h3 className="mb-2 text-[16px] text-gray-80">
-        Use the copied prompt to generate JSON output using GPT or another LLM.
-        <br />
-        The input text for JSON should be filled in this textarea.
+        Input your question to generate a prompt.
       </h3>
       <div className="flex justify-center items-center gap-4 mb-8">
         <Textarea
@@ -59,8 +57,11 @@ export default function PromptButtonDialog({
           Get Prompt
         </CommonButton>
       </div>
-
-      <h3 className="mb-2 text-[16px] text-gray-80">Use the generated JSON</h3>
+      <h3 className="mb-2 text-[16px] text-gray-80">
+        Ask GPT or another LLM using the copied prompt,
+        <br />
+        then paste the received answer below the input box.
+      </h3>
       <div className="flex justify-center items-center gap-4">
         <Textarea
           name="Follow the specified JSON format."
