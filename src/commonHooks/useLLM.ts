@@ -89,20 +89,24 @@ export default function useLLM({
       const { result, message } = checkValidation();
       if (!result) throw new Error(message);
 
-      const response = await fetch("/api/llm", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(params),
-      });
+      // * Note: github pages 배포 시 정적 페이지만 배포 가능하므로 api route 못 사용하지 못 하는 문제가 있어서 변경.
+      // const response = await fetch("/api/llm", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(params),
+      // });
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch data");
-      }
+      // if (!response.ok) {
+      //   throw new Error("Failed to fetch data");
+      // }
 
-      const data = await response.json();
-      return data.output.kwargs.content;
+      // const data = await response.json();
+      // return data.output.kwargs.content;
+
+      const response: any = await callLLM(params);
+      return response.output.content;
     } catch (e: any) {
       throw {
         variant: "warning",
