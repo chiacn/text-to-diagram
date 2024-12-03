@@ -248,9 +248,9 @@ export default function useCallLLM() {
   //       ]
   //     }
   //   ]
-  //   Note: When developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached.
+  //   Note: Wh en developing each 'steps' array must include all recursive calls made within that step, fully expanded, until the end step is reached.
   // }
-
+  //"target": <Identify the specific element that literally matchs the INPUT TEXT within the logical context>,
   const userContent_rule_format_example = `
   Complete a [step-by-step example] following the [Guideline] and [format] below:
   [Guideline]:
@@ -266,11 +266,11 @@ export default function useCallLLM() {
     "steps": [  
       {  
         "step": <Step number>,  
-        "target": <Identify the element that corresponds to the INPUT TEXT within the logical context>,  
+        "target": <Identify the specific element that exactly matchs the INPUT TEXT within the logical context>,  
         "example": <Create a [use case] that applies to the target at this step>,  
         "description": <Explain the effects when the example is applied>,  
         "result": {
-          <Provide specific elements that are changed as a result at this step in the logical context>
+          <Provide specific elements that have been changed up to this step as a result within the logical context>
         },  
         "steps": []
       }  
@@ -308,6 +308,7 @@ export default function useCallLLM() {
   let userContent_rule_response = `
   RESPONSE RULE:
   - You must respond strictly in only JSON format.
+  - 'description' field is korean language.
 
   [INPUT TEXT]:
 `;
