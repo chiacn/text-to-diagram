@@ -135,6 +135,7 @@ export default function useStepProgress({
       submittedTextMaxHeight: 0,
       submittedTextRightPosition: 0,
     });
+    setIsSmaller(false);
   };
 
   useEffect(() => {
