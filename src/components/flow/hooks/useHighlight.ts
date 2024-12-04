@@ -47,9 +47,8 @@ export default function useHighlight({ inquiryType }: UseHighlightProps) {
             newHighlightItems = [...highlightItems, params.diagramId];
           }
           setHighlightItems(newHighlightItems);
-          // TODO: 여기까지함 - currentHighlightStatus 변경 시 -> currentHighlightStatus가 변경되고 그게 다시 useHandleDataStructure에서 감지돼서 focusSpreadedStep을 변경해줘야되는데 여기서 감지 안 돼서 그럼.
-          // 선택된 아이템이 있을 때는 SEPARATE_COLOR, 없을 때는 NONE으로 설정
 
+          // 선택된 아이템이 있을 때는 SEPARATE_COLOR, 없을 때는 NONE으로 설정
           if (newHighlightItems.length > 0) {
             setCurrentHighlightStatus({
               value: HIGHLIGHT_STATUS.SEPARATE_COLOR,
