@@ -209,7 +209,7 @@ export default function useStepProgress({
       const splitedRegex = text.split(regex);
 
       // 유사도가 0.5 이상이면
-      if (highestSimilarity >= 0.5) {
+      if (highestSimilarity >= 0.3) {
         // 가장 유사한 라인을 정규식으로 구분
         result = { matchingText: bestMatchLine, parts: [...splitedRegex] };
       } else {
