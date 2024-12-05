@@ -312,6 +312,58 @@ export default function useCallLLM() {
 
   [INPUT TEXT]:
 `;
+  const getResponseRuleByLanguage = () => {
+    // 기본 언어를 영어로 설정
+    let lang = "en";
+
+    // navigator가 정의되어 있는지 확인 (서버 사이드 렌더링 시 undefined일 수 있음)
+    if (typeof navigator !== "undefined") {
+      lang = navigator.language.toLowerCase();
+    }
+
+    lang = "ja";
+
+    if (lang.startsWith("ko")) {
+      return `
+      RESPONSE RULE:
+      - You must respond strictly in only JSON format.
+      - 'description' field is Korean language.
+      
+      [INPUT TEXT]:
+      `;
+    } else if (lang.startsWith("ja")) {
+      return `
+      RESPONSE RULE:
+      - You must respond strictly in only JSON format.
+      - 'description' field is japanese language.
+      
+      [INPUT TEXT]:
+      `;
+    } else if (lang.startsWith("zh")) {
+      return `
+      RESPONSE RULE:
+      - You must respond strictly in only JSON format.
+      - 'description' field is chinese language.
+      
+      [INPUT TEXT]:
+      `;
+    } else if (lang.startsWith("en")) {
+      return `
+      RESPONSE RULE:
+      - You must respond strictly in only JSON format.
+      
+      [INPUT TEXT]:
+      `;
+    } else {
+      // 지원하지 않는 언어일 경우 기본 영어 규칙 적용
+      return `
+      RESPONSE RULE:
+      - You must respond strictly in only JSON format.
+      
+      [INPUT TEXT]:
+      `;
+    }
+  };
 
   const setUserContentByInquiryType = (inquiryType: string, input: string) => {
     switch (inquiryType) {
@@ -320,7 +372,7 @@ export default function useCallLLM() {
           userContent_rule_guide +
           rule_guide_displayType_tree +
           userContent_rule_format_tree +
-          userContent_rule_response +
+          getResponseRuleByLanguage() +
           `${input}`
         );
       case "list_compare":
@@ -328,14 +380,14 @@ export default function useCallLLM() {
           userContent_rule_guide +
           rule_guide_displayType_list_compare +
           userContent_rule_format_list_compare +
-          userContent_rule_response +
+          getResponseRuleByLanguage() +
           `${input}`
         );
       case "example":
         return (
           userContent_rule_guide +
           userContent_rule_format_example +
-          userContent_rule_response +
+          getResponseRuleByLanguage() +
           `${input}`
         );
       case "logical_progression":
@@ -343,7 +395,7 @@ export default function useCallLLM() {
           userContent_rule_guide +
           rule_guide_displayType_logical_progression +
           userContent_rule_format_logical_progression +
-          userContent_rule_response +
+          getResponseRuleByLanguage() +
           `${input}`
         );
       default:
