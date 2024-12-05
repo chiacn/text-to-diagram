@@ -321,8 +321,6 @@ export default function useCallLLM() {
       lang = navigator.language.toLowerCase();
     }
 
-    lang = "ja";
-
     if (lang.startsWith("ko")) {
       return `
       RESPONSE RULE:
