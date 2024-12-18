@@ -152,7 +152,7 @@ export default function useStepProgress({
   }) {
     const escapedKeywords = changeApostrophe(escapeRegex(keywords[0]));
     const regex = new RegExp(`(${escapedKeywords})`, "gi");
-    const splitedRegex = text.split(regex);
+    const splitedRegex = text?.split(regex);
 
     // console.log("splitedRegex :: ", splitedRegex);
     // console.log("matchingText --- ", keywords[0]);
@@ -220,8 +220,8 @@ export default function useStepProgress({
     return result;
   }
   // 특수문자 이스케이프 처리 함수
-  function escapeRegex(string: string) {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  function escapeRegex(str: string) {
+    return str?.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
   function changeApostrophe(text: string) {
@@ -258,11 +258,7 @@ export default function useStepProgress({
   }
 
   useEffect(() => {
-    // Note: tree일 경우 node 요소 클릭 시 highlight 되도록
-    if (currentHighlightStatus !== 0 && inquiryType === "tree") {
-      setProgressActive(true);
-      setHighlightText();
-    } else if (currentHighlightStatus === 0 || currentHighlightStatus === 1) {
+    if (currentHighlightStatus === 0 || currentHighlightStatus === 1) {
       resetProgress();
     }
   }, [currentHighlightStatus, focusSpreadedStep]);

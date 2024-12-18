@@ -91,8 +91,8 @@ export default function SubmittedText({
     }
 
     // 배열로 들어감.
-    const matchingTextArr = focusSpreadedStep?.map(
-      (item: DiagramItem) => item.target,
+    const matchingTextArr = focusSpreadedStep?.map((item: DiagramItem) =>
+      inquiryType === "tree" ? item.element_name : item.target,
     );
 
     const highlightedText = highlightText(submittedText, matchingTextArr ?? []);
