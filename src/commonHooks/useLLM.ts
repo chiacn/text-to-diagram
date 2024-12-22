@@ -45,7 +45,7 @@ export default function useLLM({
       inquiryType,
       serviceInfo: {
         service: "groq",
-        model: "llama3-groq-70b-8192-tool-use-preview",
+        model: "llama-3.3-70b-versatile",
       },
     };
     try {
