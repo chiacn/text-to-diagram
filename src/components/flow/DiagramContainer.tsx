@@ -80,6 +80,240 @@ export default function DiagramContainer() {
     }
   };
 
+  const getExample = async () => {
+    const input = `
+        function solution(n) {
+          let answer = [];
+          const hanoi = (n, from, to, via) => {
+              if (n === 1) answer.push([from, to]); 
+              else {
+                
+                  
+                  hanoi(n - 1, from, via, to);
+                  answer.push([from, to]);
+                  hanoi(n - 1, via, to, from);
+              }
+          } 
+          hanoi(n, 1, 3, 2);
+          return answer;
+      }
+    `;
+
+    const exampleJson = `{
+      "target": "function solution(n)",
+      "example": "function solution(3)",
+      "steps": [
+        {
+          "step": "1",
+          "target": "function solution(n)",
+          "example": "function solution(3)",
+          "description": "The function solution(n) is called with the argument n=3.",
+          "result": {
+            "answer": []
+          },
+          "steps": [
+            {
+              "step": "1.1",
+              "target": "hanoi(n, from, to, via)",
+              "example": "hanoi(3, 1, 3, 2)",
+              "description": "The hanoi function is called with n=3, from=1, to=3, and via=2.",
+              "result": {
+                "answer": []
+              },
+              "steps": [
+                {
+                  "step": "1.1.1",
+                  "target": "hanoi(n - 1, from, via, to)",
+                  "example": "hanoi(2, 1, 2, 3)",
+                  "description": "The hanoi function is called recursively with n=2, from=1, to=2, and via=3.",
+                  "result": {
+                    "answer": []
+                  },
+                  "steps": [
+                    {
+                      "step": "1.1.1.1",
+                      "target": "hanoi(n - 1, from, via, to)",
+                      "example": "hanoi(1, 1, 3, 2)",
+                      "description": "The hanoi function is called recursively with n=1, from=1, to=3, and via=2.",
+                      "result": {
+                        "answer": []
+                      },
+                      "steps": [
+                        {
+                          "step": "1.1.1.1.1",
+                          "target": "answer.push([from, to]);",
+                          "example": "answer.push([1, 3]);",
+                          "description": "The base case of the recursion is reached, and the move from peg 1 to peg 3 is added to the answer array.",
+                          "result": {
+                            "answer": [[1, 3]]
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "step": "1.1.1.2",
+                      "target": "answer.push([from, to]);",
+                      "example": "answer.push([1, 2]);",
+                      "description": "The move from peg 1 to peg 2 is added to the answer array.",
+                      "result": {
+                        "answer": [
+                          [1, 3],
+                          [1, 2]
+                        ]
+                      }
+                    },
+                    {
+                      "step": "1.1.1.3",
+                      "target": "hanoi(n - 1, via, to, from)",
+                      "example": "hanoi(1, 2, 3, 1)",
+                      "description": "The hanoi function is called recursively with n=1, from=2, to=3, and via=1.",
+                      "result": {
+                        "answer": [
+                          [1, 3],
+                          [1, 2]
+                        ]
+                      },
+                      "steps": [
+                        {
+                          "step": "1.1.1.3.1",
+                          "target": "answer.push([from, to]);",
+                          "example": "answer.push([2, 3]);",
+                          "description": "The base case of the recursion is reached, and the move from peg 2 to peg 3 is added to the answer array.",
+                          "result": {
+                            "answer": [
+                              [1, 3],
+                              [1, 2],
+                              [2, 3]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "step": "1.1.2",
+                  "target": "answer.push([from, to]);",
+                  "example": "answer.push([1, 3]);",
+                  "description": "The move from peg 1 to peg 3 is added to the answer array.",
+                  "result": {
+                    "answer": [
+                      [1, 3],
+                      [1, 2],
+                      [2, 3],
+                      [1, 3]
+                    ]
+                  }
+                },
+                {
+                  "step": "1.1.3",
+                  "target": "hanoi(n - 1, via, to, from)",
+                  "example": "hanoi(2, 2, 3, 1)",
+                  "description": "The hanoi function is called recursively with n=2, from=2, to=3, and via=1.",
+                  "result": {
+                    "answer": [
+                      [1, 3],
+                      [1, 2],
+                      [2, 3],
+                      [1, 3]
+                    ]
+                  },
+                  "steps": [
+                    {
+                      "step": "1.1.3.1",
+                      "target": "hanoi(n - 1, from, via, to)",
+                      "example": "hanoi(1, 2, 1, 3)",
+                      "description": "The hanoi function is called recursively with n=1, from=2, to=1, and via=3.",
+                      "result": {
+                        "answer": [
+                          [1, 3],
+                          [1, 2],
+                          [2, 3],
+                          [1, 3]
+                        ]
+                      },
+                      "steps": [
+                        {
+                          "step": "1.1.3.1.1",
+                          "target": "answer.push([from, to]);",
+                          "example": "answer.push([2, 1]);",
+                          "description": "The base case of the recursion is reached, and the move from peg 2 to peg 1 is added to the answer array.",
+                          "result": {
+                            "answer": [
+                              [1, 3],
+                              [1, 2],
+                              [2, 3],
+                              [1, 3],
+                              [2, 1]
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "step": "1.1.3.2",
+                      "target": "answer.push([from, to]);",
+                      "example": "answer.push([2, 3]);",
+                      "description": "The move from peg 2 to peg 3 is added to the answer array.",
+                      "result": {
+                        "answer": [
+                          [1, 3],
+                          [1, 2],
+                          [2, 3],
+                          [1, 3],
+                          [2, 1],
+                          [2, 3]
+                        ]
+                      }
+                    },
+                    {
+                      "step": "1.1.3.3",
+                      "target": "hanoi(n - 1, via, to, from)",
+                      "example": "hanoi(1, 1, 3, 2)",
+                      "description": "The hanoi function is called recursively with n=1, from=1, to=3, and via=2.",
+                      "result": {
+                        "answer": [
+                          [1, 3],
+                          [1, 2],
+                          [2, 3],
+                          [1, 3],
+                          [2, 1],
+                          [2, 3]
+                        ]
+                      },
+                      "steps": [
+                        {
+                          "step": "1.1.3.3.1",
+                          "target": "answer.push([from, to]);",
+                          "example": "answer.push([1, 3]);",
+                          "description": "The base case of the recursion is reached, and the move from peg 1 to peg 3 is added to the answer array.",
+                          "result": {
+                            "answer": [
+                              [1, 3],
+                              [1, 2],
+                              [2, 3],
+                              [1, 3],
+                              [2, 1],
+                              [2, 3],
+                              [1, 3]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }`;
+
+    setInquiryType("example");
+    submitPrompt(exampleJson as any, input, true);
+  };
+
   function fixJSON(jsonString: string) {
     return jsonString.replace(/"step":\s*([\d.]+)/g, '"step": "$1"');
   }
@@ -87,6 +321,7 @@ export default function DiagramContainer() {
   const submitPrompt = async (
     json: string | null = null,
     tempQuestion: string | null = null,
+    isExample: boolean = false,
   ) => {
     try {
       let response;
@@ -101,7 +336,7 @@ export default function DiagramContainer() {
       const fixedJSONString = fixJSON(jsonString);
 
       const validation = validateJsonFormat(fixedJSONString);
-      if (!validation.result) throw new Error(validation.message);
+      if (!validation.result && !isExample) throw new Error(validation.message);
 
       resetData();
 
@@ -296,6 +531,14 @@ export default function DiagramContainer() {
             getCopyPrompt={getCopyPrompt}
             submitPrompt={submitPrompt}
           />
+          <CommonButton
+            onClick={getExample}
+            className="min-w-[90px] h-[90px] ml-2 flex-1 justify-center item-center"
+            isLoading={isLoading}
+            variant={"outline"}
+          >
+            Example
+          </CommonButton>
         </div>
       </div>
 
