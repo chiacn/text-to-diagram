@@ -47,7 +47,7 @@ export default function StepProgressItem({
       ref={stepProgressItemRef}
       style={{
         left: stepOffsetInfo.longestLinePosition + 40,
-        top: 80,
+        top: stepOffsetInfo.submittedTextMinHeight < 200 ? 20 : 80,
       }}
     >
       <div className="w-[520px] rounded-xl shadow-lg border border-gray-200 p-4 my-4 transition-transform transform hover:scale-105 hover:shadow-xl cursor-pointer bg-white">
