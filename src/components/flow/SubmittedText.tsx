@@ -45,10 +45,6 @@ export default function SubmittedText({
     inquiryType,
   });
 
-  useEffect(() => {
-    console.log("uiInfo ---- ", stepOffsetInfo);
-  }, [stepOffsetInfo]);
-
   // 특수 문자를 이스케이프하는 함수
   const escapeRegExp = (string: string) => {
     return string?.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
