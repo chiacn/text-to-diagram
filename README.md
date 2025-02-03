@@ -1,36 +1,21 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## 프로젝트 개요
 
-## Getting Started
+주어진 text의 효율적인 이해를 위해, LLM을 이용하여 입력된 TEXT를 각각 tree, example, logical progression의 형태로 제공하는 서비스입니다.
 
-First, run the development server:
+## 사용 기술
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Next14
+- typescript
+- shadcn ui
+- tailwind
+- Langchain.js
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 주요 구현 사항
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. 입력한 text를 **llm으로 분석**해 선택한 response type (example, logical progression, tree)의 json 형태로 반환하는 로직 구현
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+2. LLM으로부터 얻은 JSON을 dfs로 분석해 각 노드를 출력해주는 ui를 **재귀 컴포넌트**로 구현
 
-## Learn More
+3. 사용자가 각 diagram을 클릭하면 해당 diagram과 해당되는 text를 **highlight처리**해주는 로직 구현
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+4. dfs 탐색으로 JSON 노드를 일렬화하고 play 버튼 클릭 시 그에 맞게 **text의 로직을 전개**해주는 기능 구현
