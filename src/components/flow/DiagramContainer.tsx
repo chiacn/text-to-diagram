@@ -1,82 +1,146 @@
 "use client";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import DiagramItem from "./DiagramItem";
-import useLLM from "@/commonHooks/useLLM";
-import CommonToggleGroups from "../CommonTogleGroup";
+import { useState, useMemo } from "react";
 import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
-import SubmittedText from "./SubmittedText";
-import useHighlight from "./hooks/useHighlight";
-import useHandleDataStructure from "./hooks/useHandleDataStructure";
-import test from "node:test";
-import useDiagram from "./hooks/useDiagram";
-import PromptButton from "./PromptButton";
-import { toast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
 import CommonButton from "../CommonButton";
+import PromptButton from "./PromptButton";
+import SubmittedText from "./SubmittedText";
+import { COLOR_PALETTE } from "@/constants";
+
+import {
+  useInquiryType,
+  useSetInquiryType,
+  useInquiryTypesList,
+  useLLMActions,
+} from "@/contexts/LLMContext";
+import {
+  useStructure,
+  useStructureDispatch,
+} from "@/contexts/StructureContext";
+import {
+  useHighlightItems,
+  useCurrentHighlightStatus,
+  useResetHighlight,
+} from "@/contexts/HighlightContext";
+import {
+  useEntireSpreadedStep,
+  useFocusSpreadedStep,
+  useResetDataStructure,
+} from "@/contexts/StepContext";
+import { useRender } from "@/contexts/RenderContext";
+import { toast } from "@/hooks/use-toast";
+import CommonToggleGroups from "../CommonTogleGroup";
 
 export default function DiagramContainer() {
-  // LLM 테스트 ---------------------------------------------
+  /* LLM */
+  const inquiryType = useInquiryType();
+  const setInquiryType = useSetInquiryType();
+  const inquiryList = useInquiryTypesList();
+  const { getAnswer, isLoading } = useLLMActions();
 
-  const {
-    getAnswerFromModel,
-    inquiryType,
-    setInquiryType,
-    inquiryTypeList,
-    getPromptByInputText,
-  } = useLLM({});
+  /* Structure */
+  const structure = useStructure();
+  const structureDispatch = useStructureDispatch();
+
+  /* Highlight */
+  const highlightItems = useHighlightItems();
+  const currentHighlightStatus = useCurrentHighlightStatus();
+  const resetHighlight = useResetHighlight();
+
+  /* Step */
+  const entireSpreadedStep = useEntireSpreadedStep();
+  const focusSpreadedStep = useFocusSpreadedStep();
+  const resetDataStructure = useResetDataStructure();
+
+  /* Render */
+  const { renderDiagramItems, contentWrapperRef } = useRender();
+
+  /* local */
   const [question, setQuestion] = useState("");
-  const [structure, setStructure] = useState(null);
   const [submittedText, setSubmittedText] = useState("");
-  const [isOpenSubmittedText, setIsOpenSubmittedText] = useState(false); // 영역 접기/펼치기 상태
+  const [isOpenSubmittedText, setIsOpenSubmittedText] = useState(false);
 
-  const {
-    highlightItems,
-    handleDiagramItem,
-    diagramItemsListRef,
-    currentHighlightStatus,
-    colorPalette,
-    targetColorMap,
-    resetHighlight,
-  } = useHighlight({ inquiryType });
-  const {
-    setSpreadSteps,
-    entireSpreadedStep,
-    focusSpreadedStep,
-    assignDiagramIds,
-    resetDataStructure,
-  } = useHandleDataStructure({
-    highlightItems,
-    currentHighlightStatus,
-    structure,
-    inquiryType,
-  });
+  const colorMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    highlightItems.forEach(
+      (id, i) => (map[id] = COLOR_PALETTE[i % COLOR_PALETTE.length]),
+    );
+    return map;
+  }, [highlightItems]);
 
-  const { renderDiagramItems } = useDiagram({
-    diagramItemsListRef,
-    currentHighlightStatus,
-    colorPalette,
-    targetColorMap,
-    handleDiagramItem,
-    highlightItems,
-    inquiryType,
-  });
+  /* handlers */
+  const changeInquiryType = (type: string) => {
+    setInquiryType(type);
+    structureDispatch({ type: "RESET_STRUCTURE" });
+    resetHighlight();
+    setSubmittedText("");
+    setIsOpenSubmittedText(false);
+  };
 
-  const [isLoading, setIsLoading] = useState(false);
+  // const onSubmit = async () => {
+  //   try {
+  //     const raw = await getAnswer(question);
+  //     const json = JSON.parse(raw);
+  //     structureDispatch({ type: "SET_STRUCTURE", payload: json });
+  //     setSubmittedText(question);
+  //     setIsOpenSubmittedText(true);
+  //   } catch (e: any) {
+  //     toast({ variant: "destructive", description: e.message });
+  //   }
+  // };
 
-  const getCopyPrompt = async (input: string) => {
+  const resetData = () => {
+    structureDispatch({ type: "RESET_STRUCTURE" });
+    setSubmittedText("");
+    setIsOpenSubmittedText(false);
+    resetHighlight();
+    resetDataStructure();
+  };
+
+  const submitPrompt = async (
+    json: string | null,
+    tempQuestion: string | null = null,
+    isExample: boolean = false,
+  ) => {
     try {
-      const copied = await getPromptByInputText(input);
-      await navigator.clipboard.writeText(copied || "");
+      let response;
+
+      if (!json) {
+        // jsonInput이 null인 경우 -> llm에게 질의
+        response = await getAnswer(question);
+      } else {
+        response = json;
+      }
+      const match = response.match(/{[\s\S]*}/);
+      let jsonString = match ? match[0] : "{}";
+      const fixedJSONString = fixJSON(jsonString);
+
+      /* 2) JSON 검증 */
+      const validation = validateJsonFormat(fixedJSONString);
+      if (!validation.result && !isExample) throw new Error(validation.message);
+
+      resetData();
+
+      /* 3) 구조 세팅 */
+      const parsedJson = JSON.parse(fixedJSONString);
+      // refactor: 기존 setSpreadSteps({ ...assignDiagramIds(parsedJson) }) -> structureDispatch - type: "SET_STRUCTURE" 로 변경
+      structureDispatch({ type: "SET_STRUCTURE", payload: parsedJson });
+
+      if (json && tempQuestion) {
+        setSubmittedText(tempQuestion);
+      } else {
+        setSubmittedText(question);
+      }
+      setIsOpenSubmittedText(true);
+
+      return { result: true, message: "Success!" };
+    } catch (e: any) {
+      resetData();
       toast({
-        variant: "info",
-        description: "Copied!",
+        variant: e.variant ? e.variant : "destructive",
+        description: e?.message,
       });
-    } catch (error: any) {
-      toast({
-        variant: error.variant ? error.variant : "destructive",
-        description: error?.message,
-      });
+      console.error("Failed to parse JSON:", e);
+      return { result: false, message: e.message };
     }
   };
 
@@ -318,61 +382,10 @@ export default function DiagramContainer() {
     return jsonString.replace(/"step":\s*([\d.]+)/g, '"step": "$1"');
   }
 
-  const submitPrompt = async (
-    json: string | null = null,
-    tempQuestion: string | null = null,
-    isExample: boolean = false,
-  ) => {
-    try {
-      let response;
-      setIsLoading(true);
-      if (json === null) {
-        response = (await getAnswerFromModel(question)) as any; // TODO: any - 추후 변경
-      } else {
-        response = json;
-      }
-      const match = response.match(/{[\s\S]*}/);
-      let jsonString = match ? match[0] : "{}";
-      const fixedJSONString = fixJSON(jsonString);
-
-      const validation = validateJsonFormat(fixedJSONString);
-      if (!validation.result && !isExample) throw new Error(validation.message);
-
-      resetData();
-
-      const parsedJson = JSON.parse(fixedJSONString);
-
-      setStructure({ ...assignDiagramIds(parsedJson) });
-      if (json && tempQuestion) {
-        setSubmittedText(tempQuestion);
-      } else {
-        setSubmittedText(question);
-      }
-      setIsOpenSubmittedText(true);
-      // Note: setState - 비동기적으로 업데이트되고, 다음 렌더링 사이클에 상태 업데이트를 적용되므로
-      // structure를 사용하지 않고 assignDiagramIds(json) 그대로 사용.
-      setSpreadSteps({ ...assignDiagramIds(parsedJson) });
-
-      return {
-        result: true,
-        message: "Success!",
-      };
-    } catch (error: any) {
-      resetData();
-      toast({
-        variant: error.variant ? error.variant : "destructive",
-        description: error?.message,
-      });
-      console.error("Failed to parse JSON:", error);
-
-      return {
-        // PromptButtomDialog용
-        result: false,
-        message: error.message,
-      };
-    } finally {
-      setIsLoading(false);
-    }
+  const checkValidation = () => {
+    if (!inquiryType)
+      throw { result: false, message: "Please select inquiry type." };
+    return { result: true, message: "Success" };
   };
 
   const validateJsonFormat = (str: string) => {
@@ -441,140 +454,53 @@ export default function DiagramContainer() {
     }
   };
 
-  const checkValidation = () => {
-    if (!inquiryType)
-      throw { result: false, message: "Please select inquiry type." };
-    return { result: true, message: "Success" };
-  };
-
-  const resetData = () => {
-    setStructure(null);
-    setSubmittedText("");
-    setIsOpenSubmittedText(false);
-    resetHighlight();
-    resetDataStructure();
-  };
-
-  const [contentWidth, setContentWidth] = useState(0);
-  const contentWrapperRef = useRef<any>(null); // 최상위 depth=1의 width만 추적할 ref
-
-  const changeInquiryType = (type: string) => {
-    setStructure(null);
-    setSubmittedText("");
-    setIsOpenSubmittedText(false);
-    resetHighlight();
-    resetDataStructure();
-    setInquiryType(type);
-  };
-  useEffect(() => {
-    const updateContentWidth = () => {
-      if (contentWrapperRef.current) {
-        console.log(
-          "contentWrapperRef.current.offsetWidth",
-          contentWrapperRef.current.offsetWidth,
-        );
-        setContentWidth(contentWrapperRef.current.offsetWidth + 40);
-      }
-    };
-
-    updateContentWidth(); // 초기 렌더링 시 설정
-
-    window.addEventListener("resize", updateContentWidth); // 윈도우 리사이즈 시 업데이트
-    return () => {
-      window.removeEventListener("resize", updateContentWidth); // 컴포넌트 언마운트 시 클린업
-    };
-  }, []);
-
-  const topScrollRef = useRef<HTMLDivElement | any>(null);
-  const bottomScrollRef = useRef<HTMLDivElement | any>(null);
-  const syncScroll = (source: string) => {
-    if (source === "top") {
-      bottomScrollRef.current.scrollLeft = topScrollRef.current.scrollLeft;
-    } else {
-      topScrollRef.current.scrollLeft = bottomScrollRef.current.scrollLeft;
-    }
-  };
-
   return (
-    // Note: <></>로 구성 시 DOM 요소를 생성하지 않아서 flow에 문제가 발생할 수 있음.
-    <div>
-      <div
-        className="flex flex-col justify-center items-center w-[80vw]"
-        style={{
-          maxWidth: `${
-            !contentWidth || contentWidth < 500 ? 1000 : contentWidth
-          }px`,
-        }}
-      >
-        <CommonToggleGroups
-          items={inquiryTypeList}
-          selectedValue={inquiryType}
-          changeInquiryType={changeInquiryType}
-          gap={80}
+    <div className="flex flex-col items-center w-[80vw]">
+      {/* ── 입력 영역 ───────────────────────── */}
+      <CommonToggleGroups
+        items={inquiryList}
+        selectedValue={inquiryType}
+        changeInquiryType={changeInquiryType}
+        gap={80}
+      />
+      <div className="flex w-full mt-4">
+        <Textarea
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          className="border flex-4 w-full h-[90px]"
         />
-        <div className="flex w-full mt-4">
-          <Textarea
-            name="postContent"
-            rows={4}
-            cols={40}
-            onChange={(e) => setQuestion(e.target.value)}
-            className={`border border-gray-300 flex-4 w-full h-[90px]`}
-          ></Textarea>
-          <CommonButton
-            onClick={submitPrompt}
-            className="min-w-[90px] h-[90px] ml-2 flex-1 justify-center item-center"
-            isLoading={isLoading}
-          >
-            Submit
-          </CommonButton>
-          <PromptButton
-            getCopyPrompt={getCopyPrompt}
-            submitPrompt={submitPrompt}
-          />
-          <CommonButton
-            onClick={getExample}
-            className="min-w-[90px] h-[90px] ml-2 flex-1 justify-center item-center"
-            isLoading={isLoading}
-            variant={"outline"}
-          >
-            Example
-          </CommonButton>
-        </div>
-      </div>
-
-      <div className="sticky top-0 z-20">
-        <SubmittedText
-          submittedText={submittedText}
-          isOpenSubmittedText={isOpenSubmittedText}
-          setIsOpenSubmittedText={setIsOpenSubmittedText}
-          currentHighlightStatus={currentHighlightStatus.value}
-          entireSpreadedStep={entireSpreadedStep}
-          focusSpreadedStep={focusSpreadedStep}
-          targetColorMap={targetColorMap.current}
-          inquiryType={inquiryType}
-        />
-
-        {/* 상단 스크롤 ---------------------------------------------------- */}
-        <div
-          ref={topScrollRef}
-          onScroll={() => syncScroll("top")}
-          className="scrollbar-custom w-[80vw] mt-2"
+        <CommonButton
+          onClick={submitPrompt}
+          className="min-w-[90px] h-[90px] ml-2 flex-1"
+          isLoading={isLoading}
         >
-          <div
-            className="h-[2px]"
-            style={{ width: `${contentWidth}px` }} // Inner div
-          ></div>
-        </div>
-        {/* ---------------------------------------------------------------- */}
+          Submit
+        </CommonButton>
+        <PromptButton submitPrompt={submitPrompt} />
+        <CommonButton
+          onClick={getExample}
+          className="min-w-[90px] h-[90px] ml-2 flex-1 justify-center item-center"
+          isLoading={isLoading}
+          variant={"outline"}
+        >
+          Example
+        </CommonButton>
       </div>
 
-      <div
-        ref={bottomScrollRef}
-        onScroll={() => syncScroll("bottom")}
-        className="scrollbar-custom w-[80vw] min-h-min flex flex-col overflow-x-auto"
-      >
+      {/* ── 텍스트 & 다이어그램 ────────────── */}
+      <SubmittedText
+        submittedText={submittedText}
+        isOpenSubmittedText={isOpenSubmittedText}
+        setIsOpenSubmittedText={setIsOpenSubmittedText}
+        entireSpreadedStep={entireSpreadedStep}
+        focusSpreadedStep={focusSpreadedStep}
+        currentHighlightStatus={currentHighlightStatus.value}
+        targetColorMap={colorMap}
+        inquiryType={inquiryType}
+      />
+
+      <div ref={contentWrapperRef} className="mt-4 w-full">
         {structure && renderDiagramItems(structure)}
-        {/* {testStructure && renderDiagramItems(testStructure)} */}
       </div>
     </div>
   );
