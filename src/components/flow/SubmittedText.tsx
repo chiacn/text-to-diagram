@@ -11,19 +11,18 @@ import {
   useFocusSpreadedStep,
 } from "@/contexts/StepContext";
 import { COLOR_PALETTE } from "@/constants";
+import { useInquiryType } from "@/contexts/LLMContext";
 
 interface SubmittedTextProps {
   submittedText: string;
   isOpenSubmittedText: boolean;
   setIsOpenSubmittedText: (isOpenSubmittedText: boolean) => void;
-  inquiryType: string | null;
 }
 
 export default function SubmittedText({
   submittedText,
   isOpenSubmittedText,
   setIsOpenSubmittedText,
-  inquiryType,
 }: SubmittedTextProps) {
   const [displayText, setDisplayText] = useState<
     string | (string | JSX.Element)[]
@@ -36,6 +35,8 @@ export default function SubmittedText({
   /* Step */
   const entireSpreadedStep = useEntireSpreadedStep();
   const focusSpreadedStep = useFocusSpreadedStep();
+
+  const inquiryType = useInquiryType();
 
   const targetColorMap = useMemo(() => {
     const map: Record<string, string> = {};
