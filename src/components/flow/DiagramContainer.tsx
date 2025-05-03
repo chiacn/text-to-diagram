@@ -4,7 +4,6 @@ import { Textarea } from "../ui/textarea";
 import CommonButton from "../CommonButton";
 import PromptButton from "./PromptButton";
 import SubmittedText from "./SubmittedText";
-import { COLOR_PALETTE } from "@/constants";
 
 import {
   useInquiryType,
@@ -16,16 +15,8 @@ import {
   useStructure,
   useStructureDispatch,
 } from "@/contexts/StructureContext";
-import {
-  useHighlightItems,
-  useCurrentHighlightStatus,
-  useResetHighlight,
-} from "@/contexts/HighlightContext";
-import {
-  useEntireSpreadedStep,
-  useFocusSpreadedStep,
-  useResetDataStructure,
-} from "@/contexts/StepContext";
+import { useResetHighlight } from "@/contexts/HighlightContext";
+import { useResetDataStructure } from "@/contexts/StepContext";
 import { useRender } from "@/contexts/RenderContext";
 import { toast } from "@/hooks/use-toast";
 import CommonToggleGroups from "../CommonTogleGroup";
@@ -42,13 +33,9 @@ export default function DiagramContainer() {
   const structureDispatch = useStructureDispatch();
 
   /* Highlight */
-  const highlightItems = useHighlightItems();
-  const currentHighlightStatus = useCurrentHighlightStatus();
   const resetHighlight = useResetHighlight();
 
   /* Step */
-  const entireSpreadedStep = useEntireSpreadedStep();
-  const focusSpreadedStep = useFocusSpreadedStep();
   const resetDataStructure = useResetDataStructure();
 
   /* Render */
@@ -58,14 +45,6 @@ export default function DiagramContainer() {
   const [question, setQuestion] = useState("");
   const [submittedText, setSubmittedText] = useState("");
   const [isOpenSubmittedText, setIsOpenSubmittedText] = useState(false);
-
-  const colorMap = useMemo(() => {
-    const map: Record<string, string> = {};
-    highlightItems.forEach(
-      (id, i) => (map[id] = COLOR_PALETTE[i % COLOR_PALETTE.length]),
-    );
-    return map;
-  }, [highlightItems]);
 
   /* handlers */
   const changeInquiryType = (type: string) => {
@@ -492,10 +471,6 @@ export default function DiagramContainer() {
         submittedText={submittedText}
         isOpenSubmittedText={isOpenSubmittedText}
         setIsOpenSubmittedText={setIsOpenSubmittedText}
-        entireSpreadedStep={entireSpreadedStep}
-        focusSpreadedStep={focusSpreadedStep}
-        currentHighlightStatus={currentHighlightStatus.value}
-        targetColorMap={colorMap}
         inquiryType={inquiryType}
       />
 
