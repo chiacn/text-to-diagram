@@ -43,4 +43,9 @@ export const RenderProvider = ({ children }: { children: ReactNode }) => {
 };
 
 /* ─────────── 셀렉터 ─────────── */
-export const useRender = () => useContextSelector(RenderCtx, (v) => v!);
+// export const useRender = () => useContextSelector(RenderCtx, (v) => v!);
+export const useRenderItems = () =>
+  useContextSelector(RenderCtx, (v) => v!.renderDiagramItems);
+
+export const useContentWrapperRef = () =>
+  useContextSelector(RenderCtx, (v) => v!.contentWrapperRef);
