@@ -14,7 +14,13 @@ interface StepSlice {
   focusSpreadedStep: any[];
   resetDataStructure: () => void;
 }
-const StepCtx = createContext<StepSlice | null>(null);
+
+type StepCtx = ReturnType<typeof useHandleDataStructure>;
+type StepState = Pick<StepCtx, "entireSpreadedStep" | "focusSpreadedStep">;
+type StepActions = Pick<StepCtx, "resetDataStructure">;
+
+const StepStateCtx = createContext<StepState | null>(null);
+const StepActionsCtx = createContext<StepActions | null>(null);
 
 export const StepProvider = ({ children }: { children: ReactNode }) => {
   const structure = useStructure();
@@ -44,18 +50,34 @@ export const StepProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [structure]);
 
-  const stable = useMemo(
-    () => ({ entireSpreadedStep, focusSpreadedStep, resetDataStructure }),
+  const stableState = useMemo(
+    () => ({
+      entireSpreadedStep,
+      focusSpreadedStep,
+    }),
     [entireSpreadedStep, focusSpreadedStep],
   );
 
-  return <StepCtx.Provider value={stable}>{children}</StepCtx.Provider>;
+  const stableActions = useMemo(
+    () => ({
+      resetDataStructure,
+    }),
+    [resetDataStructure],
+  );
+
+  return (
+    <StepActionsCtx.Provider value={stableActions}>
+      <StepStateCtx.Provider value={stableState}>
+        {children}
+      </StepStateCtx.Provider>
+    </StepActionsCtx.Provider>
+  );
 };
 
 /* ─────────── 셀렉터 ─────────── */
 export const useEntireSpreadedStep = () =>
-  useContextSelector(StepCtx, (v) => v!.entireSpreadedStep);
+  useContextSelector(StepStateCtx, (v) => v!.entireSpreadedStep);
 export const useFocusSpreadedStep = () =>
-  useContextSelector(StepCtx, (v) => v!.focusSpreadedStep);
+  useContextSelector(StepStateCtx, (v) => v!.focusSpreadedStep);
 export const useResetDataStructure = () =>
-  useContextSelector(StepCtx, (v) => v!.resetDataStructure);
+  useContextSelector(StepActionsCtx, (v) => v!.resetDataStructure);
