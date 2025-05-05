@@ -11,8 +11,6 @@ import { useResetDataStructure } from "@/contexts/StepContext";
 import { useLLMActions } from "@/contexts/LLMContext";
 
 export default function DiagramContainer() {
-  console.log("DiagramContainer Render -----------------------");
-
   /*
    !Rendering Test 
     1. <RenderDiagram />에서 비롯된 highlightItems 변경 시 => <PromptInputArea />가 렌더링 되는 상황.

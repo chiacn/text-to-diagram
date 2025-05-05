@@ -23,7 +23,6 @@ export default function PromptInputArea({
   setSubmittedText,
   setIsOpenSubmittedText,
 }: PromptInputAreaProps) {
-  console.log('"PromptInputArea Render -----------------------"');
   const inquiryList = useInquiryTypesList();
   const inquiryType = useInquiryType();
   const setInquiryType = useSetInquiryType();
@@ -61,7 +60,7 @@ export default function PromptInputArea({
     isExample: boolean = false,
   ) => {
     try {
-      let response;
+      let response: any; // TODO: 타입 정의하기
 
       if (!json) {
         // jsonInput이 null인 경우 -> llm에게 질의
