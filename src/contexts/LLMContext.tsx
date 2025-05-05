@@ -1,13 +1,13 @@
 "use client";
 import { createContext, useContextSelector } from "use-context-selector";
 import { ReactNode, useState, useMemo } from "react";
-import useCallLLM from "@/commonHooks/useCallLLM";
+import useLLM from "@/commonHooks/useLLM";
 
 interface LLMState {
   inquiryType: string | null;
   setInquiryType: (v: string) => void;
   inquiryTypeList: { value: string; label: string }[];
-  getAnswer: (input: string) => Promise<string>;
+  getAnswer: (input: string, topic?: string) => Promise<string | object>;
   getPrompt: (input: string) => Promise<string>;
   getPromptByInputText: (input: string) => Promise<string>;
   isLoading: boolean;
@@ -16,61 +16,45 @@ interface LLMState {
 const LLMContext = createContext<LLMState | null>(null);
 
 export const LLMProvider = ({ children }: { children: ReactNode }) => {
-  const { callLLM } = useCallLLM();
-  const [inquiryType, setInquiryType] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    getAnswerFromModel,
+    getPromptByInputText,
+    inquiryType,
+    setInquiryType,
+    inquiryTypeList,
+  } = useLLM({});
 
-  const inquiryTypeList = [
-    { value: "tree", label: "Tree" },
-    { value: "example", label: "Example" },
-    { value: "logical_progression", label: "Logical Progression" },
-  ];
+  const [isLoading, setIsLoading] = useState(false);
 
   const getAnswer = async (input: string) => {
     setIsLoading(true);
-    const resp: any = await callLLM({
-      input,
-      inquiryType,
-      serviceInfo: { service: "groq", model: "llama-3.3-70b-versatile" },
-    });
-    setIsLoading(false);
-    return resp;
+    try {
+      return await getAnswerFromModel(input);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const getPrompt = async (input: string) => {
-    const resp: any = await callLLM({
-      input,
-      inquiryType,
-      serviceInfo: {},
-      getOnlyPrompt: true,
-    });
-    return resp.output.content;
-  };
+  // getPrompt은 그대로 전달
+  const getPrompt = getPromptByInputText;
 
-  const getPromptByInputText = async (input: string) => {
-    const resp: any = await callLLM({
-      input,
-      inquiryType,
-      serviceInfo: {},
-      getOnlyPrompt: true,
-    });
-    return resp.output.content;
-  };
-
-  const stable = useMemo<LLMState>(
+  // Context value 객체를 useMemo로 고정
+  const stableValue = useMemo<LLMState>(
     () => ({
       inquiryType,
       setInquiryType,
       inquiryTypeList,
       getAnswer,
-      getPromptByInputText,
       getPrompt,
+      getPromptByInputText,
       isLoading,
     }),
-    [inquiryType, isLoading],
+    [inquiryType, isLoading, inquiryTypeList, getAnswer, getPromptByInputText],
   );
 
-  return <LLMContext.Provider value={stable}>{children}</LLMContext.Provider>;
+  return (
+    <LLMContext.Provider value={stableValue}>{children}</LLMContext.Provider>
+  );
 };
 
 /* ─────────── 셀렉터 훅 ─────────── */
