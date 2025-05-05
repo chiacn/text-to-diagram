@@ -10,20 +10,44 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
+import { toast } from "@/hooks/use-toast";
+import { useLLMActions } from "@/contexts/LLMContext";
+
+// interface PromptButtonProps {
+//   getCopyPrompt: (input: string) => void;
+//   submitPrompt: (
+//     json: string | null,
+//     promptInput: string | null,
+//   ) => Promise<any>;
+// }
 
 interface PromptButtonProps {
-  getCopyPrompt: (input: string) => void;
   submitPrompt: (
     json: string | null,
     promptInput: string | null,
   ) => Promise<any>;
 }
 
-export default function PromptButton({
-  getCopyPrompt,
-  submitPrompt,
-}: PromptButtonProps) {
+export default function PromptButton({ submitPrompt }: PromptButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { getPromptByInputText } = useLLMActions();
+
+  const getCopyPrompt = async (input: string) => {
+    try {
+      const copied = await getPromptByInputText(input);
+      await navigator.clipboard.writeText(copied || "");
+      toast({
+        variant: "info",
+        description: "Copied!",
+      });
+    } catch (error: any) {
+      toast({
+        variant: error.variant ? error.variant : "destructive",
+        description: error?.message,
+      });
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>

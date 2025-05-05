@@ -12,7 +12,7 @@ type variant =
   | undefined;
 
 interface CommonButtonProps {
-  onClick: () => void;
+  onClick: (item?: any) => void | Promise<void | object>;
   className: string;
   variant?: variant;
   isLoading: boolean;

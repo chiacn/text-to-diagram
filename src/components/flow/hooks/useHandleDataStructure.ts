@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface HandleDataStructureProps {
   highlightItems: Array<string | number>;
@@ -105,10 +105,10 @@ export default function useHandleDataStructure({
     );
   }
 
-  const resetDataStructure = () => {
+  const resetDataStructure = useCallback(() => {
     setEntireSpreadedStep([]);
     setFocusSpreadedStep([]);
-  };
+  }, []);
 
   useEffect(() => {
     if (highlightItems.length > 0 && entireSpreadedStep.length > 0) {

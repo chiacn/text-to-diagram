@@ -1,32 +1,51 @@
-import { MutableRefObject, useEffect, useState } from "react";
+import { MutableRefObject, useEffect, useMemo, useState } from "react";
 import useStepProgress from "./hooks/useStepProgress";
 import StepProgressContainer from "./StepProgressContainer";
 import PlayButton from "./PlayButton";
+import {
+  useCurrentHighlightStatus,
+  useHighlightItems,
+} from "@/contexts/HighlightContext";
+import {
+  useEntireSpreadedStep,
+  useFocusSpreadedStep,
+} from "@/contexts/StepContext";
+import { COLOR_PALETTE } from "@/constants";
+import { useInquiryType } from "@/contexts/LLMContext";
 
 interface SubmittedTextProps {
   submittedText: string;
   isOpenSubmittedText: boolean;
   setIsOpenSubmittedText: (isOpenSubmittedText: boolean) => void;
-  entireSpreadedStep?: DiagramItem[];
-  focusSpreadedStep?: DiagramItem[];
-  currentHighlightStatus: number;
-  targetColorMap: { [key: string]: string };
-  inquiryType: string | null;
 }
 
 export default function SubmittedText({
   submittedText,
   isOpenSubmittedText,
   setIsOpenSubmittedText,
-  entireSpreadedStep,
-  focusSpreadedStep,
-  currentHighlightStatus,
-  targetColorMap,
-  inquiryType,
 }: SubmittedTextProps) {
   const [displayText, setDisplayText] = useState<
     string | (string | JSX.Element)[]
   >(submittedText);
+
+  /* Highlight */
+  const highlightItems = useHighlightItems();
+  const currentHighlightStatus = useCurrentHighlightStatus().value;
+
+  /* Step */
+  const entireSpreadedStep = useEntireSpreadedStep();
+  const focusSpreadedStep = useFocusSpreadedStep();
+
+  const inquiryType = useInquiryType();
+
+  const targetColorMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    highlightItems.forEach(
+      (id, i) => (map[id] = COLOR_PALETTE[i % COLOR_PALETTE.length]),
+    );
+    return map;
+  }, [highlightItems]);
+
   const {
     isPlaying,
     setIsPlaying,
