@@ -77,6 +77,23 @@ export default function useDiagram({
       ? colorPalette[index % colorPalette.length]
       : "#fef3c7";
 
+  const getHighlightColorForExample = (
+    index: number,
+    target: string,
+  ): string => {
+    // highlightStatus 2이면서 기본색상(#fef3c7)이 아닐 경우
+    if (
+      currentHighlightStatus.value === 2 &&
+      targetColorMap.current[target] !== "#fef3c7"
+    ) {
+      return targetColorMap.current[target];
+    }
+
+    return currentHighlightStatus.value === 2
+      ? colorPalette[index % colorPalette.length]
+      : "#fef3c7";
+  };
+
   const renderDiagramItems = (structure: any) => {
     switch (inquiryType) {
       case "tree":
@@ -104,7 +121,7 @@ export default function useDiagram({
       parentDiagramId: parentId,
     });
 
-    const highlightColor = getHighlightColor(itemIndex);
+    const highlightColor = getHighlightColorForExample(itemIndex, item.target);
     targetColorMap.current[item.target] = highlightColor;
 
     return (
