@@ -4,6 +4,7 @@ import StepProgressContainer from "./StepProgressContainer";
 import PlayButton from "./PlayButton";
 import {
   useCurrentHighlightStatus,
+  useDiagramRefsPalette,
   useHighlightItems,
 } from "@/contexts/HighlightContext";
 import {
@@ -38,13 +39,7 @@ export default function SubmittedText({
 
   const inquiryType = useInquiryType();
 
-  const targetColorMap = useMemo(() => {
-    const map: Record<string, string> = {};
-    highlightItems.forEach(
-      (id, i) => (map[id] = COLOR_PALETTE[i % COLOR_PALETTE.length]),
-    );
-    return map;
-  }, [highlightItems]);
+  const { targetColorMap } = useDiagramRefsPalette();
 
   const {
     isPlaying,
@@ -84,7 +79,8 @@ export default function SubmittedText({
         (keyword) => part?.toLowerCase() === keyword?.toLowerCase(),
       );
       if (matchedKeyword) {
-        const highlightColor = targetColorMap[matchedKeyword] || "#fef3c7";
+        const highlightColor =
+          targetColorMap.current[matchedKeyword] || "#fef3c7";
         return (
           <span
             key={`submitted-${index}`}

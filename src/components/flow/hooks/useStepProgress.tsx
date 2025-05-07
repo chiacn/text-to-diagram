@@ -1,4 +1,11 @@
-import { use, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  MutableRefObject,
+  use,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import StepProgressItem from "../StepProgressItem";
 import React from "react";
 import { match } from "assert";
@@ -7,7 +14,7 @@ interface StepProgressProps {
   currentHighlightStatus: number;
   submittedText: string;
   focusSpreadedStep?: DiagramItem[];
-  targetColorMap: { [key: string]: string };
+  targetColorMap: MutableRefObject<Record<string, string>>;
   inquiryType: string | null;
 }
 export default function useStepProgress({
@@ -92,7 +99,9 @@ export default function useStepProgress({
           );
           if (matchedKeyword && !alreadyHighlighted) {
             if (inquiryType !== "tree") alreadyHighlighted = true;
-            highlightColor = targetColorMap[matchedKeyword] || "#fef3c7";
+            highlightColor =
+              targetColorMap.current[matchedKeyword] || "#fef3c7";
+
             return (
               <span key={`fragment-${index}`}>
                 <span
