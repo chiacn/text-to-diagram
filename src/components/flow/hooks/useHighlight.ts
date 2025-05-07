@@ -22,7 +22,7 @@ export default function useHighlight({ inquiryType }: UseHighlightProps) {
     value: number;
   }>({ value: 0 });
   const colorPalette = COLOR_PALETTE;
-  const targetColorMap = useRef<any>({});
+  const targetColorMap = useRef<Record<string, string>>({});
 
   const handleDiagramItem = useCallback(
     (
@@ -114,7 +114,7 @@ export default function useHighlight({ inquiryType }: UseHighlightProps) {
           break;
       }
     },
-    [inquiryType],
+    [inquiryType, highlightItems],
   );
 
   const resetHighlight = useCallback(() => {
