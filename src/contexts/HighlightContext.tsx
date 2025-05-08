@@ -24,7 +24,6 @@ const HighlightStateCtx = createContext<HighlightState | null>(null);
 const HighlightActionsCtx = createContext<HighlightActions | null>(null);
 
 export const HighlightProvider = ({ children }: { children: ReactNode }) => {
-  console.log("HighlightProvider -----------------------");
   const inquiryType = useInquiryType();
 
   const {

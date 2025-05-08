@@ -3,7 +3,6 @@ import { useRenderItems, useContentWrapperRef } from "@/contexts/RenderContext";
 import { useStructure } from "@/contexts/StructureContext";
 
 export default function RenderDiagram() {
-  console.log("RenderDiagram Render -----------------------");
   const structure = useStructure();
   const renderDiagramItems = useRenderItems();
   const contentWrapperRef = useContentWrapperRef();
