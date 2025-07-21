@@ -401,6 +401,22 @@ export default function useCallLLM() {
     }
   };
 
+  interface GroqMessage {
+    role: "system" | "user" | "assistant";
+    content: string;
+  }
+
+  interface GroqChoice {
+    index: number;
+    message: GroqMessage;
+    finish_reason?: string;
+  }
+
+  interface GroqResponse {
+    choices?: GroqChoice[];
+    error?: { message: string };
+  }
+
   const createPrompt = (
     input: string,
     inquiryType: string,
@@ -515,8 +531,9 @@ export default function useCallLLM() {
       });
 
       if (!resp.ok) throw new Error(`Groq error ${resp.status}`);
-      const data = await resp.json();
-      return data.choices[0].message.content; // Groq 응답 본문
+      const data = (await resp.json()) as GroqResponse;
+
+      return data?.choices?.[0].message.content;
     } catch (error: any) {
       throw new Error(error.message);
     }
