@@ -29,7 +29,7 @@
 */
 
 // ❶ ‘포트가 있는 localhost’를 전부 허용하고, 서비스 도메인은 화이트리스트로.
-const WHITELIST = new Set(['https://textdiagram.com']);
+const WHITELIST = new Set(['https://textdiagram.com', 'https://chiacn.github.io/next-blog']);
 const isAllowedOrigin = (origin: string) => {
 	try {
 		const { hostname } = new URL(origin);
