@@ -29,7 +29,7 @@ export const LLMProvider = ({ children }: { children: ReactNode }) => {
   const getAnswer = async (input: string) => {
     setIsLoading(true);
     try {
-      return await getAnswerFromModel(input);
+      return (await getAnswerFromModel(input)) ?? "";
     } finally {
       setIsLoading(false);
     }
