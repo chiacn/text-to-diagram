@@ -524,7 +524,7 @@ export default function useCallLLM() {
         temperature: 0.1,
       };
 
-      const resp = await fetch(process.env.NEXT_PUBLIC_GROQ_PROXY!, {
+      const resp = await fetch("https://groq-proxy.devhhbb1.workers.dev", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
