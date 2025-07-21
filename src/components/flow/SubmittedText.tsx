@@ -115,7 +115,7 @@ export default function SubmittedText({
   }, [focusSpreadedStep]); // currentHighlightStatus 변경 -> focusSpreadedStep 변경 -> highlightText 적용
 
   return (
-    <div className="w-full relative">
+    <div className="w-full relative z-50">
       {/* Submit된 텍스트 표시 영역 */}
       <div
         className={`w-full mt-8 bg-white border border-gray-300 rounded-lg shadow-lg ${
