@@ -187,8 +187,8 @@ export default function PromptInputArea({
                     {
                       "step": "1.1.1.3",
                       "target": "hanoi(n - 1, via, to, from)",
-                      "example": "hanoi(1, 2, 3, 1)",
-                      "description": "The hanoi function is called recursively with n=1, from=2, to=3, and via=1.",
+                      "example": "hanoi(1, 3, 2, 1)",
+                      "description": "The hanoi function is called recursively with n=1, from=3, to=2, and via=1.",
                       "result": {
                         "answer": [
                           [1, 3],
@@ -199,13 +199,13 @@ export default function PromptInputArea({
                         {
                           "step": "1.1.1.3.1",
                           "target": "answer.push([from, to]);",
-                          "example": "answer.push([2, 3]);",
-                          "description": "The base case of the recursion is reached, and the move from peg 2 to peg 3 is added to the answer array.",
+                          "example": "answer.push([3, 2]);",
+                          "description": "The base case of the recursion is reached, and the move from peg 3 to peg 2 is added to the answer array.",
                           "result": {
                             "answer": [
                               [1, 3],
                               [1, 2],
-                              [2, 3]
+                              [3, 2]
                             ]
                           }
                         }
@@ -222,7 +222,7 @@ export default function PromptInputArea({
                     "answer": [
                       [1, 3],
                       [1, 2],
-                      [2, 3],
+                      [3, 2],
                       [1, 3]
                     ]
                   }
@@ -236,7 +236,7 @@ export default function PromptInputArea({
                     "answer": [
                       [1, 3],
                       [1, 2],
-                      [2, 3],
+                      [3, 2],
                       [1, 3]
                     ]
                   },
@@ -250,7 +250,7 @@ export default function PromptInputArea({
                         "answer": [
                           [1, 3],
                           [1, 2],
-                          [2, 3],
+                          [3, 2],
                           [1, 3]
                         ]
                       },
@@ -264,7 +264,7 @@ export default function PromptInputArea({
                             "answer": [
                               [1, 3],
                               [1, 2],
-                              [2, 3],
+                              [3, 2],
                               [1, 3],
                               [2, 1]
                             ]
@@ -281,7 +281,7 @@ export default function PromptInputArea({
                         "answer": [
                           [1, 3],
                           [1, 2],
-                          [2, 3],
+                          [3, 2],
                           [1, 3],
                           [2, 1],
                           [2, 3]
@@ -297,7 +297,7 @@ export default function PromptInputArea({
                         "answer": [
                           [1, 3],
                           [1, 2],
-                          [2, 3],
+                          [3, 2],
                           [1, 3],
                           [2, 1],
                           [2, 3]
@@ -313,7 +313,7 @@ export default function PromptInputArea({
                             "answer": [
                               [1, 3],
                               [1, 2],
-                              [2, 3],
+                              [3, 2],
                               [1, 3],
                               [2, 1],
                               [2, 3],
