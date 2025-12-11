@@ -159,6 +159,13 @@ export default function useStepProgress({
     keywords: string[];
     isSimilar?: boolean;
   }) {
+    const firstKeyword = keywords[0];
+    if (!firstKeyword) {
+      return {
+        matchingText: "",
+        parts: [text],
+      };
+    }
     const escapedKeywords = changeApostrophe(escapeRegex(keywords[0]));
     const regex = new RegExp(`(${escapedKeywords})`, "gi");
     const splitedRegex = text?.split(regex);
